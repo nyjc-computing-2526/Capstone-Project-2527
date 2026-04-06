@@ -1,116 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!doctype html>
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://gstatic.com" crossorigin />
+    <link href="https://googleapis.com" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
     <title>Login Page</title>
-    <style>
-        /* Resets and Fullscreen Setup */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body, html {
-            height: 100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f5f5f5; /* Light grey background */
-        }
-
-        /* The Card Container */
-        .login-container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 8px;
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-        }
-
-        h1 {
-            margin-bottom: 30px;
-            font-size: 2rem;
-            font-weight: bold;
-        }
-
-        /* Input Styling */
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        input {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            background-color: #ebe5db; /* Beige color from image */
-            font-size: 1rem;
-            outline: none;
-        }
-
-        input::placeholder {
-            color: #8c8c8c;
-        }
-
-        /* Button Layout */
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        button {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            background-color: #d9c8b2; /* Button color from image */
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background-color: #c9b8a2;
-        }
-
-        /* Footer Link */
-        .forgot-pass {
-            display: block;
-            margin-top: 20px;
-            text-align: left;
-            font-size: 0.9rem;
-            color: #333;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="login-container">
+  </head>
+  <body>
+    <div class="authcontainer">
+      <div class="login-card">
         <h1>Log In</h1>
-        
         <form>
+          <div class="input-fields-container">
             <div class="input-group">
-                <input type="email" placeholder="Email" required>
+              <input type="email" placeholder="Email" required />
             </div>
-            
             <div class="input-group">
-                <input type="password" placeholder="Password" required>
+              <input type="password" placeholder="Password" required />
             </div>
-
-            <div class="button-group">
-                <button type="submit">Log In</button>
-                <button type="button">Register</button>
-            </div>
+            <button type="submit">Log In</button>
+            <button type="button" onclick="window.location.href = '/register'">
+              Register
+            </button>
+          </div>
         </form>
 
         <a href="#" class="forgot-pass">Forgot password?</a>
+      </div>
     </div>
-
-</body>
+  </body>
 </html>
