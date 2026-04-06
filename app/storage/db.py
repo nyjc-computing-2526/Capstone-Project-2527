@@ -49,18 +49,17 @@ def get_activities():
     query = """SELECT * FROM activities"""
     return db_execute(sql_query=query, params=None, fetch="all")
 
+
 def get_activity_by_id(id):
     query = """SELECT * FROM activities WHERE id = %s"""
     params = (id,)
     return db_execute(sql_query=query, params=params, fetch="one")
+
 
 def create_activity(data: dict):
     columns = ", ".join(data.keys())
     placeholders = ", ".join(["%s"] * len(data))
     values = tuple(data.values())
 
-    return db_execute(
-        f"INSERT INTO events ({columns}) VALUES ({placeholders}) RETURNING id",
-        values,
-        fetch="one"
-    )["id"]
+    query =  f"INSERT INTO activities ({columns}) VALUES ({placeholders}) RETURNING id"
+    return db_execute(sql_query=query, params=values, fetch="one")["id"]
