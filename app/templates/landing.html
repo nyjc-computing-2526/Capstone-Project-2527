@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://gstatic.com" crossorigin />
+    <link href="https://googleapis.com" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <title>Welcome to Capstone Project</title>
+  </head>
+  <body>
+    <header>
+      <h3>Website name</h3>
+    </header>
+    <h1 class="headline">The one-stop platform to see your events.</h1>
+    <div class="bottomhalf">
+      <p class="description">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae
+        metus tempus, semper ante ac, tristique tortor. Vestibulum ante ipsum
+        primis in faucibus orci luctus et ultrices posuere cubilia curae;
+        Aliquam risus elit, hendrerit sit amet ultricies in, gravida id lectus.
+        Praesent suscipit tincidunt lectus, a rhoncus diam lacinia ac.
+      </p>
+      <div class="buttonstack">
+        <form action="/login"><button>Log In</button></form>
+        <form action="/register"><button>Register</button></form>
+      </div>
+    </div>
+    <div class="filler"></div>
+  </body>
+</html>
