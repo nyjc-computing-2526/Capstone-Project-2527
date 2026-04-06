@@ -20,10 +20,10 @@ def create_activities():
     if request.method == 'POST':
         title = request.form['title']
         description  = request.form['description']
-        start_date  = request.form['start_date']
-        end_date  = request.form['end_date']
-        
-    activities_resource.create_activity(activity_id, title, description, start_date, end_date)
+        started_at  = request.form['started_at']
+        ended_at  = request.form['ended_at']
+ 
+        activities_resource.create_activity(title, description, started_at, ended_at)
 
     return render_template('create.html')
 
