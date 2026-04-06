@@ -7,43 +7,101 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #ffffff;
 }
 
+/* Header navigation */
 header {
   background-color: #d9c8ae;
-  padding-left: 1em;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
+  padding: 0.5em 1em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.headline {
-  padding-left: 0.5em;
+header ul {
+  list-style: none;
+  display: flex;
+  gap: 1em;
+  margin: 0;
+  padding: 0;
+  align-items: center;
 }
 
-.description {
-  padding-left: 1em;
-  padding-right: 1em;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-  max-width: 65%;
-  font-size: medium;
+header ul li a {
+  color: #2C3E50;
+  text-decoration: none;
+  padding: 0.4em 0.8em;
+  border-radius: 0.5em;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.bottomhalf {
+header ul li a:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: #1a1a1a;
+}
+
+header a.logout {
+  color: #E74C3C;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* Main layout: content + sidebar */
+main {
+  display: flex;
+  flex: 1;
   background-color: #ece5db;
-  display: flex;
-  flex-direction: row;
 }
 
-.buttonstack {
-  justify-content: center;
+/* Content area */
+.content {
+  flex: 3;
+  padding: 2em;
+}
+
+.content h1 {
+  margin-top: 0;
+  color: #2C3E50;
+}
+
+.section-title {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  color: #2C3E50;
+}
+
+/* Activities list */
+.activities {
   display: flex;
-  gap: 0.5em;
   flex-direction: column;
-  padding: 1em;
+  gap: 1em;
 }
 
-button {
+.activity-card {
+  background-color: #ECE5DB;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.activity-card h3 {
+  margin: 0 0 8px 0;
+  color: #2C3E50;
+}
+
+/* Sidebar */
+.sidebar {
+  flex: 1;
+  padding: 2em 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  align-items: flex-start; /* aligns buttons neatly to the left */
+}
+
+.sidebar .button {
   text-align: start;
   font-size: medium;
   font-weight: bold;
@@ -52,18 +110,13 @@ button {
   padding: 1em;
   min-width: 14em;
   background-color: #d9c8ae;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-button:hover {
+.sidebar .button:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-button:active {
+.sidebar .button:active {
   background-color: #7c6c55;
-}
-
-.filler {
-  background-color: #ece5db;
-  flex: 1;
 }
