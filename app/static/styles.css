@@ -7,8 +7,10 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #ffffff;
 }
 
+/* Header navigation */
 header {
   background-color: #d9c8ae;
   padding-left: 1em;
@@ -27,8 +29,13 @@ a {
   text-decoration: none;
 }
 
-.headline {
-  padding-left: 0.5em;
+header ul {
+  list-style: none;
+  display: flex;
+  gap: 1em;
+  margin: 0;
+  padding: 0;
+  align-items: center;
 }
 
 .description {
@@ -36,8 +43,32 @@ a {
   font-size: medium;
 }
 
-.bottomhalf {
+/* Main layout: content + sidebar */
+main {
+  display: flex;
+  flex: 1;
   background-color: #ece5db;
+}
+
+/* Content area */
+.content {
+  flex: 3;
+  padding: 2em;
+}
+
+.content h1 {
+  margin-top: 0;
+  color: #2C3E50;
+}
+
+.section-title {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  color: #2C3E50;
+}
+
+/* Activities list */
+.activities {
   display: flex;
   flex-direction: row;
   padding-left: 1em;
@@ -46,8 +77,10 @@ a {
   gap: 4em;
 }
 
-.buttonstack {
-  justify-content: center;
+/* Sidebar */
+.sidebar {
+  flex: 1;
+  padding: 2em 1em;
   display: flex;
   gap: 0.75rem;
   flex-direction: column;
@@ -56,7 +89,7 @@ a {
   align-items: stretch;
 }
 
-button {
+.sidebar .button {
   text-align: start;
   font-size: medium;
   font-weight: bold;
@@ -65,14 +98,14 @@ button {
   padding: 1em;
   width: 100%;
   background-color: #d9c8ae;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-button:hover {
+.sidebar .button:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-button:active {
+.sidebar .button:active {
   background-color: #7c6c55;
 }
 
