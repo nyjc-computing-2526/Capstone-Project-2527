@@ -42,10 +42,10 @@ class ActivitiesResource:
     def create_activity(self, activity_data: dict) -> int:
         if not isinstance(activity_data, dict):
             raise ValueError("Activity data must be a dictionary")
-        
+
         activity_data = dict(activity_data)  # Create a copy to avoid mutating input
 
-        required_fields = ['started_at', 'ended_at']
+        required_fields = ['started_at', 'ended_at', 'title', 'description']
         for field in required_fields:
             if field not in activity_data or not isinstance(activity_data[field], str):
                 raise ValueError(f"Missing or invalid {field}: must be a string")
@@ -54,7 +54,7 @@ class ActivitiesResource:
 
         if invalid:
             raise ValueError(f"Invalid column(s): {invalid}")
-        
+
         try:
             started_at = parser.parse(activity_data['started_at']).astimezone(timezone.utc)
             activity_data['started_at'] = started_at.isoformat()
@@ -105,9 +105,12 @@ class ActivityResource:
         invalid = activity_data.keys() - ALLOWED_ACTIVITY_COLUMNS
         if invalid:
             raise ValueError(f"Invalid column(s): {invalid}")
-        
+
+        activity_data = {k: v for k, v in activity_data.items() if v is not None}
+
+        if not activity_data:
+            raise ValueError("No valid fields to update")
         try:
-            activity_data = {k: v for k, v in activity_data.items() if v is not None}
             success = db.update_activity(self.activity_id, activity_data)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or update failed")
