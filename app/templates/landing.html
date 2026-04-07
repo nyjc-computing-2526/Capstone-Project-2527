@@ -6,13 +6,16 @@
     <link href="https://googleapis.com" rel="stylesheet" />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
+      href="{{ url_for('static', filename='styles.css') }}"
     />
     <title>Welcome to Capstone Project</title>
   </head>
   <body>
     <header>
       <h3>Website name</h3>
+      <a class="unselect" href="/about">About Us</a>
+      <a class="unselect" href="/features">Features</a>
+      <a class="unselect" href="/contact">Contact</a>
     </header>
     <h1 class="headline">The one-stop platform to see your events.</h1>
     <div class="bottomhalf">
@@ -24,8 +27,10 @@
         Praesent suscipit tincidunt lectus, a rhoncus diam lacinia ac.
       </p>
       <div class="buttonstack">
-        <form action="/login"><button>Log In</button></form>
-        <form action="/register"><button>Register</button></form>
+        <form action="/login"><button class="landing-btn">Log In</button></form>
+        <form action="/register">
+          <button class="landing-btn">Register</button>
+        </form>
       </div>
     </div>
     <div class="filler"></div>

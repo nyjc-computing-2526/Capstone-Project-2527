@@ -13,10 +13,20 @@ body {
 /* Header navigation */
 header {
   background-color: #d9c8ae;
-  padding: 0.5em 1em;
+  padding-left: 1em;
   display: flex;
+  flex-direction: row;
+  gap: 6em;
   align-items: center;
-  justify-content: space-between;
+}
+
+unselect {
+  font-weight: lighter;
+  size: 20px;
+}
+
+a {
+  text-decoration: none;
 }
 
 header ul {
@@ -28,23 +38,9 @@ header ul {
   align-items: center;
 }
 
-header ul li a {
-  color: #2C3E50;
-  text-decoration: none;
-  padding: 0.4em 0.8em;
-  border-radius: 0.5em;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-header ul li a:hover {
-  background-color: rgba(0, 0, 0, 0.08);
-  color: #1a1a1a;
-}
-
-header a.logout {
-  color: #E74C3C;
-  font-weight: bold;
-  text-decoration: none;
+.description {
+  max-width: 50%;
+  font-size: medium;
 }
 
 /* Main layout: content + sidebar */
@@ -74,21 +70,11 @@ main {
 /* Activities list */
 .activities {
   display: flex;
-  flex-direction: column;
-  gap: 1em;
-}
-
-.activity-card {
-  background-color: #ECE5DB;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.activity-card h3 {
-  margin: 0 0 8px 0;
-  color: #2C3E50;
+  flex-direction: row;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 0.5em;
+  gap: 4em;
 }
 
 /* Sidebar */
@@ -96,9 +82,11 @@ main {
   flex: 1;
   padding: 2em 1em;
   display: flex;
+  gap: 0.75rem;
   flex-direction: column;
-  gap: 1em;
-  align-items: flex-start; /* aligns buttons neatly to the left */
+  padding: 1em 0 0;
+  width: 100%;
+  align-items: stretch;
 }
 
 .sidebar .button {
@@ -108,7 +96,7 @@ main {
   border: 0;
   border-radius: 1em;
   padding: 1em;
-  min-width: 14em;
+  width: 100%;
   background-color: #d9c8ae;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -119,4 +107,104 @@ main {
 
 .sidebar .button:active {
   background-color: #7c6c55;
+}
+
+.input-group {
+  width: 100%;
+}
+
+.input-group input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #d9c8ae;
+  background-color: white;
+  font-size: 1rem;
+}
+
+.filler {
+  background-color: #ece5db;
+  flex: 1;
+}
+
+.login-card {
+  background-color: #ece5db;
+  padding: 2rem;
+  border-radius: 1.25rem;
+  width: 28rem;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.login-card h1 {
+  margin-bottom: 1.75rem;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #d9c8ae;
+  background-color: white;
+  font-size: 1rem;
+}
+
+.forgot-pass {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: #7c6c55;
+  font-weight: 600;
+}
+
+.authcontainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.input-fields-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.email-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.email-group input {
+  flex: 1;
+  width: auto;
+}
+
+.verify-btn {
+  width: 6rem;
+  padding: 1rem 0.5rem;
+  font-size: medium;
+  text-align: center;
+  background-color: #d9c8ae;
+  border: 0;
+  border-radius: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.verify-btn:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.verify-btn:active {
+  background-color: #7c6c55;
+}
+
+.landing-btn {
+  width: 14em;
+  max-width: 14em;
 }
