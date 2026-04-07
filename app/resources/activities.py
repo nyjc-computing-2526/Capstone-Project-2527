@@ -9,7 +9,6 @@ class ActivitiesResource:
         try:
             return db.get_activities()
         except Exception as e:
-            # Log the error (e.g., using logging module)
             raise ValueError(f"Failed to retrieve activities: {str(e)}")
     
     def get_completed(self) -> list[dict]:
@@ -24,9 +23,6 @@ class ActivitiesResource:
         except Exception as e:
             raise ValueError(f"Failed to retrieve upcoming activities: {str(e)}")
     
-    def get_by_id(self, activity_id: int) -> dict:
-        return ActivityResource(activity_id).get()
-        
     def get_by_user_id(self, user_id: int) -> list[dict]:
         try:
             if not isinstance(user_id, int):
@@ -43,7 +39,7 @@ class ActivitiesResource:
         if not isinstance(activity_data, dict):
             raise ValueError("Activity data must be a dictionary")
 
-        activity_data = dict(activity_data)  # Create a copy to avoid mutating input
+        activity_data = dict(activity_data)
 
         required_fields = ['started_at', 'ended_at', 'title', 'description']
         for field in required_fields:
@@ -51,7 +47,6 @@ class ActivitiesResource:
                 raise ValueError(f"Missing or invalid {field}: must be a string")
             
         invalid = activity_data.keys() - ALLOWED_ACTIVITY_COLUMNS
-
         if invalid:
             raise ValueError(f"Invalid column(s): {invalid}")
 
@@ -62,18 +57,17 @@ class ActivitiesResource:
             ended_at = parser.parse(activity_data['ended_at']).astimezone(timezone.utc)
             activity_data['ended_at'] = ended_at.isoformat()
 
+            if started_at >= ended_at:
+                raise ValueError("Started time must be before ended time") 
+
+            return db.create_activity(activity_data)
         except ValueError as e:
             raise ValueError(f"Invalid date format or logic: {str(e)}")
         except Exception as e:
             raise ValueError(f"Failed to create activity: {str(e)}")
-        
-        if started_at >= ended_at:
-            raise ValueError("Started time must be before ended time") 
-        return db.create_activity(activity_data)
 
-    def delete_activity(self, activity_id: int) -> bool:
-        return ActivityResource(activity_id).delete()
-
+    def activity(self, activity_id) -> "ActivityResource":
+        return ActivityResource(activity_id)
 
 class ActivityResource:
     def __init__(self, activity_id):
@@ -83,7 +77,6 @@ class ActivityResource:
                 raise ValueError("Activity ID must be a positive integer")
         except (ValueError, TypeError) as e:
             raise ValueError(f"Invalid activity ID: {str(e)}")
-
 
     def get(self):
         try:
@@ -100,16 +93,17 @@ class ActivityResource:
         if not isinstance(activity_data, dict):
             raise ValueError("Activity data must be a dictionary")
         
-        activity_data = dict(activity_data)  # Create a copy to avoid mutating input
+        activity_data = dict(activity_data)
 
         invalid = activity_data.keys() - ALLOWED_ACTIVITY_COLUMNS
         if invalid:
             raise ValueError(f"Invalid column(s): {invalid}")
 
-        activity_data = {k: v for k, v in activity_data.items() if v}
+        activity_data = {k: v for k, v in activity_data.items() if v is not None}
 
         if not activity_data:
             raise ValueError("No valid fields to update")
+            
         try:
             success = db.update_activity(self.activity_id, activity_data)
             if not success:
