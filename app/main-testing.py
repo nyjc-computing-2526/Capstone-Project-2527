@@ -18,4 +18,8 @@ def register():
 def home():
     return render_template("home.html")
 
+@app.route("/allactivities")
+def allactivities():
+    return render_template("allactivities.html")
+
 app.run()
