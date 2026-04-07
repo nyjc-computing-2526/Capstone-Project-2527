@@ -14,4 +14,8 @@ def login():
 def register():
     return render_template("register.html")
 
+@app.route("/home")
+def home():
+    return render_template("home.html")
+
 app.run()

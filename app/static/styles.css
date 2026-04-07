@@ -7,13 +7,11 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
 }
 
-/* Header navigation */
 header {
   background-color: #d9c8ae;
-  padding-left: 1em;
+  padding: 1em;
   display: flex;
   flex-direction: row;
   gap: 6em;
@@ -22,20 +20,28 @@ header {
 
 unselect {
   font-weight: lighter;
-  size: 20px;
+  font-size: 20px;
 }
 
 a {
   text-decoration: none;
 }
 
+.headline {
+  padding-left: 0.5em;
+}
+
 header ul {
   list-style: none;
   display: flex;
-  gap: 1em;
+  gap: 2em;
   margin: 0;
   padding: 0;
-  align-items: center;
+}
+
+header li a {
+  color: #7c6c55;
+  font-weight: bold;
 }
 
 .description {
@@ -43,32 +49,8 @@ header ul {
   font-size: medium;
 }
 
-/* Main layout: content + sidebar */
-main {
-  display: flex;
-  flex: 1;
+.bottomhalf {
   background-color: #ece5db;
-}
-
-/* Content area */
-.content {
-  flex: 3;
-  padding: 2em;
-}
-
-.content h1 {
-  margin-top: 0;
-  color: #2C3E50;
-}
-
-.section-title {
-  margin-top: 1em;
-  margin-bottom: 1em;
-  color: #2C3E50;
-}
-
-/* Activities list */
-.activities {
   display: flex;
   flex-direction: row;
   padding-left: 1em;
@@ -77,10 +59,8 @@ main {
   gap: 4em;
 }
 
-/* Sidebar */
-.sidebar {
-  flex: 1;
-  padding: 2em 1em;
+.buttonstack {
+  justify-content: center;
   display: flex;
   gap: 0.75rem;
   flex-direction: column;
@@ -89,7 +69,7 @@ main {
   align-items: stretch;
 }
 
-.sidebar .button {
+button {
   text-align: start;
   font-size: medium;
   font-weight: bold;
@@ -98,14 +78,14 @@ main {
   padding: 1em;
   width: 100%;
   background-color: #d9c8ae;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
-.sidebar .button:hover {
+button:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.sidebar .button:active {
+button:active {
   background-color: #7c6c55;
 }
 
@@ -207,4 +187,98 @@ main {
 .landing-btn {
   width: 14em;
   max-width: 14em;
+}
+
+/* Home page styles */
+header ul {
+  list-style: none;
+  display: flex;
+  gap: 2em;
+  margin: 0;
+  padding: 0;
+}
+
+header li a {
+  color: #7c6c55;
+  font-weight: bold;
+}
+
+.logout {
+  margin-left: auto;
+  color: red;
+  font-weight: bold;
+}
+
+main {
+  display: flex;
+  flex: 1;
+  background-color: #ece5db;
+  padding: 1em;
+}
+
+.content {
+  flex: 1;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  margin-right: 1em;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.activities {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activity-card {
+  background-color: #ece5db;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.activity-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.activity-card p {
+  margin: 0.25rem 0;
+}
+
+.sidebar {
+  min-width: 250px;
+  background-color: white;
+  padding: 2rem 2rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sidebar .button {
+  min-width: 20em;
+  background-color: #d9c8ae;
+  border: 0;
+  border-radius: 1rem;
+  padding: 1rem;
+  font-size: medium;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.sidebar .button:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar .button:active {
+  background-color: #7c6c55;
 }
