@@ -106,7 +106,7 @@ class ActivityResource:
         if invalid:
             raise ValueError(f"Invalid column(s): {invalid}")
 
-        activity_data = {k: v for k, v in activity_data.items() if v is not None}
+        activity_data = {k: v for k, v in activity_data.items() if v}
 
         if not activity_data:
             raise ValueError("No valid fields to update")
