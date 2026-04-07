@@ -34,8 +34,8 @@ class ActivitiesResource:
             if user_id <= 0:
                 raise ValueError("Invalid user ID: must be a positive integer")
             return db.get_activities_by_user_id(user_id)
-        except ValueError as e:
-            raise ValueError(f"Invalid user ID: {str(e)}")
+        except ValueError:
+            raise
         except Exception as e:
             raise ValueError(f"Failed to retrieve activities for user {user_id}: {str(e)}")
     
@@ -91,6 +91,8 @@ class ActivityResource:
             if activity is None:
                 raise ValueError(f"Activity {self.activity_id} not found")
             return activity
+        except ValueError:
+            raise
         except Exception as e:
             raise ValueError(f"Failed to retrieve activity {self.activity_id}: {str(e)}")
 
@@ -98,18 +100,20 @@ class ActivityResource:
         if not isinstance(activity_data, dict):
             raise ValueError("Activity data must be a dictionary")
         
+        activity_data = dict(activity_data)  # Create a copy to avoid mutating input
+
         invalid = activity_data.keys() - ALLOWED_ACTIVITY_COLUMNS
         if invalid:
             raise ValueError(f"Invalid column(s): {invalid}")
         
         try:
-            for key, value in list(activity_data.items()):
-                if value is None:
-                    del activity_data[key]
+            activity_data = {k: v for k, v in activity_data.items() if v is not None}
             success = db.update_activity(self.activity_id, activity_data)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or update failed")
             return success
+        except ValueError:
+            raise
         except Exception as e:
             raise ValueError(f"Failed to update activity {self.activity_id}: {str(e)}")
     
@@ -119,5 +123,7 @@ class ActivityResource:
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or delete failed")
             return success
+        except ValueError:
+            raise 
         except Exception as e:
             raise ValueError(f"Failed to delete activity {self.activity_id}: {str(e)}")
