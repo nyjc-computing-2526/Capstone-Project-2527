@@ -93,14 +93,67 @@ button:active {
   width: 100%;
 }
 
-.input-group input {
+.input-group input,
+.input-group select {
   width: 100%;
+  max-width: 20rem;
   box-sizing: border-box;
   padding: 1rem;
   border-radius: 1rem;
   border: 1px solid #d9c8ae;
   background-color: white;
+  font-family: inherit;
   font-size: 1rem;
+  color: #000;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.input-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 6'%3E%3Cpath d='M1 1 L4 4 L7 1' fill='none' stroke='%237c6c55' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 1rem center;
+  background-size: 0.75rem 0.75rem;
+  padding-left: 2.75rem;
+  cursor: pointer;
+}
+
+.input-group select:hover {
+  border-color: #b69b7d;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.input-group select:active,
+.input-group select:focus {
+  background-color: #fbf7f1;
+  outline: none;
+  border-color: #7c6c55;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.input-row span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.input-row .input-group {
+  flex: 1;
+  min-width: 0;
 }
 
 .filler {
@@ -287,10 +340,10 @@ main {
 .all-activities {
   display: flex;
   flex-direction: column;
-  padding: 2em;
+  padding: 1em;
   gap: 2em;
   flex: 1;
-  background-color: white;
+  background-color: #ece5db;
 }
 
 .top-section {
@@ -331,6 +384,16 @@ main {
   font-size: 2.5rem;
   font-weight: bold;
   color: #000;
+}
+
+.all-activities .page-card {
+  background-color: white;
+  border-radius: 1.25rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  padding: 2rem;
+  box-sizing: border-box;
+  width: auto;
+  max-width: 100%;
 }
 
 .all-activities h2 {

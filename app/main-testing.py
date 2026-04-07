@@ -22,4 +22,8 @@ def home():
 def allactivities():
     return render_template("allactivities.html")
 
+@app.route("/myactivities")
+def myactivities():
+    return render_template("myactivities.html")
+
 app.run()
