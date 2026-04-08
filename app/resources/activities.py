@@ -23,17 +23,30 @@ class ActivitiesResource:
         except Exception as e:
             raise ValueError(f"Failed to retrieve upcoming activities: {str(e)}")
     
-    def get_by_user_id(self, user_id: int) -> list[dict]:
+    def get_owned(self, user_id: int) -> list[dict]:
         try:
             if not isinstance(user_id, int):
                 user_id = int(user_id)
             if user_id <= 0:
                 raise ValueError("Invalid user ID: must be a positive integer")
-            return db.get_activities_by_user_id(user_id)
+            return db.get_owned(user_id)
         except ValueError:
             raise
         except Exception as e:
-            raise ValueError(f"Failed to retrieve activities for user {user_id}: {str(e)}")
+            raise ValueError(f"Failed to retrieve owned activities for user {user_id}: {str(e)}")
+        
+    def get_joined(self, user_id: int) -> list[dict]:
+        try:
+            if not isinstance(user_id, int):
+                user_id = int(user_id)
+            if user_id <= 0:
+                raise ValueError("Invalid user ID: must be a positive integer")
+            return db.get_joined(user_id)
+        except ValueError:
+            raise
+        except Exception as e:
+            raise ValueError(f"Failed to retrieve joined activities for user {user_id}: {str(e)}")
+    
     
     def create_activity(self, activity_data: dict) -> int:
         if not isinstance(activity_data, dict):
