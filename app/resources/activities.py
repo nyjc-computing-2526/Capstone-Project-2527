@@ -137,3 +137,18 @@ class ActivityResource:
             raise 
         except Exception as e:
             raise ValueError(f"Failed to delete activity {self.activity_id}: {str(e)}")
+    
+    def join(self, user_id: int) -> bool:
+        try:
+            if not isinstance(user_id, int):
+                user_id = int(user_id)
+            if user_id <= 0:
+                raise ValueError("Invalid user ID: must be a positive integer")
+            success = db.join_activity(self.activity_id, user_id)
+            if not success:
+                raise ValueError(f"Activity {self.activity_id} not found or join failed")
+            return success
+        except ValueError:
+            raise
+        except Exception as e:
+            raise ValueError(f"Failed to join activity {self.activity_id} for user {user_id}: {str(e)}")
