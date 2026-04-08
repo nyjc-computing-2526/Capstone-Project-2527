@@ -91,7 +91,7 @@ class ActivityResource:
         except (ValueError, TypeError) as e:
             raise ValueError(f"Invalid activity ID: {str(e)}")
 
-    def get(self):
+    def get(self) -> dict:
         try:
             activity = db.get_activity_by_id(self.activity_id)
             if activity is None:
