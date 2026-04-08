@@ -2,7 +2,7 @@ import .storage.db as db
 from dateutil import parser
 from datetime import timezone
 
-ALLOWED_ACTIVITY_COLUMNS = {'title', 'started_at', 'ended_at', 'description', 'created_by'}
+ALLOWED_ACTIVITY_COLUMNS = {'title', 'started_at', 'ended_at', 'description', 'created_by', 'venue'}
 
 class ActivitiesResource:
     def get_all(self) -> list[dict]:
