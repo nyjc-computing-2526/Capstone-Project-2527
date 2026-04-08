@@ -5,7 +5,7 @@ from datetime import timezone
 ALLOWED_ACTIVITY_COLUMNS = {'title', 'started_at', 'ended_at', 'description'}
 
 class ActivitiesResource:
-    def get(self) -> list[dict]:
+    def get_all(self) -> list[dict]:
         try:
             return db.get_activities()
         except Exception as e:
