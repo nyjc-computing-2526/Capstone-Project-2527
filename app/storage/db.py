@@ -5,7 +5,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ALLOWED_COLUMNS = ["id", "name", "description", "date", "created_by", "student", "participants"]
+ALLOWED_COLUMNS_ACTIVITIES = ["id", "name", "description", "date", "created_by", "student", "participants"]
+ALLOWED_COLUMNS_PARTICIPANTS = ["id", "user_id", "activity_id"]
+ALLOWED_COLUMNS_USERS = ["id", "name", "email", "password"]
 
 def db_execute(sql_query, params=None, fetch=None):
     """
@@ -66,15 +68,9 @@ def get_upcoming_activities():
     query = """SELECT * FROM activities WHERE started_at > NOW()"""
     return db_execute(sql_query=query, params=None, fetch="all")
 
-def get_owned (user_id: int):
-    pass
-
-def get_joined (user_id: int):
-    pass
-
 def create_activity(data: dict):
     for col in data.keys():
-        if col not in ALLOWED_COLUMNS:
+        if col not in ALLOWED_COLUMNS_ACTIVITIES:
             raise ValueError(f'Invalid column: {col}')
         
     columns = ", ".join(data.keys())
@@ -85,9 +81,8 @@ def create_activity(data: dict):
     result = db_execute(sql_query=query, params=values, fetch="one")
 
     if result == 0:
-        raise ValueError("Activity was unable to be created")
-    else:
-        return result["id"]
+        return False
+    return True
 
 def delete_activity(activity_id):
     query = """DELETE FROM activities WHERE id = %s"""
@@ -105,37 +100,95 @@ def update_activity(data: dict):
     update_data = {k:v for k,v in data.items() if k != "id"}
 
     for col in update_data.keys():
-        if col not in ALLOWED_COLUMNS:
+        if col not in ALLOWED_COLUMNS_ACTIVITIES:
             return False
     
     columns = ",".join([f"{col} = %s" for col in update_data.keys()])
     values = tuple(update_data.values()) + (data["id"],)
 
-    query = f"UPDATE SET activities SET {columns} WHERE id = %s"
+    query = f"UPDATE activities SET {columns} WHERE id = %s"
     updated = db_execute(sql_query=query, params=values, fetch=None)
 
     if updated == 0:
         return False
-    
     return True
 
-def join_acitivity(activity_id, user_id):
-    pass
+def get_owned (user_id: int):
+    """get all activities created by user_id"""
+    query = """SELECT * FROM activities WHERE created_by = %s"""
+    return db_execute(sql_query=query, params=[user_id], fetch="all")
 
+
+def get_joined (user_id: int):
+    """get all activities attended by user_id"""
+    query = """SELECT activities.* FROM activities 
+                JOIN participants ON participants.activity_id = activities.id
+                WHERE participants.user_id = %s"""
+    return db_execute(sql_query=query, params=[user_id], fetch="all")
+
+## ========= Participants Functions ===========
+
+def join_activity(user_id, activity_id):
+    query = """INSERT INTO participants (user_id, activity_id) VALUES (%s, %s)"""
+    joined = db_execute(sql_query=query, params=[user_id, activity_id], fetch="None")
+    
+    if joined == 0:
+        return False
+    return True
 
 ## ========= User Functions ===========
 
-def create_user (data: dict):
-    pass
-
-def update_user (data: dict):
-    pass
-
-def delete_user (user_id):
-    pass
-
 def get_user_by_email (email: str):
-    pass
+    query = """SELECT * FROM users WHERE email = %s"""
+    params = [email]
+    return db_execute(sql_query=query, params=params, fetch="one")
 
 def get_user_by_id (user_id: str):
-    pass
+    query = """SELECT * FROM users WHERE id = %s"""
+    params = [user_id]
+    return db_execute(sql_query=query, params=params, fetch="one")
+
+def create_user (data: dict):
+    for col in data.keys():
+        if col not in ALLOWED_COLUMNS_USERS:
+            raise ValueError(f'Invalid column: {col}')
+        
+    columns = ", ".join(data.keys())
+    placeholders = ", ".join(["%s"] * len(data))
+    values = tuple(data.values())
+
+    query =  f"INSERT INTO users ({columns}) VALUES ({placeholders}) RETURNING id"
+    result = db_execute(sql_query=query, params=values, fetch="one")
+
+    if result == 0:
+        return False
+    return True
+
+def update_user (data: dict):
+    if "id" not in data.keys():
+        return False
+    
+    update_data = {k:v for k,v in data.items() if k != "id"}
+
+    for col in update_data.keys():
+        if col not in ALLOWED_COLUMNS_USERS:
+            return False
+    
+    columns = ",".join([f"{col} = %s" for col in update_data.keys()])
+    values = tuple(update_data.values()) + (data["id"],)
+
+    query = f"UPDATE users SET {columns} WHERE id = %s"
+    updated = db_execute(sql_query=query, params=values, fetch=None)
+
+    if updated == 0:
+        return False
+    return True
+
+def delete_user (user_id):
+    query = """DELETE FROM users WHERE id = %s"""
+    result = db_execute(query, params=[user_id])
+
+    if result == 0:
+        return False
+    else:
+        return True
