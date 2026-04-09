@@ -3,61 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <title>{{ page_title | default('Activity Management') }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
   </head>
   <body>
     {% macro nav_link(item) %}
-      <li><a href="{{ item.href }}">{{ item.label }}</a></li>
-    {% endmacro %}
-
-    {% macro activity_card(activity) %}
-      <div class="activity-card">
-        <h3>{{ activity.title }}</h3>
-        <p>Time: {{ activity.time }}</p>
-        <p>Date: {{ activity.date }}</p>
-      </div>
-    {% endmacro %}
-
-    {% set nav_items = nav_items or [
-      {'href': '#', 'label': 'Home'},
-      {'href': '#', 'label': 'All Activities'},
-      {'href': '#', 'label': 'My Activities'},
-      {'href': '#', 'label': 'Create Activity'},
-    ] %}
-
-    {% set activities = activities or [
-      {'title': 'Activity 1', 'time': '00:00', 'date': '6th July 2025'},
-      {'title': 'Activity 2', 'time': '00:00', 'date': '6th July 2025'},
-    ] %}
-
-    {% set sidebar_actions = sidebar_actions or [
-      {'label': 'View Profile', 'href': '#'},
-      {'label': 'Create Event', 'href': '#'},
-    ] %}
+    <li><a href="{{ item.href }}">{{ item.label }}</a></li>
+    {% endmacro %} {% macro activity_card(activity) %}
+    <div class="activity-card">
+      <h3>{{ activity.title }}</h3>
+      <p>Time: {{ activity.time }}</p>
+      <p>Date: {{ activity.date }}</p>
+    </div>
+    {% endmacro %} {% set nav_items = nav_items or [ {'href': '/', 'label':
+    'Home'}, {'href': '/allactivities', 'label': 'All Activities'}, {'href':
+    '/myactivities', 'label': 'My Activities'}, {'href': '#', 'label': 'Create
+    Activity'}, ] %} {% set activities = activities or [ {'title': 'Activity 1',
+    'time': '00:00', 'date': '6th July 2025'}, {'title': 'Activity 2', 'time':
+    '00:00', 'date': '6th July 2025'}, ] %} {% set sidebar_actions =
+    sidebar_actions or [ {'label': 'View Profile', 'href': '#'}, {'label':
+    'Create Event', 'href': '#'}, ] %}
 
     <!-- Navigation Bar -->
     <header>
       <ul>
-        {% for item in nav_items %}
-          {{ nav_link(item) }}
-        {% endfor %}
+        {% for item in nav_items %} {{ nav_link(item) }} {% endfor %}
       </ul>
-      <a href="{{ logout_url | default('/login') }}" class="logout">{{ logout_label | default('Log Out') }}</a>
+      <a href="{{ logout_url | default('/login') }}" class="logout"
+        >{{ logout_label | default('Log Out') }}</a
+      >
     </header>
 
     <!-- Main Content -->
     <main>
       <div class="content">
         <h1>{{ page_heading | default('Home') }}</h1>
-        <h2 class="section-title">{{ section_title | default('Upcoming Activities') }}</h2>
+        <h2 class="section-title">
+          {{ section_title | default('Upcoming Activities') }}
+        </h2>
 
         <section class="activities">
-          {% if activities %}
-            {% for activity in activities %}
-              {{ activity_card(activity) }}
-            {% endfor %}
-          {% else %}
-            <p class="empty-state">No upcoming activities yet.</p>
+          {% if activities %} {% for activity in activities %} {{
+          activity_card(activity) }} {% endfor %} {% else %}
+          <p class="empty-state">No upcoming activities yet.</p>
           {% endif %}
         </section>
       </div>
@@ -65,7 +55,7 @@
       <!-- Sidebar -->
       <aside class="sidebar">
         {% for action in sidebar_actions %}
-          <a href="{{ action.href }}" class="button">{{ action.label }}</a>
+        <a href="{{ action.href }}" class="button">{{ action.label }}</a>
         {% endfor %}
       </aside>
     </main>

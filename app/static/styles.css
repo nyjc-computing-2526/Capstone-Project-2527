@@ -77,6 +77,7 @@ button {
   border-radius: 1em;
   padding: 1em;
   width: 100%;
+  max-width: 20rem;
   background-color: #d9c8ae;
   transition: background-color 0.2s ease;
 }
@@ -89,8 +90,16 @@ button:active {
   background-color: #7c6c55;
 }
 
+.input-fields-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
 .input-group {
   width: 100%;
+  max-width: 20rem;
 }
 
 .input-group input,
