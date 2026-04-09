@@ -9,6 +9,8 @@ ALLOWED_USER_COLUMNS = {'email', 'password', 'name'}
 
 
 class UsersResource:
+    """Resource class for managing users collection operations."""
+
     def _get_user_by_email(self, email: str) -> dict | None:
         """Private helper to fetch user by email safely."""
         if not isinstance(email, str) or not email.strip():
@@ -31,6 +33,14 @@ class UsersResource:
             raise ValueError("Internal error retrieving user list") from e
 
     def user(self, user_id: int) -> "UserResource":
+        """Get a UserResource instance for a specific user.
+
+        Args:
+            user_id (int): The ID of the user.
+
+        Returns:
+            UserResource: An instance of UserResource for the user.
+        """
         return UserResource(user_id)
 
     def authenticate(self, email: str, password: str) -> dict:
@@ -102,7 +112,17 @@ class UsersResource:
 
 
 class UserResource:
+    """Resource class for managing individual user operations."""
+
     def __init__(self, user_id: int):
+        """Initialize UserResource with a user ID.
+
+        Args:
+            user_id (int): The ID of the user.
+
+        Raises:
+            ValueError: If user_id is invalid.
+        """
         try:
             self.user_id = int(user_id)
             if self.user_id <= 0:
@@ -111,6 +131,14 @@ class UserResource:
             raise ValueError("User ID must be a positive integer")
 
     def get(self):
+        """Retrieve the user details.
+
+        Returns:
+            dict: The user data without password.
+
+        Raises:
+            ValueError: If user not found or retrieval fails.
+        """
         try:
             user = db.get_user_by_id(self.user_id)
             if user is None:
@@ -124,6 +152,17 @@ class UserResource:
             raise ValueError(f"Failed to retrieve user {self.user_id}") from e
 
     def update(self, user_data: dict) -> bool:
+        """Update the user with new data.
+
+        Args:
+            user_data (dict): Dictionary containing fields to update.
+
+        Returns:
+            bool: True if update was successful.
+
+        Raises:
+            ValueError: If user_data is invalid or update fails.
+        """
         if not isinstance(user_data, dict):
             raise ValueError("Update data must be a dictionary")
 
@@ -159,6 +198,14 @@ class UserResource:
             raise ValueError("Update failed") from None
 
     def delete(self) -> bool:
+        """Delete the user.
+
+        Returns:
+            bool: True if deletion was successful.
+
+        Raises:
+            ValueError: If deletion fails.
+        """
         try:
             success = db.delete_user(self.user_id)
             if not success:
