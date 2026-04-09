@@ -1,17 +1,13 @@
-from flask import Blueprint, render_template, request
-from .resources.activities import ActivitiesResource, ActivityResource
+from flask import Blueprint, render_template, request, redirect, url_for
+from .resources.activities import ActivitiesResource
 
 bp = Blueprint('activities', __name__, url_prefix='/activities')
 activities_resource = ActivitiesResource()
-activity_resource = ActivityResource()
 
 @bp.route('/')
 def activities():
-    """list all acitivities"""
-    completed_activities = activities_resource.get_completed()
-    upcoming_activities = activities_resource.get_upcoming()
-    total_activities = [completed_activities, upcoming_activities]
-    
+    """list all activities"""
+    total_activities = activities_resource.get()
     return render_template('activities.html', data=total_activities)
 
 @bp.route('/create', methods = ['POST', 'GET'])
@@ -20,16 +16,59 @@ def create_activities():
     if request.method == 'POST':
         title = request.form['title']
         description  = request.form['description']
-        started_at  = request.form['started_at']
-        ended_at  = request.form['ended_at']
- 
-        activities_resource.create_activity(title, description, started_at, ended_at)
+        start_date  = request.form['start_date']
+        end_date  = request.form['end_date']
+    
+        activity_data = {'title': title,
+                        'description': description,
+                        'start_date': start_date,
+                        'end_date': end_date}
+        
+        activity_id = activities_resource.create_activity(activity_data)
+
+        return redirect(url_for('activities.view_activity', id=activity_id))
 
     return render_template('create.html')
 
-@bp.route('/create/<id>')
-def view_acitivity():
+@bp.route('/<id>')
+def view_activity(id):
     """shows details of one specific activity based on id"""
-    activity_details = activities_resource.get_activity()
+    activity_resource = activities_resource.activity(id)
+    activity_data = activity_resource.get()
+    
+    return render_template('view_activity.html', data=activity_data)  
 
-    return render_template('view_acitivity.html', data=activity_details)
+@bp.route('/join/<id>', methods=['POST'])
+def join_activity(id):
+    """allows user to join acitivity with that id and redirects them to /activities"""
+    user_id = session['user_id'] #sos help idk how to get this
+
+    activity_resource = activities_resource.activity(id)
+    success = activity_resource.join(user_id)
+
+    if success:
+        return redirect(url_for('activities.activities'))
+    else:
+        # ill assume that if they somehow cannot join is because they alr inside so bring them back to view activity detail
+        return redirect(url_for('activities.view_activity', id=id))
+    
+@bp.route('/update/<id>', methods=['POST'])
+def update_activity(id):
+    """allows user to update acitivity with that id and redirects them to /view activity detail"""
+    if request.method == 'POST':
+        title = request.form['title']
+        description  = request.form['description']
+        start_date  = request.form['start_date']
+        end_date  = request.form['end_date']
+    
+        updated_activity_data = {'title': title,
+                        'description': description,
+                        'start_date': start_date,
+                        'end_date': end_date}
+        
+        activity_resource = activities_resource.activity(id)
+        success = activity_resource.update(updated_activity_data)
+
+        if success:
+            return redirect(url_for('activities.view_activity', id=id))
+        #if no update success how ah...
