@@ -2,10 +2,10 @@ import .storage.db as db
 from dateutil import parser
 from datetime import timezone
 
-ALLOWED_ACTIVITY_COLUMNS = {'title', 'started_at', 'ended_at', 'description'}
+ALLOWED_ACTIVITY_COLUMNS = {'title', 'started_at', 'ended_at', 'description', 'created_by', 'venue'}
 
 class ActivitiesResource:
-    def get(self) -> list[dict]:
+    def get_all(self) -> list[dict]:
         try:
             return db.get_activities()
         except Exception as e:
@@ -91,7 +91,7 @@ class ActivityResource:
         except (ValueError, TypeError) as e:
             raise ValueError(f"Invalid activity ID: {str(e)}")
 
-    def get(self):
+    def get(self) -> dict:
         try:
             activity = db.get_activity_by_id(self.activity_id)
             if activity is None:
@@ -137,3 +137,18 @@ class ActivityResource:
             raise 
         except Exception as e:
             raise ValueError(f"Failed to delete activity {self.activity_id}: {str(e)}")
+    
+    def join(self, user_id: int) -> bool:
+        try:
+            if not isinstance(user_id, int):
+                user_id = int(user_id)
+            if user_id <= 0:
+                raise ValueError("Invalid user ID: must be a positive integer")
+            success = db.join_activity(self.activity_id, user_id)
+            if not success:
+                raise ValueError(f"Activity {self.activity_id} not found or join failed")
+            return success
+        except ValueError:
+            raise
+        except Exception as e:
+            raise ValueError(f"Failed to join activity {self.activity_id} for user {user_id}: {str(e)}")
