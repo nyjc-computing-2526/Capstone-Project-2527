@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ALLOWED_COLUMNS_ACTIVITIES = ["name", "description", "date", "created_by", "started_at", "ended_at"]
+ALLOWED_COLUMNS_ACTIVITIES = ["name", "description", "date", "started_at", "created_by""ended_at", "venue"]
 ALLOWED_COLUMNS_PARTICIPANTS = ["user_id", "activity_id"]
 ALLOWED_COLUMNS_USERS = ["name", "email", "password"]
 
@@ -80,13 +80,13 @@ def create_activity(data: dict):
     query =  f"INSERT INTO activities ({columns}) VALUES ({placeholders}) RETURNING id"
     result = db_execute(sql_query=query, params=values, fetch="one")
 
-    if result == 0:
+    if result == None:
         return False
     return True
 
 def delete_activity(activity_id):
     query = """DELETE FROM activities WHERE id = %s"""
-    result = db_execute(query, params=[activity_id])
+    result = db_execute(query, params=[activity_id], fetch=None)
 
     if result == 0:
         return False
@@ -133,6 +133,14 @@ def join_activity(user_id, activity_id):
     joined = db_execute(sql_query=query, params=[user_id, activity_id], fetch="None")
     
     if joined == 0:
+        return False
+    return True
+
+def leave_activity(user_id, activity_id):
+    query = """DELETE FROM participants WHERE user_id = %s AND activity_id = %s"""
+    left = db_execute(sql_query=query, params=[user_id, activity_id], fetch="None")
+    
+    if left == 0:
         return False
     return True
 
