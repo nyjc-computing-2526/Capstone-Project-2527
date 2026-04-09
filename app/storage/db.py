@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ALLOWED_COLUMNS_ACTIVITIES = ["name", "description", "date", "started_at", "created_by""ended_at", "venue"]
+ALLOWED_COLUMNS_ACTIVITIES = ["title", "description", "date", "started_at", "created_by", "ended_at", "venue"]
 ALLOWED_COLUMNS_PARTICIPANTS = ["user_id", "activity_id"]
 ALLOWED_COLUMNS_USERS = ["name", "email", "password"]
 
