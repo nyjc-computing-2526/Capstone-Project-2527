@@ -168,7 +168,7 @@ def create_user (data: dict):
     query =  f"INSERT INTO users ({columns}) VALUES ({placeholders}) RETURNING id"
     result = db_execute(sql_query=query, params=values, fetch="one")
 
-    if result == 0:
+    if result is None:
         return False
     return True
 
