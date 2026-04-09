@@ -130,7 +130,7 @@ def get_joined (user_id: int):
 
 def join_activity(user_id, activity_id):
     query = """INSERT INTO participants (user_id, activity_id) VALUES (%s, %s)"""
-    joined = db_execute(sql_query=query, params=[user_id, activity_id], fetch="None")
+    joined = db_execute(sql_query=query, params=[user_id, activity_id], fetch=None)
     
     if joined == 0:
         return False
