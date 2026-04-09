@@ -196,7 +196,7 @@ def delete_user (user_id):
     query = """DELETE FROM users WHERE id = %s"""
     result = db_execute(query, params=[user_id])
 
-    if result == None:
+    if result == 0:
         return False
     else:
         return True
