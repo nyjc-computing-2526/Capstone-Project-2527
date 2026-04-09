@@ -1,0 +1,170 @@
+import hashlib
+import os
+import hmac
+import secrets
+
+import .storage.db as db
+
+ALLOWED_USER_COLUMNS = {'email', 'password', 'name'}
+
+
+class UsersResource:
+    def _get_user_by_email(self, email: str) -> dict | None:
+        """Private helper to fetch user by email safely."""
+        if not isinstance(email, str) or not email.strip():
+            return None
+        clean_email = email.strip().lower()
+        try:
+            return db.get_user_by_email(clean_email)
+        except Exception:
+            return None
+
+    def get_all(self) -> list[dict]:
+        """Return all users (without passwords for security)."""
+        try:
+            users = db.get_users()
+            return [
+                {k: v for k, v in user.items() if k != 'password'}
+                for user in users
+            ]
+        except Exception as e:
+            raise ValueError("Internal error retrieving user list") from e
+
+    def user(self, user_id: int) -> "UserResource":
+        return UserResource(user_id)
+
+    def authenticate(self, email: str, password: str) -> dict:
+        """Authenticate user with email and password."""
+        if not isinstance(email, str) or not email.strip():
+            raise ValueError("Email is required")
+        if not isinstance(password, str) or not password:
+            raise ValueError("Password is required")
+
+        user = self._get_user_by_email(email)
+        if not user or not user.get('password'):
+            raise ValueError("Invalid email or password")
+
+        try:
+            stored_password = user['password']
+            salt_hex, hash_hex = stored_password.split(':', 1)
+            salt = bytes.fromhex(salt_hex)
+
+            hashed_input = hashlib.pbkdf2_hmac(
+                'sha256', password.encode('utf-8'), salt, 100000
+            )
+
+            if hmac.compare_digest(hashed_input.hex(), hash_hex):
+                # Remove password before returning user data
+                user = {k: v for k, v in user.items() if k != 'password'}
+                return user
+
+            raise ValueError("Invalid email or password")
+
+        except ValueError:
+            raise
+        except Exception:
+            raise ValueError("Authentication service temporarily unavailable") from None
+
+    def register(self, user_data: dict) -> int:
+        """Register a new user."""
+        if not isinstance(user_data, dict):
+            raise ValueError("Data must be a dictionary")
+
+        sanitized_data = {k: v for k, v in user_data.items() if k in ALLOWED_USER_COLUMNS}
+
+        for field in ['email', 'password', 'name']:
+            val = sanitized_data.get(field)
+            if not isinstance(val, str) or not val.strip():
+                raise ValueError(f"Field '{field}' must be a non-empty string")
+
+        sanitized_data['email'] = sanitized_data['email'].strip().lower()
+        sanitized_data['name'] = sanitized_data['name'].strip()
+
+        # Check for duplicate email
+        if self._get_user_by_email(sanitized_data['email']):
+            raise ValueError("A user with this email already exists")
+
+        try:
+            # Hashing password
+            salt = secrets.token_bytes(32)
+            hashed_password = hashlib.pbkdf2_hmac(
+                'sha256',
+                sanitized_data['password'].encode('utf-8'),
+                salt,
+                100000
+            )
+            sanitized_data['password'] = f"{salt.hex()}:{hashed_password.hex()}"
+
+            return db.create_user(sanitized_data)
+
+        except Exception:
+            raise ValueError("Could not complete registration") from None
+
+
+class UserResource:
+    def __init__(self, user_id: int):
+        try:
+            self.user_id = int(user_id)
+            if self.user_id <= 0:
+                raise ValueError
+        except (ValueError, TypeError):
+            raise ValueError("User ID must be a positive integer")
+
+    def get(self):
+        try:
+            user = db.get_user_by_id(self.user_id)
+            if user is None:
+                raise ValueError(f"User {self.user_id} not found")
+            # Remove password before returning
+            user = {k: v for k, v in user.items() if k != 'password'}
+            return user
+        except ValueError:
+            raise
+        except Exception as e:
+            raise ValueError(f"Failed to retrieve user {self.user_id}") from e
+
+    def update(self, user_data: dict) -> bool:
+        if not isinstance(user_data, dict):
+            raise ValueError("Update data must be a dictionary")
+
+        updates = {}
+        for k in ALLOWED_USER_COLUMNS:
+            if k in user_data and user_data[k] is not None:
+                val = user_data[k]
+                if isinstance(val, str) and val.strip():
+                    updates[k] = val.strip()
+
+        if not updates:
+            raise ValueError("No valid fields provided for update")
+
+        if 'email' in updates:
+            updates['email'] = updates['email'].lower()
+
+        if 'password' in updates:
+            salt = secrets.token_bytes(32)
+            hashed = hashlib.pbkdf2_hmac(
+                'sha256',
+                updates['password'].encode('utf-8'),
+                salt,
+                100000
+            )
+            updates['password'] = f"{salt.hex()}:{hashed.hex()}"
+
+        try:
+            success = db.update_user(self.user_id, updates)
+            if not success:
+                raise ValueError("User not found")
+            return success
+        except Exception as e:
+            raise ValueError("Update failed") from None
+
+    def delete(self) -> bool:
+        try:
+            success = db.delete_user(self.user_id)
+            if not success:
+                raise ValueError(f"User {self.user_id} not found")
+            return success
+        except ValueError:
+            raise
+        except Exception as e:
+            raise ValueError("Delete failed") from None
