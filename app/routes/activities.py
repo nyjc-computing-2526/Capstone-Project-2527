@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from .resources.activities import ActivitiesResource
 
 bp = Blueprint('activities', __name__, url_prefix='/activities')
@@ -18,6 +18,8 @@ def create_activities():
         description  = request.form['description']
         start_date  = request.form['start_date']
         end_date  = request.form['end_date']
+        venue = request.form['venue']
+        created_by = request.form['created_by']
     
         activity_data = {'title': title,
                         'description': description,
@@ -38,7 +40,7 @@ def view_activity(id):
     
     return render_template('view_activity.html', data=activity_data)  
 
-@bp.route('/join/<id>', methods=['POST'])
+@bp.route('/join/<int:id>', methods=['POST'])
 def join_activity(id):
     """allows user to join acitivity with that id and redirects them to /activities"""
     user_id = session['user_id'] #sos help idk how to get this
@@ -52,7 +54,7 @@ def join_activity(id):
         # ill assume that if they somehow cannot join is because they alr inside so bring them back to view activity detail
         return redirect(url_for('activities.view_activity', id=id))
     
-@bp.route('/update/<id>', methods=['POST'])
+@bp.route('/update/<int:id>', methods=['POST'])  
 def update_activity(id):
     """allows user to update acitivity with that id and redirects them to /view activity detail"""
     if request.method == 'POST':
@@ -60,6 +62,7 @@ def update_activity(id):
         description  = request.form['description']
         start_date  = request.form['start_date']
         end_date  = request.form['end_date']
+        venue = request.form['venue']
     
         updated_activity_data = {'title': title,
                         'description': description,
@@ -71,4 +74,15 @@ def update_activity(id):
 
         if success:
             return redirect(url_for('activities.view_activity', id=id))
+        else:  
+              flash("Update failed, please try again.", "error")  
+              return render_template('update_activity.html')  
+              
+        if activity_data['created_by'] != session.get('user_id'):  
+              flash("You can only edit your own activities.", "error")  
+              return redirect(url_for('activities.view_activity', id=id))  
+        activity_resource = activities_resource.activity(id)  
+        activity_data = activity_resource.get()  
+        return render_template('update_activity.html', data=activity_data)  
+        
         #if no update success how ah...
