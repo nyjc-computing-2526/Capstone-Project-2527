@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ALLOWED_COLUMNS_ACTIVITIES = ["id", "name", "description", "date", "created_by", "student", "participants"]
-ALLOWED_COLUMNS_PARTICIPANTS = ["id", "user_id", "activity_id"]
-ALLOWED_COLUMNS_USERS = ["id", "name", "email", "password"]
+ALLOWED_COLUMNS_ACTIVITIES = ["name", "description", "date", "created_by", "started_at", "ended_at"]
+ALLOWED_COLUMNS_PARTICIPANTS = ["user_id", "activity_id"]
+ALLOWED_COLUMNS_USERS = ["name", "email", "password"]
 
 def db_execute(sql_query, params=None, fetch=None):
     """
@@ -143,7 +143,7 @@ def get_user_by_email (email: str):
     params = [email]
     return db_execute(sql_query=query, params=params, fetch="one")
 
-def get_user_by_id (user_id: str):
+def get_user_by_id (user_id: int):
     query = """SELECT * FROM users WHERE id = %s"""
     params = [user_id]
     return db_execute(sql_query=query, params=params, fetch="one")
@@ -188,7 +188,7 @@ def delete_user (user_id):
     query = """DELETE FROM users WHERE id = %s"""
     result = db_execute(query, params=[user_id])
 
-    if result == 0:
+    if result == None:
         return False
     else:
         return True
