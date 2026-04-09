@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My activities</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header>
+      <ul>
+        <li><a href="/home">Home</a></li>
+        <li><a href="/allactivities">All Activities</a></li>
+        <li><a href="/myactivities">My Activities</a></li>
+        <li><a href="/create">Create activity</a></li>
+      </ul>
+      <a href="/login" class="logout">Log Out</a>
+    </header>
+
+    <main>
+      <div class="content">
+        <h1>My activities</h1>
+
+        <div class="input-row">
+          <span>sort by:</span>
+          <div class="input-group">
+            <select name="sort" id="sort-order">
+              <option value="earliest" selected>Earliest first</option>
+              <option value="latest">Latest first</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="activities">
+          <div class="activity-card">
+            <h3>Activity 1</h3>
+            <p>00:00</p>
+            <p>6th July 2025</p>
+          </div>
+          <div class="activity-card">
+            <h3>Activity 1</h3>
+            <p>00:00</p>
+            <p>6th July 2025</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>All Activities</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <header>
+      <ul>
+        <li><a href="/home">Home</a></li>
+        <li><a href="#">All Activities</a></li>
+        <li><a href="/myactivities">My Activities</a></li>
+        <li><a href="#">Create activity</a></li>
+      </ul>
+      <a href="/login" class="logout">Log Out</a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="all-activities">
+      <div class="page-card">
+        <!-- Top Section: Headers and Search -->
+        <div class="top-section">
+          <div class="header-section">
+            <h1>All activities</h1>
+            <h2>Happening today</h2>
+            <div class="input-row">
+              <span>View by:</span>
+              <div class="input-group">
+                <select name="status" id="status-filter">
+                  <option value="upcoming" selected>Upcoming</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="search-section">
+            <h2 class="search-heading">Search for an activity</h2>
+            <div class="search-container">
+              <input type="text" placeholder="Enter search query" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards Section: Activity Cards -->
+        <div class="cards-section">
+          <div class="left-activities">
+            <div class="activities-grid">
+              <div class="activity-card">
+                <h3>Activity 1</h3>
+                <p>00:00</p>
+                <p>6th July 2025</p>
+              </div>
+              <div class="activity-card">
+                <h3>Activity 1</h3>
+                <p>00:00</p>
+                <p>6th July 2025</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="right-activities">
+            <div class="activities-grid">
+              <div class="activity-card">
+                <h3>Activity 1</h3>
+                <p>00:00</p>
+                <p>6th July 2025</p>
+              </div>
+              <div class="activity-card">
+                <h3>Activity 1</h3>
+                <p>00:00</p>
+                <p>6th July 2025</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
