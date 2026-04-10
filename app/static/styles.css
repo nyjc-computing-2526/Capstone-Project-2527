@@ -418,7 +418,8 @@ main {
 
 .all-activities .page-card,
 .create-activity .page-card,
-.activity-card-page .page-card {
+.activity-card-page .page-card,
+.profile-page .page-card {
   background-color: white;
   border-radius: 1.25rem;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
@@ -756,6 +757,77 @@ main {
 
 .forgot-password-form .forgot-wide-row input {
   max-width: none;
+}
+
+/* Profile Page */
+.profile-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background-color: #ece5db;
+  padding: 1.25rem;
+}
+
+.profile-card {
+  width: min(38rem, 100%);
+  min-height: 28rem;
+  box-shadow: none;
+}
+
+.profile-card h1 {
+  margin: 0 0 0.8rem;
+  font-size: 2.5rem;
+}
+
+.profile-avatar {
+  width: 9.2rem;
+  height: 9.2rem;
+  border-radius: 50%;
+  background-color: #ded8ce;
+  color: #a67328;
+  display: grid;
+  place-items: center;
+  margin: 2rem 0 2rem;
+}
+
+.profile-avatar svg {
+  width: 4.1rem;
+  height: 4.1rem;
+}
+
+.profile-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 2.2rem;
+}
+
+.profile-email {
+  color: #171717;
+  text-decoration: underline;
+  font-size: 1.2rem;
+}
+
+.profile-name {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.profile-delete-btn {
+  margin-top: 1.8rem;
+  max-width: 17rem;
+  background-color: #ff1111;
+  color: #fff;
+  border-radius: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  cursor: pointer;
+}
+
+.profile-delete-btn svg {
+  width: 1.4rem;
+  height: 1.4rem;
 }
 
 @media (max-width: 600px) {
