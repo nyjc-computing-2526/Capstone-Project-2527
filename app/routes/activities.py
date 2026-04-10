@@ -21,7 +21,7 @@ def create_activities():
         start_date  = request.form['start_date']
         end_date  = request.form['end_date']
         venue = request.form['venue']
-        created_by = request.form['created_by']
+        created_by = current_user.id
     
         activity_data = {'title': title,
                         'description': description,
@@ -61,35 +61,37 @@ def join_activity(id):
 @bp.route('/update/<int:id>', methods=['GET', 'POST'])  
 @login_required
 def update_activity(id):
-    """allows user to update acitivity with that id and redirects them to /view activity detail""" 
+    activity_resource = activities_resource.activity(id)
+    activity_data = activity_resource.get()
+
+    if activity_data is None:
+        flash("Activity not found.", "error")
+        return redirect(url_for('activities.activities'))
+
+    if activity_data['created_by'] != current_user.id:
+        flash("You can only edit your own activities.", "error")
+        return redirect(url_for('activities.view_activity', id=id))
+
     if request.method == 'POST':
         title = request.form['title']
-        description  = request.form['description']
-        start_date  = request.form['start_date']
-        end_date  = request.form['end_date']
+        description = request.form['description']
+        start_date = request.form['start_date']
+        end_date = request.form['end_date']
         venue = request.form['venue']
-    
-        updated_activity_data = {'title': title,
-                        'description': description,
-                        'start_date': start_date,
-                        'end_date': end_date,
-                        'venue': venue}
-        
-        activity_resource = activities_resource.activity(id)
-        success = activity_resource.update(updated_activity_data)
 
+        updated_activity_data = {
+            'title': title,
+            'description': description,
+            'start_date': start_date,
+            'end_date': end_date,
+            'venue': venue
+        }
+
+        success = activity_resource.update(updated_activity_data)
         if success:
             return redirect(url_for('activities.view_activity', id=id))
-        else:  
-                flash("Update failed, please try again.", "error")  
-                return render_template('update_activity.html')  
-
+        else:
+            flash("Update failed, please try again.", "error")
+            return render_template('update_activity.html', data=activity_data)
     else:
-        activity_resource = activities_resource.activity(id)  
-        activity_data = activity_resource.get() 
-
-        if activity_data['created_by'] != current_user.id:  
-            flash("You can only edit your own activities.", "error")  
-            return redirect(url_for('activities.view_activity', id=id))  
-        
-        return render_template('update_activity.html', data=activity_data)  
+        return render_template('update_activity.html', data=activity_data)
