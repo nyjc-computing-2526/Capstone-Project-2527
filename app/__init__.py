@@ -2,7 +2,7 @@ from flask import Flask
 from flask_login import LoginManager
 
 from app.models.user import User
-from app.resources.users import get_user_by_id
+from app.resources.users import UsersResource
 from .routes.landing import bp as landing_bp
 
 login_manager = LoginManager()
@@ -10,13 +10,15 @@ login_manager.login_view = 'auth.login'
 
 def create_app():
     app = Flask(__name__)
+    app.secret_key = "secret_key_yes"
     app.register_blueprint(landing_bp) 
     login_manager.init_app(app)
     return app
 
 @login_manager.user_loader
 def load_user(user_id):
-    row = get_user_by_id(user_id)
-    if row is None:
+    try:
+        user_data = UsersResource().user(int(user_id)).get()
+        return User(user_data['id'], user_data['name'], user_data['email'])
+    except:
         return None
-    return User(row['id'], row['name'], row['email'], row['password'])
