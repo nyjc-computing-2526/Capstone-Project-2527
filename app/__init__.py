@@ -5,6 +5,7 @@ from app.models.user import User
 from app.resources.users import UsersResource
 from .routes.landing import bp as landing_bp
 from .routes.activities import bp as activities_bp
+from .routes.auth import bp as auth_bp
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
@@ -12,8 +13,10 @@ login_manager.login_view = 'auth.login'
 def create_app():
     app = Flask(__name__)
     app.secret_key = "secret_key_yes"
+
     app.register_blueprint(landing_bp)
     app.register_blueprint(activities_bp)
+    app.register_blueprint(auth_bp)
     login_manager.init_app(app)
 
     return app
