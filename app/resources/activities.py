@@ -293,3 +293,17 @@ class ActivityResource:
             raise
         except Exception as e:
             raise ValueError(f"Failed to leave activity {self.activity_id} for user {user_id}: {str(e)}")
+
+    def get_participants(self) -> list[dict]:
+        """Retrieve the participants of the activity.
+
+        Returns:
+            list[dict]: A list of participants.
+
+        Raises:
+            ValueError: If retrieval fails.
+        """
+        try:
+            return db.get_participants(self.activity_id)
+        except Exception as e:
+            raise ValueError(f"Failed to retrieve participants for activity {self.activity_id}: {str(e)}")
