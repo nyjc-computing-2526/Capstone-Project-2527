@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from .resources.activities import ActivitiesResource
+from app.resources.activities import ActivitiesResource
 
 bp = Blueprint('activities', __name__, url_prefix='/activities')
 activities_resource = ActivitiesResource()
@@ -34,7 +34,7 @@ def create_activities():
 
     return render_template('create.html')
 
-@bp.route('/<id>')
+@bp.route('/<int:id>')
 def view_activity(id):
     """shows details of one specific activity based on id"""
     activity_resource = activities_resource.activity(id)
@@ -58,14 +58,7 @@ def join_activity(id):
     
 @bp.route('/update/<int:id>', methods=['GET', 'POST'])  
 def update_activity(id):
-    """allows user to update acitivity with that id and redirects them to /view activity detail"""
-    
-    if activity_data['created_by'] != session.get('user_id'):  
-            flash("You can only edit your own activities.", "error")  
-            return redirect(url_for('activities.view_activity', id=id))  
-    activity_resource = activities_resource.activity(id)  
-    activity_data = activity_resource.get()  
-    
+    """allows user to update acitivity with that id and redirects them to /view activity detail""" 
     if request.method == 'POST':
         title = request.form['title']
         description  = request.form['description']
@@ -87,7 +80,11 @@ def update_activity(id):
         else:  
                 flash("Update failed, please try again.", "error")  
                 return render_template('update_activity.html')  
-              
-    return render_template('update_activity.html', data=activity_data)  
-        
-        #if no update success how ah...
+
+    else:
+        if activity_data['created_by'] != session.get('user_id'):  
+            flash("You can only edit your own activities.", "error")  
+            return redirect(url_for('activities.view_activity', id=id))  
+        activity_resource = activities_resource.activity(id)  
+        activity_data = activity_resource.get()     
+        return render_template('update_activity.html', data=activity_data)  
