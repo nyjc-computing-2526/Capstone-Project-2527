@@ -26,4 +26,8 @@ def allactivities():
 def myactivities():
     return render_template("myactivities.html")
 
+@app.route("/create", methods=["GET", "POST"])
+def create():
+    return render_template("createactivity.html")
+
 app.run()
