@@ -1,4 +1,4 @@
-import .storage.db as db
+import app.storage.db as db
 from dateutil import parser
 from datetime import timezone
 
@@ -64,7 +64,7 @@ class ActivitiesResource:
         try:
             if not isinstance(user_id, int):
                 user_id = int(user_id)
-            if user_id <= 0:
+            if user_id < 0:
                 raise ValueError("Invalid user ID: must be a positive integer")
             return db.get_owned(user_id)
         except ValueError:
@@ -87,7 +87,7 @@ class ActivitiesResource:
         try:
             if not isinstance(user_id, int):
                 user_id = int(user_id)
-            if user_id <= 0:
+            if user_id < 0:
                 raise ValueError("Invalid user ID: must be a positive integer")
             return db.get_joined(user_id)
         except ValueError:
@@ -163,7 +163,7 @@ class ActivityResource:
         """
         try:
             self.activity_id = int(activity_id)
-            if self.activity_id <= 0:
+            if self.activity_id < 0:
                 raise ValueError("Activity ID must be a positive integer")
         except (ValueError, TypeError) as e:
             raise ValueError(f"Invalid activity ID: {str(e)}")
@@ -257,7 +257,7 @@ class ActivityResource:
         try:
             if not isinstance(user_id, int):
                 user_id = int(user_id)
-            if user_id <= 0:
+            if user_id < 0:
                 raise ValueError("Invalid user ID: must be a positive integer")
             success = db.join_activity(self.activity_id, user_id)
             if not success:
@@ -267,3 +267,29 @@ class ActivityResource:
             raise
         except Exception as e:
             raise ValueError(f"Failed to join activity {self.activity_id} for user {user_id}: {str(e)}")
+
+    def leave(self, user_id: int) -> bool:
+        """Allow a user to leave the activity.
+
+        Args:
+            user_id (int): The ID of the user leaving.
+
+        Returns:
+            bool: True if leave was successful.
+
+        Raises:
+            ValueError: If user_id is invalid or leave fails.
+        """
+        try:
+            if not isinstance(user_id, int):
+                user_id = int(user_id)
+            if user_id < 0:
+                raise ValueError("Invalid user ID: must be a positive integer")
+            success = db.leave_activity(self.activity_id, user_id)
+            if not success:
+                raise ValueError(f"Activity {self.activity_id} not found or leave failed")
+            return success
+        except ValueError:
+            raise
+        except Exception as e:
+            raise ValueError(f"Failed to leave activity {self.activity_id} for user {user_id}: {str(e)}")
