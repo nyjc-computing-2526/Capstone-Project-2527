@@ -30,6 +30,18 @@ def allactivities():
 def myactivities():
     return render_template("myactivities.html")
 
+@app.route("/activity")
+def activitycard():
+    return render_template("activitycard.html")
+
+@app.route("/forgot", methods=["GET", "POST"])
+def forgotpassword():
+    return render_template("forgotpassword.html")
+
+@app.route("/reset", methods=["GET", "POST"])
+def resetpassword():
+    return render_template("resetpassword.html")
+
 @app.route("/create", methods=["GET", "POST"])
 def create():
     return render_template("createactivity.html")
