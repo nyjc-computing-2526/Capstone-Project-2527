@@ -14,6 +14,11 @@ def about():
   if request.method == "GET":
     return render_template('about.html')
 
+@bp.route('/privacy-policy', methods=["GET"])
+def privacy_policy():
+    if request.method == "GET":
+        return render_template('privacy-policy.html')
+
 @bp.route('/contact', methods=["GET", "POST"])
 def contact():
     if request.method == "POST":
