@@ -8,13 +8,13 @@ activities_resource = ActivitiesResource()
 @bp.route('/')
 def activities():
     """list all activities"""
-    total_activities = activities_resource.get()
+    total_activities = activities_resource.get_all()
     return render_template('activities.html', data=total_activities)
 
 @bp.route('/create', methods = ['POST', 'GET'])
 @login_required
 def create_activities():
-    """create news activities"""
+    """create new activities"""
     if request.method == 'POST':
         title = request.form['title']
         description  = request.form['description']
