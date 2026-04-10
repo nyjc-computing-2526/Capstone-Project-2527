@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 
 import secrets
 import resend
+import os
 
 from app.resources.users import UsersResource
 from app.models.user import User
