@@ -1,10 +1,19 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
+from dotenv import load_dotenv
+from datetime import datetime, timedelta, timezone
+
+import secrets
+import resend
+
 from app.resources.users import UsersResource
 from app.models.user import User
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 users_resource = UsersResource()
+
+load_dotenv()
+resend.api_key = os.getenv("RESEND_API_KEY")
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -116,25 +125,69 @@ def delete_user(id):
         flash(str(e), "error")
         return redirect(url_for('activities.activities'))
     
-@bp.route('/forgotpassword', methods=['GET', 'POST'])  
+@bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
-    """allows a user to reset their password"""
-    if request.method == 'POST':
-        email = request.form['email']
-        
-        user = users_resource._get_user_by_email(email)
-        if not user:
-            flash("No account found with that email.", "error")
-            return render_template("forgotpassword.html")
-        id = user['id']
-        user_resource = users_resource.user(id)
+    if request.method == "GET":
+        return render_template("forgotpassword.html")
 
-        try: 
-            user_resource.forgotpassword(email)
-            flash("Password reset successfully", "success")
-            return redirect(url_for('auth.login'))
-        except ValueError as e:
+    email = request.form.get("email")
+
+    user = users_resource.get_user_by_email(email)
+
+    if user:
+        token = secrets.token_urlsafe(32)
+        expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
+
+        try:
+            users_resource.user(user["id"]).create_verification_token(token, expires_at)
+                
+            resend.Emails.send({
+            "from": email,
+            "to": email,
+            "subject": "Password Reset",
+            "html": f"<p>Click the link to reset your password: <a href='http://localhost:5000/reset-password?token={token}'>Reset Password</a></p>"
+            })
+            
+            print(f"http://localhost:5000/reset-password?token={token}")
+        except Exception as e:
             flash(str(e), "error")
-            render_template("forgotpassword.html")
-    
-    render_template("forgotpassword.html")
+            print("Error creating token:", e)
+            return redirect("/forgot-password")
+
+    flash("If that email exists, a reset link has been sent.")
+    return redirect("/login")
+
+
+@bp.route("/reset-password")
+def reset_password():
+    token = request.args.get("token")
+
+    reset = users_resource.verify_token(token)
+
+    if not reset:
+        return "Invalid token"
+
+    if reset["expires_at"] < datetime.now(timezone.utc):
+        return "Token expired"
+
+    return render_template("resetpassword.html", token=token)
+
+
+@bp.route("/reset-password", methods=["POST"])
+def reset_password_post():
+    token = request.form.get("token")
+    new_password = request.form.get("password")
+
+    reset = users_resource.verify_token(token)
+    user_id = reset["user_id"]
+
+    if not reset:
+        return "Invalid token"
+
+    if reset["expires_at"] < datetime.now(timezone.utc):
+        return "Token expired"
+
+
+    users_resource.user(user_id).update({"password": new_password})
+    flash("Password reset successfully", "success")
+    return redirect("/login")
