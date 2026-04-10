@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create activity</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header>
+      <ul>
+        <li><a href="/home">Home</a></li>
+        <li><a href="/allactivities">All Activities</a></li>
+        <li><a href="/myactivities">My Activities</a></li>
+        <li><a href="#">Create activity</a></li>
+      </ul>
+      <a href="/login" class="logout">Log Out</a>
+    </header>
+
+    <main class="create-activity">
+      <div class="page-card">
+        <h1>Create activity</h1>
+
+        <form class="create-activity-form" action="#" method="post">
+          <div class="create-activity-top-row">
+            <div class="input-group create-activity-name">
+              <input type="text" name="event_name" placeholder="Event name" />
+            </div>
+
+            <button
+              type="button"
+              id="open-verify-modal"
+              class="verify-btn create-activity-verify-btn"
+            >
+              Verify
+            </button>
+          </div>
+
+          <div class="input-group">
+            <textarea
+              name="event_description"
+              placeholder="Event description"
+            ></textarea>
+          </div>
+
+          <div class="create-activity-date-row">
+            <div class="input-group">
+              <input type="text" name="start_date" placeholder="Select start date (DD/MM/YYYY)" />
+            </div>
+            <div class="input-group">
+              <input type="text" name="end_date" placeholder="Select end date (DD/MM/YYYY)" />
+            </div>
+          </div>
+
+          <div class="create-activity-date-row">
+            <div class="input-group">
+              <input type="text" name="start_time" placeholder="Select start time (HH:MM)" />
+            </div>
+            <div class="input-group">
+              <input type="text" name="end_time" placeholder="Select end time (HH:MM)" />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <input type="text" name="location" placeholder="Location" />
+          </div>
+
+          <button type="submit" class="create-activity-submit">
+            <span class="plus-icon">+</span>
+            <span>Create activity</span>
+          </button>
+        </form>
+      </div>
+
+      <div id="verify-modal" class="verify-modal-overlay" hidden>
+        <div class="page-card verify-modal-card">
+          <h1>Enter verification code</h1>
+          <form action="#" method="post" class="create-activity-form">
+            <div class="input-group">
+              <input
+                type="email"
+                name="teacher_email"
+                placeholder="Enter teacher email"
+              />
+            </div>
+
+            <div class="verify-code-row">
+              <div class="input-group">
+                <input type="text" name="verification_code" placeholder="Enter code" />
+              </div>
+              <button type="button" class="verify-btn verify-send-btn">Send</button>
+            </div>
+
+            <button type="submit" class="verify-btn verify-submit-btn">Submit</button>
+            <button type="button" id="close-verify-modal" class="verify-close-btn">
+              Close
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const verifyModal = document.getElementById('verify-modal');
+      const openVerifyModalBtn = document.getElementById('open-verify-modal');
+      const closeVerifyModalBtn = document.getElementById('close-verify-modal');
+
+      const closeVerifyModal = () => {
+        verifyModal.hidden = true;
+      };
+
+      openVerifyModalBtn.addEventListener('click', () => {
+        verifyModal.hidden = false;
+      });
+
+      closeVerifyModalBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        closeVerifyModal();
+      });
+
+      verifyModal.addEventListener('click', (event) => {
+        if (event.target === verifyModal) {
+          closeVerifyModal();
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !verifyModal.hidden) {
+          closeVerifyModal();
+        }
+      });
+    </script>
+  </body>
+</html>
