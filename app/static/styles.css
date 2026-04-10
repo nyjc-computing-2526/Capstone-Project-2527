@@ -44,6 +44,11 @@ header li a {
   font-weight: bold;
 }
 
+footer {
+  padding: 0.75em 1.5em;
+  background-color: #d9c8af;
+}
+
 .description {
   max-width: 50%;
   font-size: medium;
@@ -321,6 +326,15 @@ main {
   margin: 0.25rem 0;
 }
 
+.activity-card-link {
+  display: block;
+  color: inherit;
+}
+
+.activity-card-link:hover .activity-card {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
 .sidebar {
   min-width: 250px;
   background-color: white;
@@ -403,7 +417,9 @@ main {
 }
 
 .all-activities .page-card,
-.create-activity .page-card {
+.create-activity .page-card,
+.activity-card-page .page-card,
+.profile-page .page-card {
   background-color: white;
   border-radius: 1.25rem;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
@@ -632,6 +648,186 @@ main {
   margin-top: 0.25rem;
   cursor: pointer;
   text-decoration: underline;
+}
+
+/* Activity Card Page */
+.activity-card-page {
+  display: flex;
+  flex: 1;
+  background-color: #ece5db;
+  padding: 1em;
+}
+
+.activity-card-page .page-card {
+  flex: 1;
+}
+
+.activity-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 48rem;
+}
+
+.activity-detail-card {
+  background-color: #ece5db;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.activity-detail-card h2 {
+  margin: 0 0 1.1rem;
+  font-size: 2.2rem;
+}
+
+.activity-time-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.date-label {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.time-label {
+  margin: 0.25rem 0 0;
+  font-size: 2rem;
+}
+
+.time-divider {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1;
+  padding-top: 0.3rem;
+}
+
+.activity-location {
+  display: inline-block;
+  margin: 0.25rem 0 1rem;
+  padding: 0.6rem 1rem;
+  border-radius: 0.75rem;
+  background-color: #d9c8ae;
+  font-weight: 600;
+}
+
+.activity-description {
+  margin: 0 0 1rem;
+  max-width: 32rem;
+  line-height: 1.35;
+}
+
+.activity-contact {
+  margin: 0 0 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #7d7d7d;
+  max-width: 16rem;
+}
+
+.activity-signup-btn {
+  background-color: #87829c;
+  color: #fff;
+  max-width: 16rem;
+  text-align: center;
+}
+
+/* Forgot Password Page */
+.forgot-password-form .input-group {
+  max-width: 24rem;
+}
+
+.forgot-password-form .forgot-email-row {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.forgot-password-form .verify-btn {
+  width: 8.5rem;
+}
+
+.forgot-password-form .forgot-wide-row {
+  width: 100%;
+  max-width: 24rem;
+  box-sizing: border-box;
+}
+
+.forgot-password-form .forgot-wide-row input {
+  max-width: none;
+}
+
+/* Profile Page */
+.profile-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background-color: #ece5db;
+  padding: 1.25rem;
+}
+
+.profile-card {
+  width: min(38rem, 100%);
+  min-height: 28rem;
+  box-shadow: none;
+}
+
+.profile-card h1 {
+  margin: 0 0 0.8rem;
+  font-size: 2.5rem;
+}
+
+.profile-avatar {
+  width: 9.2rem;
+  height: 9.2rem;
+  border-radius: 50%;
+  background-color: #ded8ce;
+  color: #a67328;
+  display: grid;
+  place-items: center;
+  margin: 2rem 0 2rem;
+}
+
+.profile-avatar svg {
+  width: 4.1rem;
+  height: 4.1rem;
+}
+
+.profile-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 2.2rem;
+}
+
+.profile-email {
+  color: #171717;
+  text-decoration: underline;
+  font-size: 1.2rem;
+}
+
+.profile-name {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.profile-delete-btn {
+  margin-top: 1.8rem;
+  max-width: 17rem;
+  background-color: #ff1111;
+  color: #fff;
+  border-radius: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  cursor: pointer;
+}
+
+.profile-delete-btn svg {
+  width: 1.4rem;
+  height: 1.4rem;
 }
 
 @media (max-width: 600px) {

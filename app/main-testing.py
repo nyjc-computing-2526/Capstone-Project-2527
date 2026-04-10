@@ -6,6 +6,10 @@ app = Flask(__name__)
 def landing():
     return render_template("landing.html")
 
+@app.route("/legal")
+def legal():
+    return render_template("legal.html")
+
 @app.route("/login")
 def login():
     return render_template("login.html")
@@ -18,6 +22,10 @@ def register():
 def home():
     return render_template("home.html")
 
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
+
 @app.route("/allactivities")
 def allactivities():
     return render_template("allactivities.html")
@@ -25,6 +33,18 @@ def allactivities():
 @app.route("/myactivities")
 def myactivities():
     return render_template("myactivities.html")
+
+@app.route("/activity")
+def activitycard():
+    return render_template("activitycard.html")
+
+@app.route("/forgot", methods=["GET", "POST"])
+def forgotpassword():
+    return render_template("forgotpassword.html")
+
+@app.route("/reset", methods=["GET", "POST"])
+def resetpassword():
+    return render_template("resetpassword.html")
 
 @app.route("/create", methods=["GET", "POST"])
 def create():
