@@ -145,10 +145,10 @@ def forgot_password():
             "from": email,
             "to": email,
             "subject": "Password Reset",
-            "html": f"<p>Click the link to reset your password: <a href='http://localhost:5000/reset-password?token={token}'>Reset Password</a></p>"
+            "html": f"<p>Click the link to reset your password: <a href='{request.host_url}reset-password?token={token}'>Reset Password</a></p>"
             })
             
-            print(f"http://localhost:5000/reset-password?token={token}")
+            print(f"{request.host_url}/reset-password?token={token}")
         except Exception as e:
             flash(str(e), "error")
             print("Error creating token:", e)
