@@ -58,7 +58,6 @@ def contact():
 
 @bp.route('/features', methods=["GET"])
 def features():
-  if request.method == "GET":
     return render_template('features.html')
 
 
