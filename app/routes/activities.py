@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_required, current_user
 from app.resources.activities import ActivitiesResource
 
 bp = Blueprint('activities', __name__, url_prefix='/activities')
@@ -11,6 +12,7 @@ def activities():
     return render_template('activities.html', data=total_activities)
 
 @bp.route('/create', methods = ['POST', 'GET'])
+@login_required
 def create_activities():
     """create news activities"""
     if request.method == 'POST':
@@ -43,10 +45,10 @@ def view_activity(id):
     return render_template('view_activity.html', data=activity_data)  
 
 @bp.route('/join/<int:id>', methods=['POST'])
+@login_required
 def join_activity(id):
     """allows user to join acitivity with that id and redirects them to /activities"""
-    user_id = session['user_id'] #sos help idk how to get this
-
+    user_id = current_user.id
     activity_resource = activities_resource.activity(id)
     success = activity_resource.join(user_id)
 
@@ -57,6 +59,7 @@ def join_activity(id):
         return redirect(url_for('activities.view_activity', id=id))
     
 @bp.route('/update/<int:id>', methods=['GET', 'POST'])  
+@login_required
 def update_activity(id):
     """allows user to update acitivity with that id and redirects them to /view activity detail""" 
     if request.method == 'POST':
@@ -82,9 +85,11 @@ def update_activity(id):
                 return render_template('update_activity.html')  
 
     else:
-        if activity_data['created_by'] != session.get('user_id'):  
+        activity_resource = activities_resource.activity(id)  
+        activity_data = activity_resource.get() 
+
+        if activity_data['created_by'] != current_user.id:  
             flash("You can only edit your own activities.", "error")  
             return redirect(url_for('activities.view_activity', id=id))  
-        activity_resource = activities_resource.activity(id)  
-        activity_data = activity_resource.get()     
+        
         return render_template('update_activity.html', data=activity_data)  
