@@ -5,3 +5,6 @@ bp = Blueprint('landing', __name__)
 def index():
   return render_template('landing.html')
 
+@bp.route('/legal')
+def legal():
+  return render_template('legal.html')

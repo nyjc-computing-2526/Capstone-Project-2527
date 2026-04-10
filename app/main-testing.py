@@ -6,6 +6,10 @@ app = Flask(__name__)
 def landing():
     return render_template("landing.html")
 
+@app.route("/legal")
+def legal():
+    return render_template("legal.html")
+
 @app.route("/login")
 def login():
     return render_template("login.html")

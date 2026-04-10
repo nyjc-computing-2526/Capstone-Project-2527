@@ -44,6 +44,11 @@ header li a {
   font-weight: bold;
 }
 
+footer {
+  padding: 0.75em 1.5em;
+  background-color: #d9c8af;
+}
+
 .description {
   max-width: 50%;
   font-size: medium;
