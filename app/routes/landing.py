@@ -11,13 +11,11 @@ def index():
 
 @bp.route('/about', methods=["GET"])
 def about():
-  if request.method == "GET":
     return render_template('about.html')
 
 @bp.route('/privacy-policy', methods=["GET"])
 def privacy_policy():
-    if request.method == "GET":
-        return render_template('privacy-policy.html')
+    return render_template('privacy-policy.html')
 
 @bp.route('/contact', methods=["GET", "POST"])
 def contact():
@@ -33,14 +31,14 @@ def contact():
 
         msg.set_content(
             f"""
-You received a new message from your website contact form.
+                You received a new message from your website contact form.
 
-Name: {name}
-Email: {email}
+                Name: {name}
+                Email: {email}
 
-Message:
-{message}
-"""
+                Message:
+                {message}
+            """
         )
 
         try:
