@@ -3,7 +3,7 @@ import os
 import hmac
 import secrets
 
-import .storage.db as db
+import app.storage.db as db
 
 ALLOWED_USER_COLUMNS = {'email', 'password', 'name'}
 
