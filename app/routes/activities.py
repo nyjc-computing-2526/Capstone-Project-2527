@@ -9,7 +9,7 @@ activities_resource = ActivitiesResource()
 def activities():
     """list all activities"""
     total_activities = activities_resource.get_all()
-    return render_template('activities.html', data=total_activities)
+    return render_template('allactivities.html', data=total_activities)
 
 @bp.route('/create', methods = ['POST', 'GET'])
 @login_required
@@ -34,7 +34,7 @@ def create_activities():
 
         return redirect(url_for('activities.view_activity', id=activity_id))
 
-    return render_template('create.html')
+    return render_template('createactivity.html')
 
 @bp.route('/<int:id>')
 def view_activity(id):
