@@ -115,3 +115,26 @@ def delete_user(id):
     except ValueError as e:
         flash(str(e), "error")
         return redirect(url_for('activities.activities'))
+    
+@bp.route('/forgotpassword', methods=['GET', 'POST'])  
+def forgot_password():
+    """allows a user to reset their password"""
+    if request.method == 'POST':
+        email = request.form['email']
+        
+        user = users_resource._get_user_by_email(email)
+        if not user:
+            flash("No account found with that email.", "error")
+            return render_template("forgotpassword.html")
+        id = user['id']
+        user_resource = users_resource.user(id)
+
+        try: 
+            user_resource.forgotpassword(email)
+            flash("Password reset successfully", "success")
+            return redirect(url_for('auth.login'))
+        except ValueError as e:
+            flash(str(e), "error")
+            render_template("forgotpassword.html")
+    
+    render_template("forgotpassword.html")
