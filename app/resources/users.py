@@ -5,7 +5,7 @@ import secrets
 
 import .storage.db as db
 
-ALLOWED_USER_COLUMNS = {'email', 'password', 'name'}
+ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'class'}
 
 
 class UsersResource:
