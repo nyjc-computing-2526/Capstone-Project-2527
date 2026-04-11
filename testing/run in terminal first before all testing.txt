@@ -1,0 +1,1 @@
+export PYTHONPATH=/workspaces/Capstone-Project-2527:$PYTHONPATH && /workspaces/Capstone-Project-2527/.venv/bin/python -m unittest app.tests.resources_activities -v
