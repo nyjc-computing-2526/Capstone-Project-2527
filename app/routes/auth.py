@@ -156,7 +156,7 @@ def forgot_password():
             return redirect("/forgot-password")
 
     flash("If that email exists, a reset link has been sent.")
-    return redirect("/login")
+    return redirect("/auth/login")
 
 
 @bp.route("/reset-password")
@@ -191,4 +191,4 @@ def reset_password_post():
 
     users_resource.user(user_id).update({"password": new_password})
     flash("Password reset successfully", "success")
-    return redirect("/login")
+    return redirect("/auth/login")
