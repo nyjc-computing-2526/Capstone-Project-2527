@@ -1,122 +1,298 @@
-from flask import *
+"""
+Static UI server: same URL map and url_for endpoints as create_app() (main.py),
+without blueprints. Run from repo root: python app/main-testing.py
+"""
 
-app = Flask(__name__)
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+
+from flask import Flask, flash, redirect, render_template, request, url_for
+
+_APP_DIR = Path(__file__).resolve().parent
+
+_fmt_spec = importlib.util.spec_from_file_location(
+    "formatting_util", _APP_DIR / "utils" / "formatting_util.py"
+)
+_formatting = importlib.util.module_from_spec(_fmt_spec)
+assert _fmt_spec.loader is not None
+_fmt_spec.loader.exec_module(_formatting)
+enrich_for_cards = _formatting.enrich_for_cards
+schedule_for_detail = _formatting.schedule_for_detail
+
+app = Flask(
+    __name__,
+    template_folder=str(_APP_DIR / "templates"),
+    static_folder=str(_APP_DIR / "static"),
+)
+app.secret_key = "main-testing-secret"
+
+# Lets you open /auth/reset-password with no ?token= for UI inspection; form POST still works.
+_DUMMY_RESET_TOKEN = "main-testing-ui-token"
+
+# Demo rows shaped like DB activity dicts (see ActivitiesResource / templates)
+_DEMO_ACTIVITIES: list[dict] = [
+    {
+        "id": 1,
+        "title": "Workshop A",
+        "started_at": "2026-07-06T10:00:00",
+        "ended_at": "2026-07-06T12:00:00",
+        "venue": "Room 101",
+        "description": "Sample activity for layout testing.",
+        "created_by": 1,
+    },
+    {
+        "id": 2,
+        "title": "Team sync",
+        "started_at": "2026-07-07T14:30:00",
+        "ended_at": None,
+        "venue": "Online",
+        "description": "",
+        "created_by": 1,
+    },
+]
 
 
-def _stub_page(title: str) -> str:
-    """Minimal page for routes linked from the landing nav; templates may be added later."""
-    css_href = url_for("static", filename="styles.css")
-    return f"""<!doctype html>
-<html lang="en"><head><meta charset="utf-8"/><title>{title}</title>
-<link rel="stylesheet" href="{css_href}"/></head>
-<body><main style="padding:2rem"><h1>{title}</h1><p><a href="/">Back to home</a></p></main></body></html>"""
+def _activity_by_id(activity_id: int) -> dict | None:
+    for row in _DEMO_ACTIVITIES:
+        if row.get("id") == activity_id:
+            return dict(row)
+    return None
 
 
-@app.route("/")
-def landing():
+# --- landing (no prefix; mirrors app/routes/landing.py) ---
+
+
+@app.route("/", endpoint="landing.index")
+def landing_index():
     return render_template("landing.html")
 
 
-@app.route("/legal")
-def legal():
+@app.route("/about", methods=["GET"], endpoint="landing.about")
+def landing_about():
+    return render_template("about.html")
+
+
+@app.route("/privacy-policy", methods=["GET"], endpoint="landing.privacy_policy")
+def landing_privacy_policy():
     return render_template("legal.html")
 
 
-@app.route("/login")
-def login():
-    return render_template("login.html")
+@app.route("/contact", methods=["GET", "POST"], endpoint="landing.contact")
+def landing_contact():
+    if request.method == "POST":
+        return render_template("contact.html", success=True)
+    return render_template("contact.html")
 
 
-@app.route("/auth/login")
+@app.route("/features", methods=["GET"], endpoint="landing.features")
+def landing_features():
+    return render_template("features.html")
+
+
+@app.route("/homepage", methods=["GET"], endpoint="landing.homepage")
+def landing_homepage():
+    return render_template("home.html", activities=enrich_for_cards(_DEMO_ACTIVITIES))
+
+
+# --- auth (prefix /auth; mirrors app/routes/auth.py paths) ---
+
+
+@app.route("/auth/login", methods=["GET", "POST"], endpoint="auth.login")
 def auth_login():
+    if request.method == "POST":
+        return redirect(url_for("activities.activities"))
     return render_template("login.html")
 
 
-@app.route("/register")
-def register():
-    return render_template("register.html")
-
-
-@app.route("/auth/register")
+@app.route("/auth/register", methods=["GET", "POST"], endpoint="auth.register")
 def auth_register():
+    if request.method == "POST":
+        flash("Account registered successfully", "success")
+        return redirect(url_for("auth.login"))
     return render_template("register.html")
 
 
-@app.route("/home")
-def home():
-    return render_template("home.html")
+@app.route("/auth/logout", methods=["GET", "POST"], endpoint="auth.logout")
+def auth_logout():
+    flash("Logged out successfully", "success")
+    return redirect(url_for("auth.login"))
 
 
-@app.route("/auth/view")
+@app.route("/auth/forgot-password", methods=["GET", "POST"], endpoint="auth.forgot_password")
+def auth_forgot_password():
+    if request.method == "POST":
+        flash("If that email exists, a reset link has been sent.", "info")
+        return redirect(url_for("auth.login"))
+    return render_template("forgotpassword.html")
+
+
+@app.route("/auth/reset-password", methods=["GET", "POST"], endpoint="auth.reset_password")
+def auth_reset_password():
+    token = (
+        request.args.get("token")
+        if request.method == "GET"
+        else request.form.get("token")
+    )
+    if not token:
+        token = _DUMMY_RESET_TOKEN
+    if request.method == "POST":
+        flash("Password reset successfully", "success")
+        return redirect(url_for("auth.login"))
+    return render_template("resetpassword.html", token=token)
+
+
+@app.route("/auth/update/<int:id>", methods=["GET", "POST"], endpoint="auth.update_user")
+def auth_update_user(id: int):
+    if request.method == "POST":
+        flash("Profile updated successfully", "success")
+        return redirect(url_for("activities.activities"))
+    return redirect(url_for("auth_update"))
+
+
+@app.route("/auth/delete/<int:id>", methods=["POST"], endpoint="auth.delete_user")
+def auth_delete_user(id: int):
+    flash("Profile deleted successfully", "success")
+    return redirect(url_for("landing.index"))
+
+
+# Profile/edit profile URLs used by templates (not on auth blueprint in production)
+@app.route("/auth/view", endpoint="auth_view")
 def auth_view():
     return render_template("profile.html")
 
 
-@app.route("/auth/update", methods=["GET", "POST"])
+@app.route("/auth/update", methods=["GET", "POST"], endpoint="auth_update")
 def auth_update():
     if request.method == "POST":
         return redirect(url_for("auth_view"))
     return render_template("editprofile.html")
 
 
-@app.route("/activities")
-def activities_index():
-    return render_template("allactivities.html")
+# --- activities (prefix /activities; mirrors app/routes/activities.py) ---
 
 
-@app.route("/activities/personal")
-def activities_personal():
-    return render_template("myactivities.html")
+@app.route(
+    "/activities",
+    methods=["GET"],
+    strict_slashes=False,
+    endpoint="activities.activities",
+)
+def activities_list():
+    return render_template("allactivities.html", data=enrich_for_cards(list(_DEMO_ACTIVITIES)))
 
 
-@app.route("/activities/create", methods=["GET", "POST"])
+@app.route("/activities/myactivities", methods=["GET"], endpoint="activities.my_activities")
+def activities_my_activities():
+    return render_template(
+        "myactivities.html",
+        activities=enrich_for_cards(list(_DEMO_ACTIVITIES)),
+    )
+
+
+@app.route("/activities/create", methods=["GET", "POST"], endpoint="activities.create_activities")
 def activities_create():
+    if request.method == "POST":
+        return redirect(url_for("activities.activity_details", id=_DEMO_ACTIVITIES[0]["id"]))
     return render_template("createactivity.html")
 
 
-@app.route("/allactivities")
-def allactivities():
-    return render_template("allactivities.html")
+@app.route("/activities/join/<int:id>", methods=["POST"], endpoint="activities.join_activity")
+def activities_join(id: int):
+    return redirect(url_for("activities.activities"))
 
 
-@app.route("/myactivities")
-def myactivities():
-    return render_template("myactivities.html")
+@app.route("/activities/leave/<int:id>", methods=["POST"], endpoint="activities.leave_activity")
+def activities_leave(id: int):
+    return redirect(url_for("activities.activity_details", id=id))
 
 
-@app.route("/activity")
-def activitycard():
-    return render_template("activitycard.html")
+@app.route("/activities/update/<int:id>", methods=["GET", "POST"], endpoint="activities.update_activity")
+def activities_update(id: int):
+    row = _activity_by_id(id)
+    if not row:
+        flash("Activity not found.", "error")
+        return redirect(url_for("activities.activities"))
+    flash("Update form is not bundled in main-testing; redirected to details.", "info")
+    return redirect(url_for("activities.activity_details", id=id))
 
 
-@app.route("/forgetpassword", methods=["GET", "POST"])
-def forgotpassword():
-    return render_template("forgotpassword.html")
+@app.route("/activities/delete/<int:id>", methods=["POST"], endpoint="activities.delete_activity")
+def activities_delete(id: int):
+    return redirect(url_for("activities.activities"))
 
 
-@app.route("/reset", methods=["GET", "POST"])
-def resetpassword():
-    return render_template("resetpassword.html")
+@app.route("/activities/<int:id>", methods=["GET"], endpoint="activities.activity_details")
+def activities_activity_details(id: int):
+    row = _activity_by_id(id)
+    if not row:
+        flash("Activity not found.", "error")
+        return redirect(url_for("activities.activities"))
+    return render_template(
+        "activity_details.html",
+        data=row,
+        schedule=schedule_for_detail(row),
+        organizer_email="organizer@example.com",
+    )
+
+
+# --- convenience paths used by templates / older links (not blueprint names) ---
+
+
+@app.route("/home", methods=["GET"])
+def home():
+    return redirect(url_for("landing.homepage"))
+
+
+@app.route("/allactivities", methods=["GET"])
+def allactivities_alias():
+    return redirect(url_for("activities.activities"))
+
+
+@app.route("/myactivities", methods=["GET"])
+def myactivities_alias():
+    return redirect(url_for("activities.my_activities"))
 
 
 @app.route("/create", methods=["GET", "POST"])
-def create():
-    return render_template("createactivity.html")
+def create_alias():
+    return redirect(url_for("activities.create_activities"))
 
 
-@app.route("/about")
-def about():
-    return render_template("about.html")
+@app.route("/activity", methods=["GET"])
+def activity_card_demo():
+    return render_template("activitycard.html")
 
 
-@app.route("/features")
-def features():
-    return render_template("features.html")
+@app.route("/legal", methods=["GET"])
+def legal_alias():
+    return redirect(url_for("landing.privacy_policy"))
 
 
-@app.route("/contact")
-def contact():
-    return render_template("contact.html")
+@app.route("/login", methods=["GET"])
+def login_alias():
+    return redirect(url_for("auth.login"))
 
 
-app.run()
+@app.route("/register", methods=["GET"])
+def register_alias():
+    return redirect(url_for("auth.register"))
+
+
+@app.route("/forgetpassword", methods=["GET", "POST"])
+def forgotpassword_alias():
+    return redirect(url_for("auth.forgot_password"))
+
+
+@app.route("/reset", methods=["GET", "POST"])
+def resetpassword_alias():
+    q = request.query_string.decode() if request.query_string else ""
+    target = url_for("auth.reset_password")
+    if q:
+        target = f"{target}?{q}"
+    return redirect(target)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
