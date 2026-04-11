@@ -126,7 +126,7 @@ def delete_user(id):
         flash(str(e), "error")
         return redirect(url_for('activities.activities'))
     
-@bp.route('/forgot-password', methods=['GET', 'POST'])  
+@bp.route('/auth/forgot-password', methods=['GET', 'POST'])  
 def forgot_password():
     if request.method == "GET":
         return render_template("forgotpassword.html")
