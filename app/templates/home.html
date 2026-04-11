@@ -19,21 +19,27 @@
     <p>Date: {{ activity.date }}</p>
   </div>
 </a>
-    {% endmacro %} {% set nav_items = nav_items or [ {'href': '/', 'label':
-    'Home'}, {'href': '/allactivities', 'label': 'All Activities'}, {'href':
-    '/myactivities', 'label': 'My Activities'}, {'href': '/create', 'label': 'Create
-    Activity'}, ] %} {% set activities = activities or [ {'title': 'Activity 1',
+    {% endmacro %}
+    {% set nav_items = nav_items or [
+      {'href': url_for('landing.homepage'), 'label': 'Home'},
+      {'href': url_for('activities.activities'), 'label': 'All Activities'},
+      {'href': url_for('activities.my_activities'), 'label': 'My Activities'},
+      {'href': url_for('activities.create_activities'), 'label': 'Create Activity'},
+      {'href': '/auth/view', 'label': 'View Profile'},
+    ] %}
+    {% set activities = activities or [ {'title': 'Activity 1',
     'time': '00:00', 'date': '6th July 2025'}, {'title': 'Activity 2', 'time':
-    '00:00', 'date': '6th July 2025'}, ] %} {% set sidebar_actions =
-    sidebar_actions or [ {'label': 'View Profile', 'href': '/auth/view'}, {'label':
-    'Create Event', 'href': '/create'}, ] %}
+    '00:00', 'date': '6th July 2025'}, ] %}
+    {% set sidebar_actions = sidebar_actions or [
+      {'label': 'Create Event', 'href': url_for('activities.create_activities')},
+    ] %}
 
     <!-- Navigation Bar -->
     <header>
       <ul>
         {% for item in nav_items %} {{ nav_link(item) }} {% endfor %}
       </ul>
-      <a href="{{ logout_url | default('/auth/login') }}" class="logout"
+      <a href="{{ logout_url | default(url_for('auth.login')) }}" class="logout"
         >{{ logout_label | default('Log Out') }}</a
       >
     </header>
