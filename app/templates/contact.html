@@ -1,37 +1,29 @@
 <!doctype html>
 <html>
   <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://gstatic.com" crossorigin />
-    <link href="https://googleapis.com" rel="stylesheet" />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
-    <title>Welcome to Capstone Project</title>
-  </head>
-  <body>
-    <header>
-      <ul>
-        <li><a href="/">Website name</a></li>
-        <li><a href="/about">About Us</a></li>
-        <li><a href="/features">Features</a></li>
-        <li><a href="/contact">Contact</a></li>
-      </ul>
-    </header>
-    <h1 class="headline">How can you contact us?</h1>
-    <div class="bottomhalf">
-      <p class="description">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae
-        metus tempus, semper ante ac, tristique tortor. Vestibulum ante ipsum
-        primis in faucibus orci luctus et ultrices posuere cubilia curae;
-        Aliquam risus elit, hendrerit sit amet ultricies in, gravida id lectus.
-        Praesent suscipit tincidunt lectus, a rhoncus diam lacinia ac.
-
-        savio.sidharta@nyjc.edu.sg
-      </p>
-    </div>
-    <div class="filler"></div>
+    {% extends "landing.html" %}
+    {% block content %}
+    <body>
+      <h1 class="headline">Contact Us</h1>
+      <div class="filler">
+        <form action="{{ url_for('landing.contact') }}" method="POST">
+            <div class="input-fields-container">
+              <div class="input-group" max>
+                <table>
+                  <tr>
+                    <td><input type="email" name="email" placeholder="Email" required /></td>
+                    <td><input type="text" name="name" placeholder="Name" required /></td>
+                  </tr>
+                </table>
+                <div class="input-group message-group">
+                  <textarea name="message" placeholder="Message" required></textarea>
+                </div>
+              </div>
+              <button type="submit">Send</button>
+            </div>
+        </form>
+      </div>
     {% include "partials/footer.html" %}
   </body>
+  {% endblock %}
 </html>
