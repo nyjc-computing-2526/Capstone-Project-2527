@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 
 from app.resources.users import UsersResource
 from app.resources.activities import ActivitiesResource
-from .formatting_util import enrich_for_cards, merge_by_id, schedule_for_detail
+from ..utils.formatting_util import enrich_for_cards, merge_by_id, schedule_for_detail
 
 bp = Blueprint('activities', __name__, url_prefix='/activities')
 activities_resource = ActivitiesResource()

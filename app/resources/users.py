@@ -64,8 +64,6 @@ class UsersResource:
             )
 
             if hmac.compare_digest(hashed_input.hex(), hash_hex):
-                # Remove password before returning user data
-                user = {k: v for k, v in user.items() if k != 'password'}
                 return user
 
             raise ValueError("Invalid email or password")

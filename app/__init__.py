@@ -7,8 +7,7 @@ from .routes.landing import bp as landing_bp
 from .routes.activities import bp as activities_bp
 from .routes.auth import bp as auth_bp
 
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
+
 
 def create_app():
     app = Flask(__name__)
@@ -17,14 +16,20 @@ def create_app():
     app.register_blueprint(landing_bp)
     app.register_blueprint(activities_bp)
     app.register_blueprint(auth_bp)
+
     login_manager.init_app(app)
+    login_manager = LoginManager()
+    login_manager.login_view = 'auth.login'
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        try:
+            user_data = UsersResource().user(int(user_id)).get()
+            print("Loaded user:", user_data) 
+            return User(user_data['id'], user_data['name'], user_data['email'])
+        except Exception as e:
+            print("user_loader error:", e)
+            return None
 
     return app
 
-@login_manager.user_loader
-def load_user(user_id):
-    try:
-        user_data = UsersResource().user(int(user_id)).get()
-        return User(user_data['id'], user_data['name'], user_data['email'])
-    except:
-        return None

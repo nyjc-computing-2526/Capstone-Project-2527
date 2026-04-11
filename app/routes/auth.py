@@ -56,7 +56,6 @@ def register():
             return redirect(url_for('auth.login'))
         except ValueError as e:
             flash(str(e), "error")
-            raise e
             return render_template('register.html')
 
     return render_template('register.html')
@@ -91,7 +90,7 @@ def update_user(id):
             user_data['name'] = name.strip()
 
         if user_class and user_class.strip():
-            user_data['class'] = user_class.strip()
+            user_data['user_class'] = user_class.strip()
 
         if password:
             if password != confirm_password:
