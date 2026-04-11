@@ -54,12 +54,12 @@ def create_activities():
         
         activity_id = activities_resource.create_activity(activity_data)
 
-        return redirect(url_for('activities.view_activity', id=activity_id))
+        return redirect(url_for('activities.activity_details', id=activity_id))
 
     return render_template('createactivity.html')
 
 @bp.route('/<int:id>')
-def view_activity(id):
+def activity_details(id):
     try:
         activity_data = activities_resource.activity(id).get()
     except ValueError:
@@ -76,7 +76,7 @@ def view_activity(id):
             organizer_email = None
 
     return render_template(
-        'view_activity.html',
+        'activity_details.html',
         data=activity_data,
         schedule=schedule_for_detail(activity_data),
         organizer_email=organizer_email or '',
@@ -94,7 +94,7 @@ def join_activity(id):
     if success:
         return redirect(url_for('activities.activities'))
     else:
-        return redirect(url_for('activities.view_activity', id=id))
+        return redirect(url_for('activities.activity_details', id=id))
     
 @bp.route('/leave/<int:id>', methods=['POST'])
 @login_required
@@ -107,7 +107,7 @@ def leave_activity(id):
     if success:
         return redirect(url_for('activities.activities'))
     else:
-        return redirect(url_for('activities.view_activity', id=id))
+        return redirect(url_for('activities.activity_details', id=id))
     
 @bp.route('/update/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -121,7 +121,7 @@ def update_activity(id):
 
     if activity_data['created_by'] != current_user.id:
         flash("You can only edit your own activities.", "error")
-        return redirect(url_for('activities.view_activity', id=id))
+        return redirect(url_for('activities.activity_details', id=id))
 
     if request.method == 'POST':
         updated_data = {
@@ -133,7 +133,7 @@ def update_activity(id):
         }
         try:
             activity_resource.update(updated_data)
-            return redirect(url_for('activities.view_activity', id=id))
+            return redirect(url_for('activities.activity_details', id=id))
         except ValueError as e:
             flash(str(e), "error")
             return render_template('update_activity.html', data=activity_data)
