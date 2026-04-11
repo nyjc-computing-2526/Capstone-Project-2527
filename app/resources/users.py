@@ -125,6 +125,12 @@ class UsersResource:
             return db.verify_token(token, type)
         except Exception as e:
             raise ValueError("Failed to verify token") from None
+    
+    def invalidate_token(self, token: str):
+        try:
+            db.invalidate_token(token)
+        except Exception as e:
+            raise ValueError("Failed to invalidate token") from None
 
 
 class UserResource:
@@ -209,6 +215,7 @@ class UserResource:
                 raise ValueError("User not found")
             return success
         except Exception as e:
+            print("Actual error: " + str(e))
             raise ValueError("Update failed") from None
 
     def delete(self) -> bool:
