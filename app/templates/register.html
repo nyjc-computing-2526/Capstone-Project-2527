@@ -1,33 +1,44 @@
 <!doctype html>
 <html>
   <head>
-    <link rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}" />
-    <title>Reset Password</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://gstatic.com" crossorigin />
+    <link href="https://googleapis.com" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <title>Register Page</title>
   </head>
-
   <body>
     <div class="authcontainer">
       <div class="login-card">
-        <h1>Reset Password</h1>
-        <form action="/reset-password" method="POST">
-          <!-- Pass me token from backend-->
-          <input type="hidden" name="token" value="{{ token }}">
+        <h1>Register</h1>
+        <form action="/home">
           <div class="input-fields-container">
-            <div class="input-group">
-              <input type="password" name="new_password"
-                     placeholder="New password" required />
+            <div class="input-group email-group">
+              <input type="email" name="email" placeholder="Email" required />
             </div>
             <div class="input-group">
-              <input type="password" name="confirm_password"
-                     placeholder="Confirm password" required />
+              <input type="name" placeholder="Name" required />
             </div>
+            <div class="input-group">
+              <input type="class" placeholder="Class" required />
+            </div>
+            <div class="input-group">
+              <input type="password" placeholder="Password" required />
+            </div>
+            <div class="input-group">
+              <input
+                type="passwordconfirm"
+                placeholder="Confirm Password"
+                required
+              />
+            </div>
+            <button type="submit">Register</button>
           </div>
-          <button type="submit">
-            Update Password
-          </button>
         </form>
-        <a href="/login" class="forgot-pass">Back to login</a>
+        <a href="{{ url_for('auth.login') }}" class="forgot-pass">
       </div>
     </div>
   </body>
