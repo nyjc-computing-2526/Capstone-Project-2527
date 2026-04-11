@@ -104,17 +104,17 @@ def create():
 
 @app.route("/about")
 def about():
-    return _stub_page("About Us")
+    return render_template("about.html")
 
 
 @app.route("/features")
 def features():
-    return _stub_page("Features")
+    return render_template("features.html")
 
 
 @app.route("/contact")
 def contact():
-    return _stub_page("Contact")
+    return render_template("contact.html")
 
 
 app.run()
