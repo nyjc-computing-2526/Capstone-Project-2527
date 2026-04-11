@@ -139,15 +139,16 @@ def forgot_password():
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
         try:
             users_resource.user(user["id"]).create_verification_token(token, expires_at, 'forgot_password')
-            reset_url = url_for('auth.reset_password', token=token, _external=True)
+            reset_url = f"{request.host_url}auth/reset-password?token={token}"
             resend.Emails.send({
-                "from": "wang.jiayuan_2526@gmail.com",
+                "from": "onboarding@resend.dev",
                 "to": email,
                 "subject": "Password Reset",
                 "html": f"<p>Click to reset your password: <a href='{reset_url}'>Reset Password</a></p>"
             })
         except Exception as e:
             flash(str(e), "error")
+            print(str(e))
             return redirect(url_for('auth.forgot_password'))
 
     flash("If that email exists, a reset link has been sent.", "info")
@@ -165,10 +166,13 @@ def reset_password():
     if not reset:
         return "Invalid token", 400
 
-    if reset["expires_at"] < datetime.now(timezone.utc):
+    if reset["expiry"] < datetime.now(timezone.utc):
         return "Token expired", 400
 
     if request.method == "POST":
+        if request.form.get("password") != request.form.get("confirm_password"):
+            flash("The passwords you keyed in are not the same. Please check again.", "error")
+            return render_template("resetpassword.html", token=token)
         new_password = request.form.get("password")
         try:
             users_resource.user(reset["user_id"]).update({"password": new_password})
@@ -177,6 +181,7 @@ def reset_password():
             return redirect(url_for('auth.login'))
         except Exception as e:
             flash(str(e), "error")
+            print(str(e))
             return render_template("resetpassword.html", token=token)
 
     return render_template("resetpassword.html", token=token)

@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_login import LoginManager
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .models.user import User
 from .resources.users import UsersResource
@@ -9,6 +10,7 @@ from .routes.auth import bp as auth_bp
 
 def create_app():
     app = Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     app.secret_key = "secret_key_yes"
 
     login_manager = LoginManager() 
