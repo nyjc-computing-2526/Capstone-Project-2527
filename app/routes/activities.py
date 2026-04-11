@@ -140,7 +140,7 @@ def update_activity(id):
     else:
         return render_template('update_activity.html', data=activity_data)
 
-@bp.post('/delete/<int:id>', methods=['POST'])
+@bp.route('/delete/<int:id>', methods=['POST'])
 def delete_activity(id):
     try:
         activity_resource = activities_resource.activity(id)
