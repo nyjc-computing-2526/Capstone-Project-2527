@@ -202,13 +202,13 @@ def delete_user (user_id):
     else:
         return True
 
-def create_verification_token(user_id, token, expires_at):
-    query = """INSERT INTO verification_tokens (user_id, token, expiry) VALUES (%s, %s, %s)"""
-    db_execute(sql_query=query, params=[user_id, token, expires_at], fetch=None)
+def create_verification_token(user_id: int, token: str, expires_at, type: str):
+    query = """INSERT INTO verification_tokens (user_id, token, expiry, type) VALUES (%s, %s, %s, %s)"""
+    db_execute(sql_query=query, params=[user_id, token, expires_at, type], fetch=None)
 
-def verify_token(token):
-    query = """SELECT * FROM verification_tokens WHERE token = %s"""
-    result = db_execute(sql_query=query, params=[token], fetch="one")
+def verify_token(token: str, type: str) -> dict | None:
+    query = """SELECT * FROM verification_tokens WHERE token = %s AND type = %s"""
+    result = db_execute(sql_query=query, params=[token, type], fetch="one")
 
     if result is None:
         return None

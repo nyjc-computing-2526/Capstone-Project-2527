@@ -110,11 +110,12 @@ class UsersResource:
         except Exception:
             raise ValueError("Could not complete registration") from None
     
-    def verify_token(self, token: str) -> dict | None:
+    def verify_token(self, token: str, type: str) -> dict | None:
         """Verify a password reset token.
 
         Args:
             token (str): The token to verify.
+            type (str): The type of token to verify.
 
         Returns:
             dict: The token data if valid, None if invalid or expired.
@@ -123,7 +124,7 @@ class UsersResource:
             ValueError: If token verification fails.
         """
         try:
-            return db.verify_token(token)
+            return db.verify_token(token, type)
         except Exception as e:
             raise ValueError("Failed to verify token") from None
 
@@ -233,19 +234,20 @@ class UserResource:
         except Exception as e:
             raise ValueError("Delete failed") from None
         
-    def create_verification_token(self, token: str, expires_at):
+    def create_verification_token(self, token: str, expires_at, type: str):
         """Create a verification token for password reset.
 
         Args:
             token (str): The token to be stored.
             expires_at (datetime): The expiration time of the token.
+            type (str): The type of verification token.
         Returns:
             bool: True if token creation was successful.
         Raises:
             ValueError: If token creation fails.
         """
         try:
-            db.create_verification_token(self.user_id, token, expires_at)
+            db.create_verification_token(self.user_id, token, expires_at, type)
         except Exception as e:
             raise ValueError("Failed to create verification token") from None
 
