@@ -14,7 +14,7 @@
     <div class="authcontainer">
       <div class="login-card">
         <h1>Register</h1>
-        <form action="/home">
+        <form action="{{ url_for('auth.register') }}" method="post">
           <div class="input-fields-container">
             <div class="input-group email-group">
               <input type="email" name="email" placeholder="Email" required />
