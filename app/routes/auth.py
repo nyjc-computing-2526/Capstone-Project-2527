@@ -25,7 +25,7 @@ def login():
         
         try:
             user_data = users_resource.authenticate(email, password)
-            user = User(user_data['id'], user_data['name'], user_data['email'])
+            user = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], user_data['password'])
             login_user(user) 
             return redirect(url_for('activities.activities'))
         except ValueError as e:

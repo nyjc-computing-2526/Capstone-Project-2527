@@ -26,7 +26,7 @@ class UsersResource:
         try:
             users = db.get_users()
             return [
-                {k: v for k, v in user.items() if k != 'password'}
+                {k: v for k, v in user.items()}
                 for user in users
             ]
         except Exception as e:
@@ -159,8 +159,6 @@ class UserResource:
             user = db.get_user_by_id(self.user_id)
             if user is None:
                 raise ValueError(f"User {self.user_id} not found")
-            # Remove password before returning
-            user = {k: v for k, v in user.items() if k != 'password'}
             return user
         except ValueError:
             raise
