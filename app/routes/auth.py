@@ -80,7 +80,7 @@ def register():
                 }
             })
             flash("Please check your email to verify your account for creation :).", "info")
-            return render_template('register.html')
+            return render_template('login.html')
 
         except Exception as e:
             flash(str(e), "error")
