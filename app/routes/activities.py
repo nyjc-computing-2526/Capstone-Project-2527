@@ -137,5 +137,22 @@ def update_activity(id):
         except ValueError as e:
             flash(str(e), "error")
             return render_template('update_activity.html', data=activity_data)
+    else:
+        return render_template('update_activity.html', data=activity_data)
 
-    return render_template('update_activity.html', data=activity_data)
+@bp.post('/delete/<int:id>', methods=['POST'])
+def delete_activity(id):
+    try:
+        activity_resource = activities_resource.activity(id)
+        success = activity_resource.delete()
+        
+        if not success:
+            raise ValueError(f'Deletion of activity {id} not successful')
+    
+    except Exception as e:
+        print(e)
+    
+    return redirect('activities.activities')
+    
+    
+    

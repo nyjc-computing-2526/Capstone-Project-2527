@@ -91,8 +91,7 @@ def delete_activity(activity_id):
 
     if result == 0:
         return False
-    else:
-        return True
+    return True
 
 def update_activity(data: dict):
     if "id" not in data.keys():
@@ -140,6 +139,22 @@ def join_activity(user_id, activity_id):
 def leave_activity(user_id, activity_id):
     query = """DELETE FROM participants WHERE user_id = %s AND activity_id = %s"""
     left = db_execute(sql_query=query, params=[user_id, activity_id], fetch=None)
+    
+    if left == 0:
+        return False
+    return True
+
+def delete_participant_activity(activity_id):
+    query = """DELETE FROM participants WHERE activity_id = %s"""
+    left = db_execute(sql_query=query, params=[activity_id], fetch=None)
+    
+    if left == 0:
+        return False
+    return True
+
+def delete_participant_user(user_id):
+    query = """DELETE FROM participants WHERE user_id = %s"""
+    left = db_execute(sql_query=query, params=[user_id], fetch=None)
     
     if left == 0:
         return False
