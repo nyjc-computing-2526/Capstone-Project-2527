@@ -30,6 +30,7 @@ def login():
             
             user = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], user_data['password'])
             #is passing password like that safe...?
+            #is passing password like that safe...?
             login_user(user) 
             return redirect(url_for('landing.home'))
         except ValueError as e:
@@ -52,7 +53,7 @@ def register():
         if password != confirm_password:
             flash("Passwords do not match", "error")
             return render_template('register.html')
-        
+                
         user_data = {'email': email, 'password': password, 'name': name, 'user_class': user_class}
         
         try:
@@ -76,6 +77,7 @@ def register():
 
         except Exception as e:
             flash(str(e), "error")
+            print(str(e))
             print(str(e))
             return render_template('register.html')
     
@@ -122,6 +124,7 @@ def logout():
     return redirect(url_for('auth.login'))
 
 
+<<<<<<<<< Temporary merge branch 1
 @bp.route('/view/<int:id>')  
 @login_required
 def view_profile(id):
@@ -133,17 +136,16 @@ def view_profile(id):
 
 @bp.route('/update/<int:id>', methods=['GET', 'POST'])  
 @login_required
-def update_user():
+def update_user(id):
     """updates user details"""
-    id = current_user.id
     user_resource = users_resource.user(id)
 
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        name = request.form.get('name')
-        user_class = request.form.get('class')
-        confirm_password = request.form.get('confirm_password')
+        email = request.form['email']
+        password = request.form['password']
+        name = request.form['name']
+        user_class = request.form['class']
+        confirm_password = request.form['confirm_password']
 
         user_data = {}
 
@@ -172,15 +174,14 @@ def update_user():
             return redirect(url_for('landing.home'))
         except ValueError as e:
             flash(str(e), "error")
-            return render_template('editprofile.html')
+            return render_template('updateuser.html')
 
-    return render_template('editprofile.html')
+    return render_template('updateuser.html')
 
-@bp.route('/delete', methods=['POST'])  
+@bp.route('/delete/<int:id>', methods=['POST'])  
 @login_required
-def delete_user():
+def delete_user(id):
     """deletes a user"""
-    id = current_user.id
     user_resource = users_resource.user(id)
 
     try: 
