@@ -25,7 +25,7 @@
     Activity'}, ] %} {% set activities = activities or [ {'title': 'Activity 1',
     'time': '00:00', 'date': '6th July 2025'}, {'title': 'Activity 2', 'time':
     '00:00', 'date': '6th July 2025'}, ] %} {% set sidebar_actions =
-    sidebar_actions or [ {'label': 'View Profile', 'href': '/profile'}, {'label':
+    sidebar_actions or [ {'label': 'View Profile', 'href': '/auth/view'}, {'label':
     'Create Event', 'href': '/create'}, ] %}
 
     <!-- Navigation Bar -->
@@ -33,7 +33,7 @@
       <ul>
         {% for item in nav_items %} {{ nav_link(item) }} {% endfor %}
       </ul>
-      <a href="{{ logout_url | default('/login') }}" class="logout"
+      <a href="{{ logout_url | default('/auth/login') }}" class="logout"
         >{{ logout_label | default('Log Out') }}</a
       >
     </header>
