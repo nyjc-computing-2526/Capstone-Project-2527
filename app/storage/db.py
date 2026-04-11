@@ -80,7 +80,7 @@ def create_activity(data: dict):
     values = tuple(data.values())
 
     query =  f"INSERT INTO activities ({columns}) VALUES ({placeholders})"
-    result = db_execute(sql_query=query, params=values, fetch="None")
+    result = db_execute(sql_query=query, params=values, fetch=None)
 
     return (result == 1)
 
@@ -123,9 +123,9 @@ def get_joined (user_id: int):
 
 ## ========= Participants Functions ===========
 
-def get_participant(user_id):
+def get_participant(activity_id):
     query = """SELECT * FROM participants WHERE id = %s"""
-    params = [user_id]
+    params = [activity_id]
     return db_execute(sql_query=query, params=params, fetch="one")
 
 def join_activity(user_id, activity_id):
@@ -174,7 +174,7 @@ def create_user (data: dict):
     values = tuple(data.values())
 
     query =  f"INSERT INTO users ({columns}) VALUES ({placeholders})"
-    result = db_execute(sql_query=query, params=values, fetch="None")
+    result = db_execute(sql_query=query, params=values, fetch=None)
 
     return (result == 1)
 
@@ -214,7 +214,7 @@ def create_verification_token(data: dict):
     values = tuple(data.values())
 
     query =  f"INSERT INTO verification_tokens ({columns}) VALUES ({placeholders})"
-    result = db_execute(sql_query=query, params=values, fetch="None")
+    result = db_execute(sql_query=query, params=values, fetch=None)
 
     return (result == 1)
     
