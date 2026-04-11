@@ -128,18 +128,19 @@ def view_profile(id):
     return render_template('view_profile.html', user_data=user_data)
 
 
-@bp.route('/update/<int:id>', methods=['GET', 'POST'])  
+@bp.route('/update', methods=['GET', 'POST'])  
 @login_required
-def update_user(id):
+def update_user():
     """updates user details"""
+    id = current_user.id
     user_resource = users_resource.user(id)
 
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        name = request.form['name']
-        user_class = request.form['class']
-        confirm_password = request.form['confirm_password']
+        email = request.form.get('email')
+        password = request.form.get('password')
+        name = request.form.get('name')
+        user_class = request.form.get('class')
+        confirm_password = request.form.get('confirm_password')
 
         user_data = {}
 
@@ -168,14 +169,15 @@ def update_user(id):
             return redirect(url_for('landing.home'))
         except ValueError as e:
             flash(str(e), "error")
-            return render_template('updateuser.html')
+            return render_template('editprofile.html')
 
-    return render_template('updateuser.html')
+    return render_template('editprofile.html')
 
-@bp.route('/delete/<int:id>', methods=['POST'])  
+@bp.route('/delete', methods=['POST'])  
 @login_required
-def delete_user(id):
+def delete_user():
     """deletes a user"""
+    id = current_user.id
     user_resource = users_resource.user(id)
 
     try: 

@@ -11,10 +11,11 @@
   <body>
     <header>
       <ul>
-        <li><a href="/home">Home</a></li>
-        <li><a href="/activities/allactivities">All Activities</a></li>
-        <li><a href="/activities/myactivities">My Activities</a></li>
-        <li><a href="/activities/create">Create activity</a></li>
+        <li><a href="{{ url_for('landing.homepage') }}">Home</a></li>
+        <li><a href="{{ url_for('activities.activities') }}">All Activities</a></li>
+        <li><a href="{{ url_for('activities.my_activities') }}">My Activities</a></li>
+        <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
+        <li><a href="/auth/view">View Profile</a></li>
       </ul>
       <a href="/auth/logout" class="logout">Log Out</a>
     </header>
@@ -39,7 +40,7 @@
         <form
           class="edit-profile-form"
           method="post"
-          action="{{ url_for('auth_update') }}"
+          action="{{ url_for('auth.update_user') }}"
         >
           <div class="input-group edit-profile-field">
             <label class="visually-hidden" for="edit-name">Name</label>

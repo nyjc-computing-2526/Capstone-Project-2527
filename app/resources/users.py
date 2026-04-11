@@ -88,12 +88,10 @@ class UsersResource:
         sanitized_data['email'] = sanitized_data['email'].strip().lower()
         sanitized_data['name'] = sanitized_data['name'].strip()
 
-        # Check for duplicate email
         if self.get_user_by_email(sanitized_data['email']):
             raise ValueError("A user with this email already exists")
 
         try:
-            # Hashing password
             salt = secrets.token_bytes(32)
             hashed_password = hashlib.pbkdf2_hmac(
                 'sha256',
@@ -186,7 +184,7 @@ class UserResource:
         if not isinstance(user_data, dict):
             raise ValueError("Update data must be a dictionary")
 
-        updates = {}
+        updates = {"id": self.user_id}
         for k in ALLOWED_USER_COLUMNS:
             if k in user_data and user_data[k] is not None:
                 val = user_data[k]
@@ -210,7 +208,7 @@ class UserResource:
             updates['password'] = f"{salt.hex()}:{hashed.hex()}"
 
         try:
-            success = db.update_user(self.user_id, updates)
+            success = db.update_user(updates)
             if not success:
                 raise ValueError("User not found")
             return success
