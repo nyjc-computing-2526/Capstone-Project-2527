@@ -5,7 +5,7 @@ import secrets
 
 import app.storage.db as db
 
-ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'user_class'}
+ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'user_class', 'verified'}
 
 
 class UsersResource:
@@ -239,7 +239,7 @@ class UserResource:
         except Exception as e:
             raise ValueError("Delete failed") from None
         
-    def create_verification_token(self, token: str, expires_at, type: str):
+    def create_verification_token(self, data: dict):
         """Create a verification token for password reset.
 
         Args:
@@ -252,7 +252,8 @@ class UserResource:
             ValueError: If token creation fails.
         """
         try:
-            db.create_verification_token(self.user_id, token, expires_at, type)
+            data['user_id'] = self.user_id
+            db.create_verification_token(data)
         except Exception as e:
             raise ValueError("Failed to create verification token") from None
 

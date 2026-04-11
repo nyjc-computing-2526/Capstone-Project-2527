@@ -28,11 +28,10 @@ def login():
                 flash("Please verify your email before logging in.", "error")
                 return render_template('login.html')
             
-            user = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], user_data['password'])
-            #is passing password like that safe...?
+            user = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], None)
             #is passing password like that safe...?
             login_user(user) 
-            return redirect(url_for('landing.home'))
+            return redirect(url_for('landing.homepage'))
         except ValueError as e:
             flash(str(e), "error")
             return render_template('login.html')
@@ -61,16 +60,23 @@ def register():
             expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
             
             user_id = users_resource.register(user_data)
-            #assuming register returns id
             user_resource = users_resource.user(user_id)
-            user_resource.create_verification_token(token, expires_at, 'verify_email')
+            data = {
+                "token": token,
+                "expiry": expires_at,                
+                "type": "verify_email"
+            }
+            user_resource.create_verification_token(data)
             
             verify_url = f"{request.host_url}auth/verify-email?token={token}"
             resend.Emails.send({
                 "from": "onboarding@resend.dev",
                 "to": email,
                 "subject": "Verify Email",
-                "html": f"<p>Click to verify your email: <a href='{verify_url}'>Verify Email</a></p>"
+                "template_id": "email-verification",
+                "variables": {
+                    "link": verify_url
+                }
             })
             flash("Please check your email to verify your account for creation :).", "info")
             return render_template('register.html')
@@ -78,11 +84,9 @@ def register():
         except Exception as e:
             flash(str(e), "error")
             print(str(e))
-            print(str(e))
             return render_template('register.html')
     
     return render_template('register.html')
-        
 
 
 @bp.route('/verify-email')
@@ -105,7 +109,7 @@ def verify_email():
     user_resource = users_resource.user(id)
 
     try:
-        user_resource.update({"is_verified": True})
+        user_resource.update({"verified": True})
         users_resource.invalidate_token(token)
 
         flash("Email verified successfully! Your account has been created!", "success")
@@ -123,8 +127,6 @@ def logout():
     flash("Logged out successfully", "success")
     return redirect(url_for('auth.login'))
 
-
-<<<<<<<<< Temporary merge branch 1
 @bp.route('/view/<int:id>')  
 @login_required
 def view_profile(id):
@@ -134,11 +136,11 @@ def view_profile(id):
     return render_template('view_profile.html', user_data=user_data)
 
 
-@bp.route('/update/<int:id>', methods=['GET', 'POST'])  
+@bp.route('/update', methods=['GET', 'POST'])  
 @login_required
-def update_user(id):
+def update_user():
     """updates user details"""
-    user_resource = users_resource.user(id)
+    user_resource = users_resource.user(current_user.id)
 
     if request.method == 'POST':
         email = request.form['email']
@@ -171,7 +173,7 @@ def update_user(id):
         try: 
             user_resource.update(user_data)
             flash("Profile updated successfully", "success")
-            return redirect(url_for('landing.home'))
+            return redirect(url_for('landing.homepage'))
         except ValueError as e:
             flash(str(e), "error")
             return render_template('updateuser.html')
@@ -190,7 +192,7 @@ def delete_user(id):
         return redirect(url_for('landing.landing'))
     except ValueError as e:
         flash(str(e), "error")
-        return redirect(url_for('landing.home'))
+        return redirect(url_for('landing.homepage'))
     
 @bp.route('/forgot-password', methods=['GET', 'POST'])  
 def forgot_password():
@@ -204,13 +206,21 @@ def forgot_password():
         token = secrets.token_urlsafe(32)
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
         try:
-            users_resource.user(user["id"]).create_verification_token(token, expires_at, 'forgot_password')
+            data = {
+                "token": token,
+                "expiry": expires_at,
+                "type": "forgot_password"
+            }
+            users_resource.user(user["id"]).create_verification_token(data)
             reset_url = f"{request.host_url}auth/reset-password?token={token}"
             resend.Emails.send({
                 "from": "onboarding@resend.dev",
                 "to": email,
                 "subject": "Password Reset",
-                "html": f"<p>Click to reset your password: <a href='{reset_url}'>Reset Password</a></p>"
+                "template_id": "password-reset",
+                "variables": {
+                    "link": reset_url
+                }
             })
         except Exception as e:
             flash(str(e), "error")
