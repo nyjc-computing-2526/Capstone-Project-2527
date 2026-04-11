@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, request
+from flask_login import login_required, current_user
+from app.resources.activities import ActivitiesResource
 from email.message import EmailMessage
 import smtplib
 import os
@@ -40,7 +42,7 @@ def contact():
                 {message}
             """
         )
-
+        
         try:
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
                 smtp.login(
@@ -59,6 +61,14 @@ def contact():
 @bp.route('/features', methods=["GET"])
 def features():
     return render_template('features.html')
+
+@bp.route('/homepage', methods=["GET"])
+@login_required
+def homepage():
+    user_id = current_user.id
+    activities_resource = ActivitiesResource()
+    upcoming_activities = activities_resource.get_upcoming(user_id)
+    return render_template('home.html', activities=upcoming_activities)
 
 
 
