@@ -126,69 +126,57 @@ def delete_user(id):
         flash(str(e), "error")
         return redirect(url_for('activities.activities'))
     
-@bp.route("/forgot-password", methods=["GET", "POST"])
+@bp.route('/forgot-password', methods=['GET', 'POST'])  
 def forgot_password():
     if request.method == "GET":
         return render_template("forgotpassword.html")
 
     email = request.form.get("email")
-
     user = users_resource.get_user_by_email(email)
 
     if user:
         token = secrets.token_urlsafe(32)
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
-
         try:
-            users_resource.user(user["id"]).create_verification_token(token, expires_at)
-                
+            users_resource.user(user["id"]).create_verification_token(token, expires_at, 'forgot_password')
+            reset_url = url_for('auth.reset_password', token=token, _external=True)
             resend.Emails.send({
-            "from": email,
-            "to": email,
-            "subject": "Password Reset",
-            "html": f"<p>Click the link to reset your password: <a href='{request.host_url}reset-password?token={token}'>Reset Password</a></p>"
+                "from": "wang.jiayuan_2526@gmail.com",
+                "to": email,
+                "subject": "Password Reset",
+                "html": f"<p>Click to reset your password: <a href='{reset_url}'>Reset Password</a></p>"
             })
-            
-            print(f"{request.host_url}/reset-password?token={token}")
         except Exception as e:
-            flash(str(e), "error")
-            print("Error creating token:", e)
-            return redirect("/forgot-password")
+            flash(e, "error")
+            return redirect(url_for('auth.forgot_password'))
 
-    flash("If that email exists, a reset link has been sent.")
-    return redirect("/auth/login")
+    flash("If that email exists, a reset link has been sent.", "info")
+    return redirect(url_for('auth.login'))
 
-
-@bp.route("/reset-password")
+@bp.route("/reset-password", methods=["GET", "POST"])
 def reset_password():
-    token = request.args.get("token")
+    token = request.args.get("token") if request.method == "GET" else request.form.get("token")
 
-    reset = users_resource.verify_token(token)
+    if not token:
+        return "Missing token", 400
+
+    reset = users_resource.verify_token(token, 'forgot_password')
 
     if not reset:
-        return "Invalid token"
+        return "Invalid token", 400
 
     if reset["expires_at"] < datetime.now(timezone.utc):
-        return "Token expired"
+        return "Token expired", 400
+
+    if request.method == "POST":
+        new_password = request.form.get("password")
+        try:
+            users_resource.user(reset["user_id"]).update({"password": new_password})
+            users_resource.invalidate_token(token)
+            flash("Password reset successfully", "success")
+            return redirect(url_for('auth.login'))
+        except Exception as e:
+            flash(e, "error")
+            return render_template("resetpassword.html", token=token)
 
     return render_template("resetpassword.html", token=token)
-
-
-@bp.route("/reset-password", methods=["POST"])
-def reset_password_post():
-    token = request.form.get("token")
-    new_password = request.form.get("password")
-
-    reset = users_resource.verify_token(token)
-    user_id = reset["user_id"]
-
-    if not reset:
-        return "Invalid token"
-
-    if reset["expires_at"] < datetime.now(timezone.utc):
-        return "Token expired"
-
-
-    users_resource.user(user_id).update({"password": new_password})
-    flash("Password reset successfully", "success")
-    return redirect("/auth/login")
