@@ -5,7 +5,7 @@ import secrets
 
 import app.storage.db as db
 
-ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'user_class'}
+ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'user_class', 'verified'}
 
 
 class UsersResource:
@@ -188,6 +188,8 @@ class UserResource:
         for k in ALLOWED_USER_COLUMNS:
             if k in user_data and user_data[k] is not None:
                 val = user_data[k]
+                if isinstance(val, bool):
+                    updates[k] = val
                 if isinstance(val, str) and val.strip():
                     updates[k] = val.strip()
 
@@ -239,7 +241,7 @@ class UserResource:
         except Exception as e:
             raise ValueError("Delete failed") from None
         
-    def create_verification_token(self, token: str, expires_at, type: str):
+    def create_verification_token(self, data: dict):
         """Create a verification token for password reset.
 
         Args:
@@ -252,7 +254,8 @@ class UserResource:
             ValueError: If token creation fails.
         """
         try:
-            db.create_verification_token(self.user_id, token, expires_at, type)
+            data['user_id'] = self.user_id
+            db.create_verification_token(data)
         except Exception as e:
             raise ValueError("Failed to create verification token") from None
 

@@ -8,7 +8,7 @@ load_dotenv()
 
 ALLOWED_COLUMNS_ACTIVITIES = ["title", "description", "date", "started_at", "created_by", "ended_at", "venue"]
 ALLOWED_COLUMNS_PARTICIPANTS = ["user_id", "activity_id"]
-ALLOWED_COLUMNS_USERS = ["name", "email", "password", "user_class"]
+ALLOWED_COLUMNS_USERS = ["name", "email", "password", "user_class", "verified"]
 ALLOWED_COLUMNS_VERIFICATION_TOKENS = ["user_id", "token", "expiry", "type"]
 
 def db_execute(sql_query, params=None, fetch=None):
@@ -164,7 +164,7 @@ def get_user_by_id (user_id: int):
     params = [user_id]
     return db_execute(sql_query=query, params=params, fetch="one")
 
-def create_user (data: dict):
+def create_user(data: dict):
     for col in data.keys():
         if col not in ALLOWED_COLUMNS_USERS:
             raise ValueError(f'Invalid column: {col}')
@@ -173,10 +173,10 @@ def create_user (data: dict):
     placeholders = ", ".join(["%s"] * len(data))
     values = tuple(data.values())
 
-    query =  f"INSERT INTO users ({columns}) VALUES ({placeholders})"
-    result = db_execute(sql_query=query, params=values, fetch=None)
+    query = f"INSERT INTO users ({columns}) VALUES ({placeholders}) RETURNING id"
+    result = db_execute(sql_query=query, params=values, fetch="one")
 
-    return (result == 1)
+    return result["id"]
 
 def update_user (data: dict):
     if "id" not in data.keys():
