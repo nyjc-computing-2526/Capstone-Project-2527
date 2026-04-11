@@ -11,6 +11,14 @@ def activities():
     total_activities = activities_resource.get_all()
     return render_template('allactivities.html', data=total_activities)
 
+@bp.route('/myactivities')
+@login_required
+def my_activities():
+    """list all activities created by user and all activities joined by user"""
+    owned_activities = activities_resource.get_owned(current_user.id)
+    joined_activities = activities_resource.get_joined(current_user.id)
+    return render_template('myactivities.html', owned=owned_activities, joined=joined_activities)
+
 @bp.route('/create', methods = ['POST', 'GET'])
 @login_required
 def create_activities():
@@ -55,7 +63,19 @@ def join_activity(id):
     if success:
         return redirect(url_for('activities.activities'))
     else:
-        # ill assume that if they somehow cannot join is because they alr inside so bring them back to view activity detail
+        return redirect(url_for('activities.view_activity', id=id))
+    
+@bp.route('/leave/<int:id>', methods=['POST'])
+@login_required
+def leave_activity(id):
+    """allows user to leave acitivity with that id and redirects them to /activities"""
+    user_id = current_user.id
+    activity_resource = activities_resource.activity(id)
+    success = activity_resource.leave(user_id)
+
+    if success:
+        return redirect(url_for('activities.activities'))
+    else:
         return redirect(url_for('activities.view_activity', id=id))
     
 @bp.route('/update/<int:id>', methods=['GET', 'POST'])  
