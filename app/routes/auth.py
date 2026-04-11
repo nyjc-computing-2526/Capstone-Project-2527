@@ -138,7 +138,7 @@ def forgot_password():
         token = secrets.token_urlsafe(32)
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
         try:
-            users_resource.user(user["id"]).create_verification_token(token, expires_at)
+            users_resource.user(user["id"]).create_verification_token(token, expires_at, 'forgot_password')
             reset_url = url_for('auth.reset_password', token=token, _external=True)
             resend.Emails.send({
                 "from": "wang.jiayuan_2526@gmail.com",
@@ -160,7 +160,7 @@ def reset_password():
     if not token:
         return "Missing token", 400
 
-    reset = users_resource.verify_token(token)
+    reset = users_resource.verify_token(token, 'forgot_password')
 
     if not reset:
         return "Invalid token", 400
