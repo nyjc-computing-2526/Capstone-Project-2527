@@ -78,6 +78,9 @@ def register():
             flash(str(e), "error")
             print(str(e))
             return render_template('register.html')
+    
+    return render_template('register.html')
+        
 
 
 @bp.route('/verify-email')
