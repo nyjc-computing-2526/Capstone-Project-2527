@@ -67,7 +67,7 @@ def features():
 def home():
     user_id = current_user.id
     activities_resource = ActivitiesResource()
-    upcoming_activities = activities_resource.get_upcoming(user_id)
+    upcoming_activities = activities_resource.get_upcoming()
     return render_template('home.html', activities=upcoming_activities)
 
 
