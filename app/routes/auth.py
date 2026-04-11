@@ -30,8 +30,9 @@ def login():
             
             user = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], user_data['password'])
             #is passing password like that safe...?
+            #is passing password like that safe...?
             login_user(user) 
-            return redirect(url_for('landing.home'))
+            return redirect(url_for('landing.homepage'))
         except ValueError as e:
             flash(str(e), "error")
             return render_template('login.html')
@@ -52,16 +53,16 @@ def register():
         if password != confirm_password:
             flash("Passwords do not match", "error")
             return render_template('register.html')
-        
+                
         user_data = {'email': email, 'password': password, 'name': name, 'user_class': user_class}
         
         try:
             token = secrets.token_urlsafe(32)
             expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
             
-            user_id = users_resource.register(user_data)
-            #assuming register returns id
-            user_resource = users_resource.user(user_id)
+            user = users_resource.register(user_data)
+            id = user['id']
+            user_resource = users_resource.user(id)
             user_resource.create_verification_token(token, expires_at, 'verify_email')
             
             verify_url = f"{request.host_url}auth/verify-email?token={token}"
@@ -76,6 +77,7 @@ def register():
 
         except Exception as e:
             flash(str(e), "error")
+            print(str(e))
             print(str(e))
             return render_template('register.html')
 
@@ -129,6 +131,16 @@ def view_profile(id):
 
 
 @bp.route('/update', methods=['GET', 'POST'])  
+@bp.route('/view/<int:id>')  
+@login_required
+def view_profile(id):
+    """allows user to view their profile details"""
+    user_resource = users_resource.user(id)
+    user_data = user_resource.get()
+    return render_template('view_profile.html', user_data=user_data)
+
+
+@bp.route('/update/<int:id>', methods=['GET', 'POST'])  
 @login_required
 def update_user(id):
     """updates user details"""
@@ -184,7 +196,7 @@ def delete_user(id):
         return redirect(url_for('landing.landing'))
     except ValueError as e:
         flash(str(e), "error")
-        return redirect(url_for('landing.home'))
+        return redirect(url_for('landing.homepage'))
     
 @bp.route('/forgot-password', methods=['GET', 'POST'])  
 def forgot_password():
