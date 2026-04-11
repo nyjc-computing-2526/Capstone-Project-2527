@@ -24,7 +24,7 @@ def login():
         try:
             user_data = users_resource.authenticate(email, password)
 
-            if not user_data.get("is_verified"):
+            if not user_data.get("verified"):
                 flash("Please verify your email before logging in.", "error")
                 return render_template('login.html')
             
