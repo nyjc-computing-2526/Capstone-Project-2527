@@ -88,12 +88,10 @@ class UsersResource:
         sanitized_data['email'] = sanitized_data['email'].strip().lower()
         sanitized_data['name'] = sanitized_data['name'].strip()
 
-        # Check for duplicate email
         if self.get_user_by_email(sanitized_data['email']):
             raise ValueError("A user with this email already exists")
 
         try:
-            # Hashing password
             salt = secrets.token_bytes(32)
             hashed_password = hashlib.pbkdf2_hmac(
                 'sha256',
