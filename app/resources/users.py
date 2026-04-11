@@ -188,6 +188,8 @@ class UserResource:
         for k in ALLOWED_USER_COLUMNS:
             if k in user_data and user_data[k] is not None:
                 val = user_data[k]
+                if isinstance(val, bool):
+                    updates[k] = val
                 if isinstance(val, str) and val.strip():
                     updates[k] = val.strip()
 
