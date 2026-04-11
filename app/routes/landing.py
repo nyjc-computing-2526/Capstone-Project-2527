@@ -64,10 +64,9 @@ def features():
 
 @bp.route('/home', methods=["GET"])
 @login_required
-def home():
-    user_id = current_user.id
+def homepage():
     activities_resource = ActivitiesResource()
-    upcoming_activities = activities_resource.get_upcoming(user_id)
+    upcoming_activities = activities_resource.get_upcoming()
     return render_template('home.html', activities=upcoming_activities)
 
 
