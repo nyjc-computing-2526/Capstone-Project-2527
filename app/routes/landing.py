@@ -15,7 +15,7 @@ def about():
 
 @bp.route('/privacy-policy', methods=["GET"])
 def privacy_policy():
-    return render_template('privacy-policy.html')
+    return render_template('legal.html')
 
 @bp.route('/contact', methods=["GET", "POST"])
 def contact():
