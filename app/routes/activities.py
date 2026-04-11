@@ -152,7 +152,7 @@ def delete_activity(id):
     except Exception as e:
         print(e)
     
-    return redirect('activities.activities')
+    return redirect(url_for('activities.activities'))
     
     
     
