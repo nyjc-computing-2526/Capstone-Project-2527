@@ -19,6 +19,7 @@
         <li><a href="/contact">Contact</a></li>
       </ul>
     </header>
+    {% block content %}
     <h1 class="headline">The one-stop platform to see your events.</h1>
     <div class="bottomhalf">
       <p class="description">
@@ -37,5 +38,7 @@
     </div>
     <div class="filler"></div>
     {% include "partials/footer.html" %}
+    {% endblock %}
   </body>
+  
 </html>

@@ -107,6 +107,33 @@ button:active {
   max-width: 20rem;
 }
 
+.message-group textarea {
+  width: 100%;
+  max-width: 40rem;       /* wider than other inputs */
+  min-height: 8rem;       /* taller for multi-line input */
+  box-sizing: border-box;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #d9c8ae;
+  background-color: white;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #000;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+  resize: vertical;       /* allow vertical resizing */
+}
+
+.message-group textarea:focus {
+  outline: none;
+  border-color: #7c6c55;
+  background-color: #fbf7f1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+
 .input-group input,
 .input-group select {
   width: 100%;

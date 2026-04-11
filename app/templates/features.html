@@ -1,24 +1,8 @@
 <!doctype html>
 <html>
-  <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://gstatic.com" crossorigin />
-    <link href="https://googleapis.com" rel="stylesheet" />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
-    <title>Welcome to Capstone Project</title>
-  </head>
+  {% extends "landing.html" %}
+  {% block content %}
   <body>
-    <header>
-      <ul>
-        <li><a href="/">Website name</a></li>
-        <li><a href="/about">About Us</a></li>
-        <li><a href="/features">Features</a></li>
-        <li><a href="/contact">Contact</a></li>
-      </ul>
-    </header>
     <h1 class="headline">Features</h1>
     <div class="bottomhalf">
       <p class="description">
@@ -32,4 +16,5 @@
     <div class="filler"></div>
     {% include "partials/footer.html" %}
   </body>
+  {% endblock %}
 </html>
