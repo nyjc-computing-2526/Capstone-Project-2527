@@ -11,6 +11,7 @@ users_resource = UsersResource()
 
 
 @bp.route('/')
+@bp.route('')
 def activities():
     try:
         rows = activities_resource.get_all()

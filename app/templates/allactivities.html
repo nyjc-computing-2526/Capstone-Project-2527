@@ -3,27 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <title>All Activities</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
   <body>
-    <!-- Navigation Bar -->
     <header>
       <ul>
         <li><a href="/home">Home</a></li>
         <li><a href="{{ url_for('activities.activities') }}">All Activities</a></li>
-        <li><a href="/activities/myactivities">My Activities</a></li>
-        <li><a href="/activities/create">Create activity</a></li>
+        <li><a href="{{ url_for('activities.my_activities') }}">My Activities</a></li>
+        <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
       </ul>
-      <a href="/auth/logout" class="logout">Log Out</a>
+      <form action="{{ url_for('auth.logout') }}" method="POST" style="margin-left: auto;">
+        <button type="submit" class="logout" style="background:none; border:none; color:red; font-weight:bold; font-size:1rem; cursor:pointer; padding:0; width:auto; max-width:none;">Log Out</button>
+      </form>
     </header>
 
-    <!-- Main Content -->
     <main class="all-activities">
       <div class="page-card">
-        <!-- Top Section: Headers and Search -->
         <div class="top-section">
           <div class="header-section">
             <h1>All activities</h1>
@@ -46,17 +42,13 @@
           </div>
         </div>
 
-        <!-- Cards Section: Activity Cards -->
         {% set rows = data or [] %}
         {% set mid = ((rows | length) + 1) // 2 %}
         <div class="cards-section">
           <div class="left-activities">
             <div class="activities-grid">
               {% for activity in rows[:mid] %}
-              <a
-                href="{{ url_for('activities.view_activity', id=activity.id) }}"
-                class="activity-card-link"
-              >
+              <a href="{{ url_for('activities.view_activity', id=activity.id) }}" class="activity-card-link">
                 <div class="activity-card">
                   <h3>{{ activity.title | default('Untitled') }}</h3>
                   <p>{{ activity.display_time }}</p>
@@ -66,14 +58,10 @@
               {% endfor %}
             </div>
           </div>
-
           <div class="right-activities">
             <div class="activities-grid">
               {% for activity in rows[mid:] %}
-              <a
-                href="{{ url_for('activities.view_activity', id=activity.id) }}"
-                class="activity-card-link"
-              >
+              <a href="{{ url_for('activities.view_activity', id=activity.id) }}" class="activity-card-link">
                 <div class="activity-card">
                   <h3>{{ activity.title | default('Untitled') }}</h3>
                   <p>{{ activity.display_time }}</p>
