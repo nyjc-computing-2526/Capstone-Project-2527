@@ -25,7 +25,7 @@ def login():
         
         try:
             user_data = users_resource.authenticate(email, password)
-            user = User(user_data['id'], user_data['name'], user_data['email'])
+            user = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], user_data['password'])
             login_user(user) 
             return redirect(url_for('activities.activities'))
         except ValueError as e:
@@ -48,7 +48,7 @@ def register():
             flash("Passwords do not match", "error")
             return render_template('register.html')
 
-        user_data = {'email': email, 'password': password, 'name': name, 'class': user_class}
+        user_data = {'email': email, 'password': password, 'name': name, 'user_class': user_class}
         
         try:
             users_resource.register(user_data)
@@ -90,7 +90,7 @@ def update_user(id):
             user_data['name'] = name.strip()
 
         if user_class and user_class.strip():
-            user_data['class'] = user_class.strip()
+            user_data['user_class'] = user_class.strip()
 
         if password:
             if password != confirm_password:

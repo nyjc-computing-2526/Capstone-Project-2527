@@ -47,14 +47,16 @@ def home():
     return render_template("home.html")
 
 
-@app.route("/profile")
-def profile():
-    return render_template("profile.html")
-
-
 @app.route("/auth/view")
 def auth_view():
     return render_template("profile.html")
+
+
+@app.route("/auth/update", methods=["GET", "POST"])
+def auth_update():
+    if request.method == "POST":
+        return redirect(url_for("auth_view"))
+    return render_template("editprofile.html")
 
 
 @app.route("/activities")
