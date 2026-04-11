@@ -3,16 +3,16 @@ import os
 import hmac
 import secrets
 
-import .storage.db as db
+import app.storage.db as db
 
-ALLOWED_USER_COLUMNS = {'email', 'password', 'name'}
+ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'class'}
 
 
 class UsersResource:
     """Resource class for managing users collection operations."""
 
-    def _get_user_by_email(self, email: str) -> dict | None:
-        """Private helper to fetch user by email safely."""
+    def get_user_by_email(self, email: str) -> dict | None:
+        """helper to fetch user by email safely."""
         if not isinstance(email, str) or not email.strip():
             return None
         clean_email = email.strip().lower()
@@ -50,7 +50,7 @@ class UsersResource:
         if not isinstance(password, str) or not password:
             raise ValueError("Password is required")
 
-        user = self._get_user_by_email(email)
+        user = self.get_user_by_email(email)
         if not user or not user.get('password'):
             raise ValueError("Invalid email or password")
 
@@ -91,7 +91,7 @@ class UsersResource:
         sanitized_data['name'] = sanitized_data['name'].strip()
 
         # Check for duplicate email
-        if self._get_user_by_email(sanitized_data['email']):
+        if self.get_user_by_email(sanitized_data['email']):
             raise ValueError("A user with this email already exists")
 
         try:
@@ -109,6 +109,23 @@ class UsersResource:
 
         except Exception:
             raise ValueError("Could not complete registration") from None
+    
+    def verify_token(self, token: str) -> dict | None:
+        """Verify a password reset token.
+
+        Args:
+            token (str): The token to verify.
+
+        Returns:
+            dict: The token data if valid, None if invalid or expired.
+
+        Raises:
+            ValueError: If token verification fails.
+        """
+        try:
+            return db.verify_token(token)
+        except Exception as e:
+            raise ValueError("Failed to verify token") from None
 
 
 class UserResource:
@@ -215,3 +232,21 @@ class UserResource:
             raise
         except Exception as e:
             raise ValueError("Delete failed") from None
+        
+    def create_verification_token(self, token: str, expires_at):
+        """Create a verification token for password reset.
+
+        Args:
+            token (str): The token to be stored.
+            expires_at (datetime): The expiration time of the token.
+        Returns:
+            bool: True if token creation was successful.
+        Raises:
+            ValueError: If token creation fails.
+        """
+        try:
+            db.create_verification_token(self.user_id, token, expires_at)
+        except Exception as e:
+            raise ValueError("Failed to create verification token") from None
+
+

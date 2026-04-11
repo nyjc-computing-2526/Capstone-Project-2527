@@ -9,9 +9,9 @@
     <header>
       <ul>
         <li><a href="/home">Home</a></li>
-        <li><a href="/allactivities">All Activities</a></li>
-        <li><a href="/myactivities">My Activities</a></li>
-        <li><a href="/create">Create activity</a></li>
+        <li><a href="/activities">All Activities</a></li>
+        <li><a href="/activities/personal">My Activities</a></li>
+        <li><a href="/activities/create">Create activity</a></li>
       </ul>
       <a href="/login" class="logout">Log Out</a>
     </header>
@@ -31,16 +31,20 @@
         </div>
 
         <div class="activities">
-          <div class="activity-card">
-            <h3>Activity 1</h3>
-            <p>00:00</p>
-            <p>6th July 2025</p>
-          </div>
-          <div class="activity-card">
-            <h3>Activity 1</h3>
-            <p>00:00</p>
-            <p>6th July 2025</p>
-          </div>
+          <a href="/activity" class="activity-card-link">
+            <div class="activity-card">
+              <h3>Activity 1</h3>
+              <p>00:00</p>
+              <p>6th July 2025</p>
+            </div>
+          </a>
+          <a href="/activity" class="activity-card-link">
+            <div class="activity-card">
+              <h3>Activity 1</h3>
+              <p>00:00</p>
+              <p>6th July 2025</p>
+            </div>
+          </a>
         </div>
       </div>
     </main>

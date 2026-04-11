@@ -44,6 +44,11 @@ header li a {
   font-weight: bold;
 }
 
+footer {
+  padding: 0.75em 1.5em;
+  background-color: #d9c8af;
+}
+
 .description {
   max-width: 50%;
   font-size: medium;
@@ -287,6 +292,13 @@ main {
   margin-right: 1em;
 }
 
+.content h1 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
 .section-title {
   font-size: 1.5rem;
   margin-bottom: 1rem;
@@ -312,6 +324,15 @@ main {
 
 .activity-card p {
   margin: 0.25rem 0;
+}
+
+.activity-card-link {
+  display: block;
+  color: inherit;
+}
+
+.activity-card-link:hover .activity-card {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar {
@@ -395,7 +416,10 @@ main {
   color: #000;
 }
 
-.all-activities .page-card {
+.all-activities .page-card,
+.create-activity .page-card,
+.activity-card-page .page-card,
+.profile-page .page-card {
   background-color: white;
   border-radius: 1.25rem;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
@@ -446,6 +470,379 @@ main {
 
 .search-container input::placeholder {
   color: #b0a08a;
+}
+
+/* Create Activity Page */
+.create-activity {
+  display: flex;
+  flex: 1;
+  background-color: #ece5db;
+  padding: 1em;
+}
+
+.create-activity .page-card {
+  flex: 1;
+}
+
+.create-activity h1 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #000;
+}
+
+.create-activity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.create-activity-top-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.create-activity-name {
+  flex: 2;
+}
+
+.create-activity .input-group,
+.create-activity .input-group input,
+.create-activity .input-group textarea {
+  max-width: none;
+}
+
+.create-activity .input-group input,
+.create-activity .input-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: none;
+  background-color: #ece5db;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #000;
+}
+
+.create-activity .input-group textarea {
+  min-height: 7.5rem;
+  resize: vertical;
+}
+
+.create-activity .input-group input::placeholder,
+.create-activity .input-group textarea::placeholder {
+  color: #8d8374;
+}
+
+.create-activity-date-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.create-activity-date-row .input-group {
+  flex: 1;
+}
+
+.create-activity-verify-btn {
+  flex: 1;
+  width: 100%;
+  max-width: none;
+  height: 3.25rem;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.create-activity-submit {
+  width: 100%;
+  max-width: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.create-activity-submit .plus-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.verify-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2rem;
+  z-index: 1000;
+}
+
+.verify-modal-overlay[hidden] {
+  display: none;
+}
+
+.verify-modal-overlay .verify-modal-card {
+  flex: 0 1 auto;
+  width: min(50vw, 42rem);
+  max-width: calc(100vw - 4rem);
+  min-width: 0;
+  padding-left: 3rem;
+  padding-right: 3rem;
+  box-sizing: border-box;
+}
+
+.verify-modal-card h1 {
+  margin-bottom: 2rem;
+}
+
+.verify-modal-card .create-activity-form {
+  gap: 1.25rem;
+}
+
+.verify-modal-card .input-group input {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.verify-code-row {
+  display: flex;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.verify-code-row .input-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.verify-send-btn {
+  flex: 0 0 9rem;
+  width: 9rem;
+  max-width: 9rem;
+  text-align: center;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.verify-submit-btn {
+  width: 100%;
+  max-width: none;
+  text-align: center;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.verify-close-btn {
+  border: none;
+  background: transparent;
+  color: #7c6c55;
+  font-weight: 600;
+  align-self: center;
+  width: auto;
+  max-width: none;
+  padding: 0.25rem 0.5rem;
+  margin-top: 0.25rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Activity Card Page */
+.activity-card-page {
+  display: flex;
+  flex: 1;
+  background-color: #ece5db;
+  padding: 1em;
+}
+
+.activity-card-page .page-card {
+  flex: 1;
+}
+
+.activity-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 48rem;
+}
+
+.activity-detail-card {
+  background-color: #ece5db;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.activity-detail-card h2 {
+  margin: 0 0 1.1rem;
+  font-size: 2.2rem;
+}
+
+.activity-time-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.date-label {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.time-label {
+  margin: 0.25rem 0 0;
+  font-size: 2rem;
+}
+
+.time-divider {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1;
+  padding-top: 0.3rem;
+}
+
+.activity-location {
+  display: inline-block;
+  margin: 0.25rem 0 1rem;
+  padding: 0.6rem 1rem;
+  border-radius: 0.75rem;
+  background-color: #d9c8ae;
+  font-weight: 600;
+}
+
+.activity-description {
+  margin: 0 0 1rem;
+  max-width: 32rem;
+  line-height: 1.35;
+}
+
+.activity-contact {
+  margin: 0 0 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #7d7d7d;
+  max-width: 16rem;
+}
+
+.activity-signup-btn {
+  background-color: #87829c;
+  color: #fff;
+  max-width: 16rem;
+  text-align: center;
+}
+
+/* Forgot Password Page */
+.forgot-password-form .input-group {
+  max-width: 24rem;
+}
+
+.forgot-password-form .forgot-email-row {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.forgot-password-form .verify-btn {
+  width: 8.5rem;
+}
+
+.forgot-password-form .forgot-wide-row {
+  width: 100%;
+  max-width: 24rem;
+  box-sizing: border-box;
+}
+
+.forgot-password-form .forgot-wide-row input {
+  max-width: none;
+}
+
+/* Profile Page */
+.profile-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background-color: #ece5db;
+  padding: 1.25rem;
+}
+
+.profile-card {
+  width: min(38rem, 100%);
+  min-height: 28rem;
+  box-shadow: none;
+}
+
+.profile-card h1 {
+  margin: 0 0 0.8rem;
+  font-size: 2.5rem;
+}
+
+.profile-avatar {
+  width: 9.2rem;
+  height: 9.2rem;
+  border-radius: 50%;
+  background-color: #ded8ce;
+  color: #a67328;
+  display: grid;
+  place-items: center;
+  margin: 2rem 0 2rem;
+}
+
+.profile-avatar svg {
+  width: 4.1rem;
+  height: 4.1rem;
+}
+
+.profile-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 2.2rem;
+}
+
+.profile-email {
+  color: #171717;
+  text-decoration: underline;
+  font-size: 1.2rem;
+}
+
+.profile-name {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.profile-delete-btn {
+  margin-top: 1.8rem;
+  max-width: 17rem;
+  background-color: #ff1111;
+  color: #fff;
+  border-radius: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  cursor: pointer;
+}
+
+.profile-delete-btn svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+@media (max-width: 600px) {
+  .create-activity-top-row,
+  .create-activity-date-row,
+  .verify-code-row {
+    flex-direction: column;
+  }
+
+  .verify-modal-card {
+    width: 100%;
+    max-width: calc(100vw - 2rem);
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
 
 @media (max-width: 600px) {
