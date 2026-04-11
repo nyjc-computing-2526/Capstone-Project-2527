@@ -186,7 +186,7 @@ class UserResource:
         if not isinstance(user_data, dict):
             raise ValueError("Update data must be a dictionary")
 
-        updates = {}
+        updates = {"id": self.user_id}
         for k in ALLOWED_USER_COLUMNS:
             if k in user_data and user_data[k] is not None:
                 val = user_data[k]
@@ -210,7 +210,7 @@ class UserResource:
             updates['password'] = f"{salt.hex()}:{hashed.hex()}"
 
         try:
-            success = db.update_user(self.user_id, updates)
+            success = db.update_user(updates)
             if not success:
                 raise ValueError("User not found")
             return success
