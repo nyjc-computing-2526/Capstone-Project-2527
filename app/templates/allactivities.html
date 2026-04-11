@@ -48,7 +48,7 @@
           <div class="left-activities">
             <div class="activities-grid">
               {% for activity in rows[:mid] %}
-              <a href="{{ url_for('activities.view_activity', id=activity.id) }}" class="activity-card-link">
+              <a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
                 <div class="activity-card">
                   <h3>{{ activity.title | default('Untitled') }}</h3>
                   <p>{{ activity.display_time }}</p>
@@ -61,7 +61,7 @@
           <div class="right-activities">
             <div class="activities-grid">
               {% for activity in rows[mid:] %}
-              <a href="{{ url_for('activities.view_activity', id=activity.id) }}" class="activity-card-link">
+              <a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
                 <div class="activity-card">
                   <h3>{{ activity.title | default('Untitled') }}</h3>
                   <p>{{ activity.display_time }}</p>

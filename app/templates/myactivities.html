@@ -38,7 +38,7 @@
         <div class="activities">
           {% for activity in activities or [] %}
           <a
-            href="{{ url_for('activities.view_activity', id=activity.id) }}"
+            href="{{ url_for('activities.activity_details', id=activity.id) }}"
             class="activity-card-link"
           >
             <div class="activity-card">
