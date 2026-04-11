@@ -147,7 +147,7 @@ def forgot_password():
                 "html": f"<p>Click to reset your password: <a href='{reset_url}'>Reset Password</a></p>"
             })
         except Exception as e:
-            flash(e, "error")
+            flash(str(e), "error")
             return redirect(url_for('auth.forgot_password'))
 
     flash("If that email exists, a reset link has been sent.", "info")
@@ -176,7 +176,7 @@ def reset_password():
             flash("Password reset successfully", "success")
             return redirect(url_for('auth.login'))
         except Exception as e:
-            flash(e, "error")
+            flash(str(e), "error")
             return render_template("resetpassword.html", token=token)
 
     return render_template("resetpassword.html", token=token)
