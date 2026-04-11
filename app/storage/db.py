@@ -8,7 +8,7 @@ load_dotenv()
 
 ALLOWED_COLUMNS_ACTIVITIES = ["title", "description", "date", "started_at", "created_by", "ended_at", "venue"]
 ALLOWED_COLUMNS_PARTICIPANTS = ["user_id", "activity_id"]
-ALLOWED_COLUMNS_USERS = ["name", "email", "password"]
+ALLOWED_COLUMNS_USERS = ["name", "email", "password", "user_class"]
 
 def db_execute(sql_query, params=None, fetch=None):
     """

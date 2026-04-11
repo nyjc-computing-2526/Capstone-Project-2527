@@ -759,6 +759,13 @@ main {
   max-width: none;
 }
 
+.forgot-password-btn {
+  width: 100%;
+  max-width: 20rem;
+  text-align: center;
+  font-weight: bold;
+}
+
 /* Profile Page */
 .profile-page {
   display: flex;

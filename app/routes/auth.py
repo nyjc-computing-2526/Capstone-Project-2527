@@ -48,7 +48,7 @@ def register():
             flash("Passwords do not match", "error")
             return render_template('register.html')
 
-        user_data = {'email': email, 'password': password, 'name': name, 'class': user_class}
+        user_data = {'email': email, 'password': password, 'name': name, 'user_class': user_class}
         
         try:
             users_resource.register(user_data)
@@ -56,6 +56,7 @@ def register():
             return redirect(url_for('auth.login'))
         except ValueError as e:
             flash(str(e), "error")
+            raise e
             return render_template('register.html')
 
     return render_template('register.html')

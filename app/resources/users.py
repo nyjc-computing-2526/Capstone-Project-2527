@@ -5,7 +5,7 @@ import secrets
 
 import app.storage.db as db
 
-ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'class'}
+ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'user_class'}
 
 
 class UsersResource:
@@ -82,7 +82,7 @@ class UsersResource:
 
         sanitized_data = {k: v for k, v in user_data.items() if k in ALLOWED_USER_COLUMNS}
 
-        for field in ['email', 'password', 'name']:
+        for field in ['email', 'password', 'name', 'user_class']:
             val = sanitized_data.get(field)
             if not isinstance(val, str) or not val.strip():
                 raise ValueError(f"Field '{field}' must be a non-empty string")
@@ -107,8 +107,8 @@ class UsersResource:
 
             return db.create_user(sanitized_data)
 
-        except Exception:
-            raise ValueError("Could not complete registration") from None
+        except Exception as e:
+            raise ValueError(e) from None
     
     def verify_token(self, token: str, type: str) -> dict | None:
         """Verify a password reset token.
