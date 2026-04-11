@@ -72,10 +72,11 @@ def register():
             resend.Emails.send({
                 "from": "onboarding@resend.dev",
                 "to": email,
-                "subject": "Verify Email",
-                "template_id": "email-verification",
-                "variables": {
+                "template": {
+                    "id": "email-verification",
+                    "variables": {
                     "link": verify_url
+                    }
                 }
             })
             flash("Please check your email to verify your account for creation :).", "info")
@@ -216,10 +217,11 @@ def forgot_password():
             resend.Emails.send({
                 "from": "onboarding@resend.dev",
                 "to": email,
-                "subject": "Password Reset",
-                "template_id": "password-reset",
-                "variables": {
-                    "link": reset_url
+                "template": {
+                    "id": "password-reset",
+                    "variables": {
+                        "link": reset_url
+                    }
                 }
             })
         except Exception as e:
