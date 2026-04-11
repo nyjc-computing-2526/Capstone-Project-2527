@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_login import LoginManager
 
-from app.models.user import User
-from app.resources.users import UsersResource
+from .models.user import User
+from .resources.users import UsersResource
 from .routes.landing import bp as landing_bp
 from .routes.activities import bp as activities_bp
 from .routes.auth import bp as auth_bp

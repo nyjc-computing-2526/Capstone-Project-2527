@@ -1,6 +1,7 @@
 import os
 import psycopg2
 import psycopg2.extras
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -200,3 +201,19 @@ def delete_user (user_id):
         return False
     else:
         return True
+
+def create_verification_token(user_id, token, expires_at):
+    query = """INSERT INTO verification_tokens (user_id, token, expiry) VALUES (%s, %s, %s)"""
+    db_execute(sql_query=query, params=[user_id, token, expires_at], fetch=None)
+
+def verify_token(token):
+    query = """SELECT * FROM verification_tokens WHERE token = %s"""
+    result = db_execute(sql_query=query, params=[token], fetch="one")
+
+    if result is None:
+        return None
+
+    if result["expiry"] < datetime.now(timezone.utc):
+        return None
+
+    return result
