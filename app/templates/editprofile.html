@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Edit profile</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <ul>
+        <li><a href="/home">Home</a></li>
+        <li><a href="/allactivities">All Activities</a></li>
+        <li><a href="/myactivities">My Activities</a></li>
+        <li><a href="/create">Create activity</a></li>
+      </ul>
+      <a href="/login" class="logout">Log Out</a>
+    </header>
+
+    <main class="profile-page">
+      <section class="page-card profile-card">
+        <h1>Edit profile</h1>
+
+        <div class="profile-avatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" role="img">
+            <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="2" />
+            <path
+              d="M5 19v-1c0-2.8 3.1-4.5 7-4.5s7 1.7 7 4.5v1"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <form
+          class="edit-profile-form"
+          method="post"
+          action="{{ url_for('auth_update') }}"
+        >
+          <div class="input-group edit-profile-field">
+            <label class="visually-hidden" for="edit-name">Name</label>
+            <input
+              id="edit-name"
+              type="text"
+              name="name"
+              placeholder="Name"
+              autocomplete="name"
+            />
+          </div>
+          <div class="input-group edit-profile-field">
+            <label class="visually-hidden" for="edit-email">Email</label>
+            <input
+              id="edit-email"
+              type="email"
+              name="email"
+              placeholder="Email"
+              autocomplete="email"
+            />
+          </div>
+          <button type="submit" class="edit-profile-apply-btn">
+            <span class="edit-profile-apply-plus" aria-hidden="true">+</span>
+            <span>Apply changes</span>
+          </button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

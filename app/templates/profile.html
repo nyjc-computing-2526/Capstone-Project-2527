@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <title>Profile</title>
-    <link rel="stylesheet" href="/static/styles.css" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
   </head>
   <body>
     <header>
@@ -38,18 +41,36 @@
           >jeff.wong_2025@nyjc.edu.sg</a
         >
 
-        <button type="button" class="profile-delete-btn">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M4 7h16M9 7V5h6v2M8 7v11m4-11v11m4-11v11M7 20h10"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <span>Delete Account</span>
-        </button>
+        <div class="profile-actions-row">
+          <button type="button" class="profile-delete-btn">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M4 7h16M9 7V5h6v2M8 7v11m4-11v11m4-11v11M7 20h10"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>Delete Account</span>
+          </button>
+          <a
+            href="{{ url_for('auth_update') }}"
+            class="profile-edit-btn"
+            aria-label="Edit profile"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>Edit profile</span>
+          </a>
+        </div>
       </section>
     </main>
   </body>
