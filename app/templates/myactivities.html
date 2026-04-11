@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <title>My activities</title>
-    <link rel="stylesheet" href="/static/styles.css" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
   </head>
   <body>
     <header>
@@ -31,20 +34,18 @@
         </div>
 
         <div class="activities">
-          <a href="/activity" class="activity-card-link">
+          {% for activity in activities or [] %}
+          <a
+            href="{{ url_for('activities.view_activity', id=activity.id) }}"
+            class="activity-card-link"
+          >
             <div class="activity-card">
-              <h3>Activity 1</h3>
-              <p>00:00</p>
-              <p>6th July 2025</p>
+              <h3>{{ activity.title | default('Untitled') }}</h3>
+              <p>{{ activity.display_time }}</p>
+              <p>{{ activity.display_date }}</p>
             </div>
           </a>
-          <a href="/activity" class="activity-card-link">
-            <div class="activity-card">
-              <h3>Activity 1</h3>
-              <p>00:00</p>
-              <p>6th July 2025</p>
-            </div>
-          </a>
+          {% endfor %}
         </div>
       </div>
     </main>
