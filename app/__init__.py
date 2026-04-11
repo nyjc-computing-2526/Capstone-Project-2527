@@ -19,7 +19,6 @@ def create_app():
     def load_user(user_id):
         try:
             user_data = UsersResource().user(int(user_id)).get()
-            print("Loaded user:", user_data)
             return User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'],  user_data['password'])
         except Exception as e:
             print("user_loader error:", e)
