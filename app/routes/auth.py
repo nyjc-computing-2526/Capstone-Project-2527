@@ -32,7 +32,7 @@ def login():
             #is passing password like that safe...?
             #is passing password like that safe...?
             login_user(user) 
-            return redirect(url_for('landing.homepage'))
+            return redirect(url_for('landing.home'))
         except ValueError as e:
             flash(str(e), "error")
             return render_template('login.html')
@@ -60,9 +60,9 @@ def register():
             token = secrets.token_urlsafe(32)
             expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
             
-            user = users_resource.register(user_data)
-            id = user['id']
-            user_resource = users_resource.user(id)
+            user_id = users_resource.register(user_data)
+            #assuming register returns id
+            user_resource = users_resource.user(user_id)
             user_resource.create_verification_token(token, expires_at, 'verify_email')
             
             verify_url = f"{request.host_url}auth/verify-email?token={token}"
@@ -196,7 +196,7 @@ def delete_user(id):
         return redirect(url_for('landing.landing'))
     except ValueError as e:
         flash(str(e), "error")
-        return redirect(url_for('landing.homepage'))
+        return redirect(url_for('landing.home'))
     
 @bp.route('/forgot-password', methods=['GET', 'POST'])  
 def forgot_password():
