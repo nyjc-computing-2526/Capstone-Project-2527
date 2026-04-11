@@ -62,9 +62,9 @@ def contact():
 def features():
     return render_template('features.html')
 
-@bp.route('/homepage', methods=["GET"])
+@bp.route('/home', methods=["GET"])
 @login_required
-def homepage():
+def home():
     user_id = current_user.id
     activities_resource = ActivitiesResource()
     upcoming_activities = activities_resource.get_upcoming(user_id)
