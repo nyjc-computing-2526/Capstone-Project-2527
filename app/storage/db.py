@@ -9,6 +9,7 @@ load_dotenv()
 ALLOWED_COLUMNS_ACTIVITIES = ["title", "description", "date", "started_at", "created_by", "ended_at", "venue"]
 ALLOWED_COLUMNS_PARTICIPANTS = ["user_id", "activity_id"]
 ALLOWED_COLUMNS_USERS = ["name", "email", "password", "user_class"]
+ALLOWED_COLUMNS_VERIFICATION_TOKENS = ["user_id", "token", "expiry", "type"]
 
 def db_execute(sql_query, params=None, fetch=None):
     """
@@ -78,20 +79,16 @@ def create_activity(data: dict):
     placeholders = ", ".join(["%s"] * len(data))
     values = tuple(data.values())
 
-    query =  f"INSERT INTO activities ({columns}) VALUES ({placeholders}) RETURNING id"
-    result = db_execute(sql_query=query, params=values, fetch="one")
+    query =  f"INSERT INTO activities ({columns}) VALUES ({placeholders})"
+    result = db_execute(sql_query=query, params=values, fetch=None)
 
-    if result == None:
-        return False
-    return True
+    return (result == 1)
 
 def delete_activity(activity_id):
     query = """DELETE FROM activities WHERE id = %s"""
     result = db_execute(query, params=[activity_id], fetch=None)
 
-    if result == 0:
-        return False
-    return True
+    return (result == 1)
 
 def update_activity(data: dict):
     if "id" not in data.keys():
@@ -109,9 +106,7 @@ def update_activity(data: dict):
     query = f"UPDATE activities SET {columns} WHERE id = %s"
     updated = db_execute(sql_query=query, params=values, fetch=None)
 
-    if updated == 0:
-        return False
-    return True
+    return (updated == 1)
 
 def get_owned (user_id: int):
     """get all activities created by user_id"""
@@ -128,37 +123,34 @@ def get_joined (user_id: int):
 
 ## ========= Participants Functions ===========
 
+def get_participant(activity_id):
+    query = """SELECT * FROM participants WHERE id = %s"""
+    params = [activity_id]
+    return db_execute(sql_query=query, params=params, fetch="one")
+
 def join_activity(user_id, activity_id):
     query = """INSERT INTO participants (user_id, activity_id) VALUES (%s, %s)"""
     joined = db_execute(sql_query=query, params=[user_id, activity_id], fetch=None)
     
-    if joined == 0:
-        return False
-    return True
+    return (joined == 1)
 
 def leave_activity(user_id, activity_id):
     query = """DELETE FROM participants WHERE user_id = %s AND activity_id = %s"""
     left = db_execute(sql_query=query, params=[user_id, activity_id], fetch=None)
     
-    if left == 0:
-        return False
-    return True
+    return (left == 1)
 
 def delete_participant_activity(activity_id):
     query = """DELETE FROM participants WHERE activity_id = %s"""
     left = db_execute(sql_query=query, params=[activity_id], fetch=None)
     
-    if left == 0:
-        return False
-    return True
+    return (left == 1)
 
 def delete_participant_user(user_id):
     query = """DELETE FROM participants WHERE user_id = %s"""
     left = db_execute(sql_query=query, params=[user_id], fetch=None)
     
-    if left == 0:
-        return False
-    return True
+    return (left == 1)
 
 ## ========= User Functions ===========
 
@@ -181,12 +173,10 @@ def create_user (data: dict):
     placeholders = ", ".join(["%s"] * len(data))
     values = tuple(data.values())
 
-    query =  f"INSERT INTO users ({columns}) VALUES ({placeholders}) RETURNING id"
-    result = db_execute(sql_query=query, params=values, fetch="one")
+    query =  f"INSERT INTO users ({columns}) VALUES ({placeholders})"
+    result = db_execute(sql_query=query, params=values, fetch=None)
 
-    if result is None:
-        return False
-    return True
+    return (result == 1)
 
 def update_user (data: dict):
     if "id" not in data.keys():
@@ -204,22 +194,30 @@ def update_user (data: dict):
     query = f"UPDATE users SET {columns} WHERE id = %s"
     updated = db_execute(sql_query=query, params=values, fetch=None)
 
-    if updated == 0:
-        return False
-    return True
+    return (updated == 1)
 
 def delete_user (user_id):
     query = """DELETE FROM users WHERE id = %s"""
-    result = db_execute(query, params=[user_id])
+    result = db_execute(query, params=[user_id], fetch=None)
 
-    if result == 0:
-        return False
-    else:
-        return True
+    return (result == 1)
 
-def create_verification_token(user_id: int, token: str, expires_at, type: str):
-    query = """INSERT INTO verification_tokens (user_id, token, expiry, type) VALUES (%s, %s, %s, %s)"""
-    db_execute(sql_query=query, params=[user_id, token, expires_at, type], fetch=None)
+## ========= Verification Token Functions ===========
+
+def create_verification_token(data: dict):
+    for col in data.keys():
+        if col not in ALLOWED_COLUMNS_VERIFICATION_TOKENS:
+            raise ValueError(f'Invalid column: {col}')
+        
+    columns = ", ".join(data.keys())
+    placeholders = ", ".join(["%s"] * len(data))
+    values = tuple(data.values())
+
+    query =  f"INSERT INTO verification_tokens ({columns}) VALUES ({placeholders})"
+    result = db_execute(sql_query=query, params=values, fetch=None)
+
+    return (result == 1)
+    
 
 def verify_token(token: str, type: str) -> dict | None:
     query = """SELECT * FROM verification_tokens WHERE token = %s AND type = %s"""
@@ -232,3 +230,9 @@ def verify_token(token: str, type: str) -> dict | None:
         return None
 
     return result
+
+def invalidate_token(token: str):
+    query = """DELETE FROM verification_tokens WHERE token = %s"""
+    result = db_execute(sql_query=query, params=[token], fetch=None)
+
+    return (result == 1)
