@@ -115,8 +115,8 @@ class ActivitiesResource:
 
         required_fields = ['started_at', 'ended_at', 'title', 'description', 'created_by', 'venue']
         for field in required_fields:
-            if field not in activity_data or not isinstance(activity_data[field], str):
-                raise ValueError(f"Missing or invalid {field}: must be a string")
+            if field not in activity_data or not (isinstance(activity_data[field], str) or isinstance(activity_data[field], int)):
+                raise ValueError(f"Missing or invalid {field}: must be a string or integer")
             
         invalid = activity_data.keys() - ALLOWED_ACTIVITY_COLUMNS
         if invalid:

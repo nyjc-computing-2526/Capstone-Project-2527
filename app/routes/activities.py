@@ -47,8 +47,8 @@ def create_activities():
     
         activity_data = {'title': title,
                         'description': description,
-                        'start_date': start_date,
-                        'end_date': end_date,
+                        'started_at': start_date,
+                        'ended_at': end_date,
                         'venue': venue,
                         'created_by': created_by}
         
