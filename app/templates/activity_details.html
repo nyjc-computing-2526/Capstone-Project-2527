@@ -15,9 +15,9 @@
         <li><a href="{{ url_for('activities.activities') }}">All Activities</a></li>
         <li><a href="{{ url_for('activities.my_activities') }}">My Activities</a></li>
         <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
-        <li><a href="{{ url_for('landing.profile') }}">View Profile</a></li>
+        <li><a href="/auth/view">View Profile</a></li>
       </ul>
-      <a href="{{ url_for('auth.logout') }}" class="logout">Log Out</a>
+      <a href="/auth/logout" class="logout">Log Out</a>
     </header>
 
     <main class="activity-card-page">
