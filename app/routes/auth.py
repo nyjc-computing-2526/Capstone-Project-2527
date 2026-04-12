@@ -134,7 +134,7 @@ def view_profile(id):
     """allows user to view their profile details"""
     user_resource = users_resource.user(id)
     user_data = user_resource.get()
-    return render_template('editprofile.html', user_data=user_data)
+    return render_template('profile.html', user_data=user_data)
 
 
 @bp.route('/update', methods=['GET', 'POST'])  
@@ -169,7 +169,7 @@ def update_user():
 
         if not user_data:
             flash("No valid fields provided for update", "error")
-            return render_template('updateuser.html')
+            return render_template('editprofile.html')
 
         try: 
             user_resource.update(user_data)
@@ -177,9 +177,9 @@ def update_user():
             return redirect(url_for('landing.homepage'))
         except ValueError as e:
             flash(str(e), "error")
-            return render_template('updateuser.html')
+            return render_template('editprofile.html')
 
-    return render_template('updateuser.html')
+    return render_template('editprofile.html')
 
 @bp.route('/delete/<int:id>', methods=['POST'])  
 @login_required
@@ -190,7 +190,7 @@ def delete_user(id):
     try: 
         user_resource.delete()
         flash("Profile deleted successfully", "success")
-        return redirect(url_for('landing.landing'))
+        return redirect(url_for('landing.index'))
     except ValueError as e:
         flash(str(e), "error")
         return redirect(url_for('landing.homepage'))

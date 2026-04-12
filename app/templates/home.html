@@ -12,7 +12,7 @@
     {% macro nav_link(item) %}
     <li><a href="{{ item.href }}">{{ item.label }}</a></li>
 {% endmacro %} {% macro activity_card(activity) %}
-<a href="/activity" class="activity-card-link">
+<a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
   <div class="activity-card">
     <h3>{{ activity.title }}</h3>
     <p>Time: {{ activity.time }}</p>
@@ -25,10 +25,10 @@
       {'href': url_for('activities.activities'), 'label': 'All Activities'},
       {'href': url_for('activities.my_activities'), 'label': 'My Activities'},
       {'href': url_for('activities.create_activities'), 'label': 'Create Activity'},
-      {'href': '/auth/view', 'label': 'View Profile'},
+      {'href': url_for('auth.view_profile', id=current_user.id), 'label': 'View Profile'},
     ] %}
-    {% set activities = activities or [ {'title': 'Activity 1',
-    'time': '00:00', 'date': '6th July 2025'}, {'title': 'Activity 2', 'time':
+    {% set activities = activities or [ {'id': 1, 'title': 'Activity 1',
+    'time': '00:00', 'date': '6th July 2025'}, {'id': 2, 'title': 'Activity 2', 'time':
     '00:00', 'date': '6th July 2025'}, ] %}
     {% set sidebar_actions = sidebar_actions or [
       {'label': 'Create Event', 'href': url_for('activities.create_activities')},

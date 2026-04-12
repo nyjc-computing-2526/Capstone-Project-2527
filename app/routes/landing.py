@@ -70,4 +70,3 @@ def homepage():
     return render_template('home.html', activities=upcoming_activities)
 
 
-
