@@ -89,7 +89,7 @@ def activity_details(id):
             organizer_email = None
 
     return render_template(
-        'activity_details.html',
+        'activitydetails.html',
         data=activity_data,
         schedule=schedule_for_detail(activity_data),
         organizer_email=organizer_email or '',
