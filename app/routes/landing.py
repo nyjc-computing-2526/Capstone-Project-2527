@@ -69,8 +69,4 @@ def homepage():
     upcoming_activities = activities_resource.get_upcoming()
     return render_template('home.html', activities=upcoming_activities)
 
-@bp.route('/profile', methods=["GET"])
-def profile():
-    return render_template('profile.html')
-
 

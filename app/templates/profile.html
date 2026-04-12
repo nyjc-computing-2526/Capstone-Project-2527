@@ -56,7 +56,7 @@
             <span>Delete Account</span>
           </button>
           <a
-            href="{{ url_for('auth_update') }}"
+            href="{{ url_for('auth.update_user', id=current_user.id) }}"
             class="profile-edit-btn"
             aria-label="Edit profile"
           >
