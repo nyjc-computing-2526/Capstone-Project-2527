@@ -83,10 +83,15 @@ def create_activity(data: dict):
     placeholders = ", ".join(["%s"] * len(data))
     values = tuple(data.values())
 
-    query =  f"INSERT INTO activities ({columns}) VALUES ({placeholders})"
-    result = db_execute(sql_query=query, params=values, fetch=None)
+    query =  f"INSERT INTO activities ({columns}) VALUES ({placeholders}) RETURNING id"
+    result = db_execute(sql_query=query, params=values, fetch="one")    
 
-    return (result == 1)
+    activity_id = result["id"]
+    creator_id = data["created_by"]
+
+    join_activity(activity_id, creator_id)
+
+    return activity_id
 
 def delete_activity(activity_id):
     query = """DELETE FROM activities WHERE id = %s"""

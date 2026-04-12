@@ -1113,3 +1113,48 @@ a.profile-edit-btn:active {
     transform: translateX(100%);
   }
 }
+
+.organizer-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  position: relative;
+  background: linear-gradient(90deg, #1a1a2e, #16213e, #1a1a2e);
+  background-size: 200% auto;
+  color: #00f0ff;
+  animation: neon-pulse 2s ease-in-out infinite, shimmer 3s linear infinite;
+}
+
+.organizer-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  padding: 1px;
+  background: linear-gradient(90deg, #00f0ff, #bf5fff, #00f0ff);
+  background-size: 200% auto;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes neon-pulse {
+  0%, 100% {
+    color: #00f0ff;
+    text-shadow: 0 0 6px #00f0ff, 0 0 12px #00f0ff55;
+  }
+  50% {
+    color: #aaffff;
+    text-shadow: 0 0 12px #00f0ff, 0 0 24px #00f0ffaa;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
