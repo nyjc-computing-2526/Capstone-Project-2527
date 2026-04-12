@@ -134,7 +134,7 @@ def view_profile(id):
     """allows user to view their profile details"""
     user_resource = users_resource.user(id)
     user_data = user_resource.get()
-    return render_template('view_profile.html', user_data=user_data)
+    return render_template('editprofile.html', user_data=user_data)
 
 
 @bp.route('/update', methods=['GET', 'POST'])  
