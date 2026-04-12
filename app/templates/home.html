@@ -14,7 +14,6 @@
 {% endmacro %} {% macro activity_card(activity) %}
 <a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
   <div class="activity-card">
-    <h3>{{activity}}</h3>
     <h3>{{ activity.title }}</h3>
     <p>Time: {{ activity.time }}</p>
     <p>Date: {{ activity.date }}</p>
