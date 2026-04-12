@@ -88,17 +88,21 @@
 
             <!-- Join/Leave button -->
             <div style="margin-top:1.25rem;">
-              {% if current_user.is_authenticated %}
-                {% if current_user.id in participants | map(attribute='id') | list %}
-                <form action="{{ url_for('activities.leave_activity', id=data.id) }}" method="POST">
-                  <button type="submit" class="activity-signup-btn" style="background-color:#e8d5d5; color:#991b1b;">− Leave</button>
-                </form>
-                {% else %}
+            {% if current_user.is_authenticated %}
+              {% if current_user.id in participants | map(attribute='id') | list %}
+                {% if current_user.id != data.created_by %}
+                  <form action="{{ url_for('activities.leave_activity', id=data.id) }}" method="POST">
+                    <button type="submit" class="activity-signup-btn" style="background-color:#e8d5d5; color:#991b1b;">
+                      − Leave
+                    </button>
+                  </form>
+                {% endif %}
+              {% else %}
                 <form action="{{ url_for('activities.join_activity', id=data.id) }}" method="POST">
                   <button type="submit" class="activity-signup-btn">+ Sign Up</button>
                 </form>
-                {% endif %}
               {% endif %}
+            {% endif %}
             </div>
 
           </article>
