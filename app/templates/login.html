@@ -5,6 +5,25 @@
     <title>Login Page</title>
   </head>
   <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">
+              <span>{{ message }}</span>
+              <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <script>
+      document.querySelectorAll('.toast').forEach(toast => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+    </script>
+
     <div class="authcontainer">
       <div class="login-card">
         <h1>Log In</h1>
@@ -16,6 +35,7 @@
             <div class="input-group">
               <input type="password" name="password" placeholder="Password" required />
             </div>
+            <div class="g-recaptcha" data-sitekey="{{ config['RECAPTCHA_SITE_KEY'] }}"></div>
             <button type="submit">Log In</button>
             <button type="button" onclick="window.location.href='{{ url_for('auth.register') }}'">
               Register
@@ -25,5 +45,7 @@
         <a href="{{ url_for('auth.forgot_password') }}" class="forgot-pass">Forgot password?</a>
       </div>
     </div>
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </body>
 </html>

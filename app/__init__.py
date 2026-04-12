@@ -1,6 +1,9 @@
 from flask import Flask
 from flask_login import LoginManager
+from dotenv import load_dotenv
 from werkzeug.middleware.proxy_fix import ProxyFix
+
+import os
 
 from .models.user import User
 from .resources.users import UsersResource
@@ -8,10 +11,14 @@ from .routes.landing import bp as landing_bp
 from .routes.activities import bp as activities_bp
 from .routes.auth import bp as auth_bp
 
+load_dotenv()
+
 def create_app():
     app = Flask(__name__)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     app.secret_key = "secret_key_yes"
+    app.config['RECAPTCHA_SITE_KEY'] = os.getenv('RECAPTCHA_SITE_KEY')
+    app.config['RECAPTCHA_SECRET_KEY'] = os.getenv('RECAPTCHA_SECRET_KEY')
 
     login_manager = LoginManager() 
     login_manager.login_view = 'auth.login'

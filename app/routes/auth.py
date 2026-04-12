@@ -2,11 +2,14 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
+
 import secrets
 import resend
 import os
+
 from app.resources.users import UsersResource
 from app.models.user import User
+from app.utils.recaptcha import verify_recaptcha
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 users_resource = UsersResource()
@@ -18,6 +21,11 @@ resend.api_key = os.getenv("RESEND_API_KEY")
 def login():
     """allows user to log in"""
     if request.method == 'POST':
+        recaptcha_token = request.form.get('g-recaptcha-response')
+        if not recaptcha_token or not verify_recaptcha(recaptcha_token):
+            flash("Please complete the captcha.", "error")
+            return render_template('login.html')
+
         email = request.form['email']
         password = request.form['password']
         
@@ -43,6 +51,12 @@ def login():
 def register():
     """registers user"""
     if request.method == 'POST':
+        recaptcha_token = request.form.get('g-recaptcha-response')
+        if not recaptcha_token or not verify_recaptcha(recaptcha_token):
+            flash("Please complete the captcha.", "error")
+            print("Error completeting captcha")
+            return render_template('register.html')
+
         email = request.form['email']
         password = request.form['password']
         name = request.form['name']
@@ -57,7 +71,7 @@ def register():
         
         try:
             token = secrets.token_urlsafe(32)
-            expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
+            expires_at = datetime.now(timezone.utc) + timedelta(days=2)
             
             user_id = users_resource.register(user_data)
             user_resource = users_resource.user(user_id)

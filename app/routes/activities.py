@@ -36,7 +36,7 @@ def my_activities():
 @bp.route('/create', methods = ['POST', 'GET'])
 @login_required
 def create_activities():
-    """create new activities"""
+    """create new activity"""
     if request.method == 'POST':
         title = request.form['title']
         description  = request.form['description']
