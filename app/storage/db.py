@@ -70,6 +70,10 @@ def get_upcoming_activities():
     query = """SELECT * FROM activities WHERE started_at > NOW()"""
     return db_execute(sql_query=query, params=None, fetch="all")
 
+def get_ongoing_activities():
+    query = """SELECT * FROM activities WHERE started_at <= NOW() AND ended_at >= NOW()"""
+    return db_execute(sql_query=query, params=None, fetch="all")
+
 def create_activity(data: dict):
     for col in data.keys():
         if col not in ALLOWED_COLUMNS_ACTIVITIES:
@@ -123,7 +127,7 @@ def get_joined (user_id: int):
 
 ## ========= Participants Functions ===========
 
-def get_participant(activity_id):
+def get_participants(activity_id):
     query = """SELECT * FROM participants WHERE id = %s"""
     params = [activity_id]
     return db_execute(sql_query=query, params=params, fetch="one")
