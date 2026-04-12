@@ -13,7 +13,7 @@
         <li><a href="{{ url_for('activities.my_activities') }}">My Activities</a></li>
         <li><a href="{{ url_for('activities.create_activities') }}">Create activity</a></li>
       </ul>
-      <a href="/auth/logout" class="logout">Log Out</a>
+      <a href="{{ url_for('auth.logout') }}" class="logout">Log Out</a>
     </header>
 
     <main class="activity-card-page">
