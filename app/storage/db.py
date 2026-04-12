@@ -132,7 +132,7 @@ def get_participants(activity_id):
     params = [activity_id]
     return db_execute(sql_query=query, params=params, fetch="one")
 
-def join_activity(user_id, activity_id):
+def join_activity(activity_id, user_id):
     query = """INSERT INTO participants (user_id, activity_id) VALUES (%s, %s)"""
     joined = db_execute(sql_query=query, params=[user_id, activity_id], fetch=None)
     

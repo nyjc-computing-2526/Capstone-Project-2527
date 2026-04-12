@@ -41,7 +41,9 @@
               {{ data.description | default('No description provided.') }}
             </p>
             <p class="activity-contact">{{ organizer_email | default('—') }}</p>
-            <button type="button" class="activity-signup-btn">+ Sign Up</button>
+            <form action="{{ url_for('activities.join_activity', id=data.id) }}" method="post">
+              <button type="submit" class="activity-signup-btn">+ Sign Up</button>
+            </form>
           </article>
         </section>
       </div>
