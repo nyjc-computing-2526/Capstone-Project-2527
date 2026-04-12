@@ -41,7 +41,7 @@
         <a href="mailto:{{ user_data.email }}" class="profile-email"
           >{{ user_data.email }}</a
         >
-
+        {% if user_data.id == current_user.id %}
         <div class="profile-actions-row">
           <button type="button" class="profile-delete-btn">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -56,7 +56,7 @@
             <span>Delete Account</span>
           </button>
           <a
-            href="{{ url_for('auth.update_user', id=current_user.id) }}"
+            href="{{ url_for('auth.update_user') }}"
             class="profile-edit-btn"
             aria-label="Edit profile"
           >
@@ -73,6 +73,7 @@
           </a>
         </div>
       </section>
+      {% endif %}
     </main>
   </body>
 </html>

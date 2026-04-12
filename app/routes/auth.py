@@ -158,11 +158,11 @@ def update_user():
     user_resource = users_resource.user(current_user.id)
 
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        name = request.form['name']
-        user_class = request.form['class']
-        confirm_password = request.form['confirm_password']
+        email = request.form.get('email')
+        password = request.form.get('password')
+        name = request.form.get('name')
+        user_class = request.form.get('class')
+        confirm_password = request.form.get('confirm_password')
 
         user_data = {}
 
