@@ -109,8 +109,8 @@ button:active {
 
 .message-group textarea {
   width: 100%;
-  max-width: 40rem;       /* wider than other inputs */
-  min-height: 8rem;       /* taller for multi-line input */
+  max-width: 40rem;
+  min-height: 8rem;
   box-sizing: border-box;
   padding: 1rem;
   border-radius: 1rem;
@@ -123,7 +123,7 @@ button:active {
     border-color 0.2s ease,
     box-shadow 0.2s ease,
     background-color 0.2s ease;
-  resize: vertical;       /* allow vertical resizing */
+  resize: vertical;
 }
 
 .message-group textarea:focus {
@@ -132,7 +132,6 @@ button:active {
   background-color: #fbf7f1;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
-
 
 .input-group input,
 .input-group select {
@@ -299,8 +298,22 @@ header li a {
 
 .logout {
   margin-left: auto;
-  color: red;
+  color: #c0392b;
   font-weight: bold;
+  background: none;
+  border: none;
+  box-shadow: none;
+  transition: opacity 0.15s ease;
+}
+
+.logout:hover {
+  box-shadow: none;
+  opacity: 0.65;
+}
+
+.logout:active {
+  background: none;
+  opacity: 0.4;
 }
 
 main {
@@ -926,7 +939,7 @@ a.profile-edit-btn:active {
   background-color: #4d4558;
 }
 
-/* Edit profile form (same shell as profile page) */
+/* Edit profile form */
 .profile-page .edit-profile-form {
   display: flex;
   flex-direction: column;
@@ -1027,6 +1040,7 @@ a.profile-edit-btn:active {
   }
 }
 
+/* Toast notifications */
 .toast-container {
   position: fixed;
   top: 1.25rem;
@@ -1114,25 +1128,246 @@ a.profile-edit-btn:active {
   }
 }
 
-.organizer-badge {
+/* ── Activity detail page (view_activity.html) ────────────────────────────── */
+
+.hero {
+  background-color: #fff;
+  border-radius: 1.25rem;
+  padding: clamp(1.25rem, 4vw, 2.25rem) clamp(1.25rem, 4vw, 2.5rem);
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-blob-1,
+.hero-blob-2 {
+  display: none;
+}
+
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.hero h2 {
+  color: #4a3728;
+  font-size: clamp(1.3rem, 3.5vw, 1.9rem);
+  margin: 0.5rem 0 0;
+  line-height: 1.25;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.hero-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.hero-meta-label {
   font-size: 0.7rem;
   font-weight: 700;
-  padding: 0.35rem 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7c6c55;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #4a3728;
+}
+
+.hero-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: #d9c8ae;
+  color: #4a3728;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.82rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 0.65rem;
+  white-space: nowrap;
+  border: 1.5px solid #c9b89e;
+}
+
+/* Status pills — warm palette only, no one-off greens/blues */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.body-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 680px) {
+  .body-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.main-card {
+  background-color: #fff;
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+}
+
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7c6c55;
+  margin-bottom: 0.65rem;
+}
+
+.description-box {
+  background-color: #ece5db;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  line-height: 1.65;
+  font-size: 0.95rem;
+  color: #3d2f1e;
+}
+
+/* Sign up / leave buttons use the site-standard warm palette */
+.signup-btn {
+  width: 100%;
+  max-width: none;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background-color: #d9c8ae;
+  color: #7c6c55;
+  border: none;
+  border-radius: 1rem;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.signup-btn:hover {
+  background-color: #c9b89e;
+}
+
+.signup-btn:active {
+  background-color: #7c6c55;
+  color: #fff;
+}
+
+.leave-btn {
+  width: 100%;
+  max-width: none;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background-color: #e8d5d5;
+  color: #991b1b;
+  border: none;
+  border-radius: 1rem;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.participants-card {
+  background-color: #fff;
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+}
+
+.p-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.p-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background-color: #ece5db;
+  padding: 0.65rem 1rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.p-item.is-organizer {
+  background-color: #fff;
+  border: 1.5px solid #d9c8ae;
+}
+
+.p-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.p-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #d9c8ae;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #7c6c55;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.p-item.is-organizer .p-avatar {
+  background-color: #d9c8ae;
+  color: #7c6c55;
+}
+
+.p-name {
+  font-weight: 500;
+  font-size: 0.92rem;
+  color: #3d2f1e;
+}
+
+.p-item.is-organizer .p-name {
+  color: #4a3728;
+}
+
+/* Organizer badge — warm palette, consistent with the dark hero row */
+.organizer-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
   border-radius: 0.4rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
-  background-color: #2a3a4a;
-  color: #ffffff;
-  box-shadow: 0 0 8px rgba(100, 180, 210, 0.3), 0 0 16px rgba(100, 180, 210, 0.15);
-  animation: subtle-glow 3s ease-in-out infinite;
-}
-
-@keyframes subtle-glow {
-  0%, 100% {
-    box-shadow: 0 0 8px rgba(100, 180, 210, 0.3), 0 0 16px rgba(100, 180, 210, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 12px rgba(100, 180, 210, 0.5), 0 0 24px rgba(100, 180, 210, 0.25);
-  }
+  background-color: #d9c8ae;
+  color: #7c6c55;
+  border: none;
 }

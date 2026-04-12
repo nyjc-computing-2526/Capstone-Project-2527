@@ -137,6 +137,16 @@ def verify_email():
         flash(str(e), "error")
         return redirect(url_for('auth.register'))
 
+@bp.route('/verify-password', methods=['POST'])
+@login_required
+def verify_password():
+    password = request.json.get('password')
+    try:
+        users_resource.authenticate(current_user.email, password)
+        return {'valid': True}
+    except ValueError:
+        return {'valid': False}
+
 
 @bp.route('/logout', methods=['POST'])
 @login_required
