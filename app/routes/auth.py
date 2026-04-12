@@ -190,7 +190,7 @@ def delete_user(id):
     try: 
         user_resource.delete()
         flash("Profile deleted successfully", "success")
-        return redirect(url_for('landing.landing'))
+        return redirect(url_for('landing.index'))
     except ValueError as e:
         flash(str(e), "error")
         return redirect(url_for('landing.homepage'))
