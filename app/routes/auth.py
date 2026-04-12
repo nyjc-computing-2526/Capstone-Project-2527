@@ -8,11 +8,14 @@ import resend
 import os
 
 from app.resources.users import UsersResource
+from app.resources.activities import ActivitiesResource
 from app.models.user import User
 from app.utils.recaptcha import verify_recaptcha
+from ..utils.formatting_util import enrich_for_cards, merge_by_id, schedule_for_detail
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 users_resource = UsersResource()
+activities_resource = ActivitiesResource()
 
 load_dotenv()
 resend.api_key = os.getenv("RESEND_API_KEY")
@@ -147,8 +150,12 @@ def logout():
 def view_profile(id):
     """allows user to view their profile details"""
     user_resource = users_resource.user(id)
+    
+    
     user_data = user_resource.get()
-    return render_template('profile.html', user_data=user_data)
+    activity_data = activities_resource.get_owned(id)
+
+    return render_template('profile.html', user_data=user_data, activity_data=enrich_for_cards(activity_data))
 
 
 @bp.route('/update', methods=['GET', 'POST'])  
