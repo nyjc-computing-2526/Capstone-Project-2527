@@ -223,12 +223,13 @@ class ActivityResource:
             raise ValueError(f"Invalid column(s): {invalid}")
 
         activity_data = {k: v for k, v in activity_data.items() if v is not None}
+        activity_data["id"] = self.activity_id
 
         if not activity_data:
             raise ValueError("No valid fields to update")
             
         try:
-            success = db.update_activity(self.activity_id, activity_data)
+            success = db.update_activity(activity_data)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or update failed")
             return success

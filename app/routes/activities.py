@@ -148,10 +148,10 @@ def update_activity(id):
             activity_resource.update(updated_data)
             return redirect(url_for('activities.activity_details', id=id))
         except ValueError as e:
-            flash(str(e), "error")
-            return render_template('update_activity.html', data=activity_data)
+            flash("Failed to update activity. Please try again later.", "error")
+            return render_template('updateactivity.html', data=activity_data)
     else:
-        return render_template('update_activity.html', data=activity_data)
+        return render_template('updateactivity.html', data=activity_data)
 
 @bp.route('/delete/<int:id>', methods=['POST'])
 def delete_activity(id):

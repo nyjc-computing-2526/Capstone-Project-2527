@@ -3,12 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <title>{{ data.title | default('Activity') }}</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
   <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">
+              <span>{{ message }}</span>
+              <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
     <header>
       <ul>
         <li><a href="{{ url_for('landing.homepage') }}">Home</a></li>
@@ -17,14 +27,27 @@
         <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
         <li><a href="{{ url_for('auth.view_profile', id=current_user.id) }}">View Profile</a></li>
       </ul>
-      <a href="{{ url_for('auth.logout') }}" class="logout">Log Out</a>
+      <form action="{{ url_for('auth.logout') }}" method="POST" style="margin-left: auto;">
+        <button type="submit" class="logout" style="background:none; border:none; color:red; font-weight:bold; font-size:1rem; cursor:pointer; padding:0; width:auto; max-width:none;">Log Out</button>
+      </form>
     </header>
 
     <main class="activity-card-page">
       <div class="page-card">
         <section class="activity-card-list">
           <article class="activity-detail-card">
-            <h2>{{ data.title | default('Activity') }}</h2>
+
+            <!-- Title row with edit button -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+              <h2 style="margin:0;">{{ data.title | default('Activity') }}</h2>
+              {% if current_user.is_authenticated and current_user.id == data.created_by %}
+              <a href="{{ url_for('activities.update_activity', id=data.id) }}"
+                 style="display:inline-flex; align-items:center; gap:0.4rem; background-color:#d9c8ae; color:#1a1a1a; text-decoration:none; font-weight:bold; font-size:0.85rem; padding:0.5rem 1rem; border-radius:0.75rem; white-space:nowrap;">
+                ✏️ Edit
+              </a>
+              {% endif %}
+            </div>
+
             <div class="activity-time-row">
               <div>
                 <p class="date-label">{{ schedule.start_date }}</p>
@@ -48,5 +71,11 @@
         </section>
       </div>
     </main>
+
+    <script>
+      document.querySelectorAll('.toast').forEach(toast => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+    </script>
   </body>
 </html>
