@@ -18,8 +18,8 @@ def index():
 def about():
     return render_template('about.html')
 
-@bp.route('/privacy-policy', methods=["GET"])
-def privacy_policy():
+@bp.route('/legal', methods=["GET"])
+def legal():
     return render_template('legal.html')
 
 @bp.route('/contact', methods=["GET", "POST"])
