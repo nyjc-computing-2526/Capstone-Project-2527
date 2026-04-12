@@ -39,16 +39,27 @@
         <section class="activity-card-list" style="flex:2;">
           <article class="activity-detail-card">
 
+            <!-- Title row with status badge and edit button -->
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
-              <h2 style="margin:0;">{{ data.title | default('Activity') }}</h2>
+              <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+                <h2 style="margin:0;">{{ data.title | default('Activity') }}</h2>
+                {% if status == 'ongoing' %}
+                  <span style="font-size:0.75rem; font-weight:700; padding:0.25rem 0.6rem; border-radius:0.4rem; background-color:#d4f0e0; color:#1a6640; text-transform:uppercase; letter-spacing:0.06em;">Ongoing</span>
+                {% elif status == 'completed' %}
+                  <span style="font-size:0.75rem; font-weight:700; padding:0.25rem 0.6rem; border-radius:0.4rem; background-color:#ece5db; color:#7c6c55; text-transform:uppercase; letter-spacing:0.06em;">Completed</span>
+                {% else %}
+                  <span style="font-size:0.75rem; font-weight:700; padding:0.25rem 0.6rem; border-radius:0.4rem; background-color:#dbeafe; color:#1e40af; text-transform:uppercase; letter-spacing:0.06em;">Upcoming</span>
+                {% endif %}
+              </div>
               {% if current_user.is_authenticated and current_user.id == data.created_by %}
               <a href="{{ url_for('activities.update_activity', id=data.id) }}"
-                style="display:inline-flex; align-items:center; gap:0.4rem; background-color:#d9c8ae; color:#1a1a1a; text-decoration:none; font-weight:bold; font-size:0.85rem; padding:0.5rem 1rem; border-radius:0.75rem; white-space:nowrap;">
+                 style="display:inline-flex; align-items:center; gap:0.4rem; background-color:#d9c8ae; color:#1a1a1a; text-decoration:none; font-weight:bold; font-size:0.85rem; padding:0.5rem 1rem; border-radius:0.75rem; white-space:nowrap;">
                 ✏️ Edit
               </a>
               {% endif %}
             </div>
 
+            <!-- Date/Time -->
             <div class="activity-time-row">
               <div>
                 <p class="date-label">{{ schedule.start_date }}</p>
@@ -60,14 +71,36 @@
                 <p class="time-label">{{ schedule.end_time }}</p>
               </div>
             </div>
-            <p class="activity-location">{{ data.venue | default('—') }}</p>
-            <p class="activity-description">
-              {{ data.description | default('No description provided.') }}
-            </p>
-            <p class="activity-contact">{{ organizer_email | default('—') }}</p>
-            <form action="{{ url_for('activities.join_activity', id=data.id) }}" method="post">
-              <button type="submit" class="activity-signup-btn">+ Sign Up</button>
-            </form>
+
+            <!-- Venue -->
+            <p class="activity-location">📍 {{ data.venue | default('—') }}</p>
+
+            <!-- Description -->
+            <div style="background-color:#ece5db; border-radius:0.75rem; padding:1rem 1.25rem; margin:0.75rem 0;">
+              <p style="margin:0; line-height:1.6;">{{ data.description | default('No description provided.') }}</p>
+            </div>
+
+            <!-- Organizer -->
+            <div style="padding-top:0.8rem; border-top:1px solid #d9c8ae; margin-top:0.75rem;">
+              <p style="font-size:0.85rem; color:#7c6c55; font-weight:600; margin:0 0 0.25rem;">Organizer</p>
+              <p style="margin:0;">{{ organizer_email | default('—') }}</p>
+            </div>
+
+            <!-- Join/Leave button -->
+            <div style="margin-top:1.25rem;">
+              {% if current_user.is_authenticated %}
+                {% if current_user.id in participants | map(attribute='id') | list %}
+                <form action="{{ url_for('activities.leave_activity', id=data.id) }}" method="POST">
+                  <button type="submit" class="activity-signup-btn" style="background-color:#e8d5d5; color:#991b1b;">− Leave</button>
+                </form>
+                {% else %}
+                <form action="{{ url_for('activities.join_activity', id=data.id) }}" method="POST">
+                  <button type="submit" class="activity-signup-btn">+ Sign Up</button>
+                </form>
+                {% endif %}
+              {% endif %}
+            </div>
+
           </article>
         </section>
 
@@ -78,15 +111,12 @@
         <aside style="flex:1; min-width:200px;">
           <h3 style="margin:0 0 1rem; font-size:1.1rem; font-weight:700; color:#000;">
             Participants
-            <span style="font-size:0.85rem; color:#7c6c55; font-weight:500;">
-              ({{ participants | length }})
-            </span>
+            <span style="font-size:0.85rem; color:#7c6c55; font-weight:500;">({{ participants | length }})</span>
           </h3>
           {% if participants %}
             <div style="display:flex; flex-direction:column; gap:0.75rem;">
               {% for p in participants %}
-              <a href="{{ url_for('auth.view_profile', id=p.id) }}" style="color: inherit">
-                <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; background-color:#ece5db; padding:0.75rem 1.25rem; border-radius:0.75rem;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; background-color:#ece5db; padding:0.75rem 1.25rem; border-radius:0.75rem;">
                 <div style="display:flex; align-items:center; gap:0.75rem;">
                   <div style="width:2rem; height:2rem; border-radius:50%; background-color:#d9c8ae; display:flex; align-items:center; justify-content:center; font-weight:700; color:#7c6c55; font-size:0.9rem; flex-shrink:0;">
                     {{ p.name[0].upper() if p.name else '?' }}
@@ -97,8 +127,6 @@
                 <span class="organizer-badge">✦ Organizer</span>
                 {% endif %}
               </div>
-              </a>
-
               {% endfor %}
             </div>
           {% else %}

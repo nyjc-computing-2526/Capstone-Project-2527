@@ -150,7 +150,7 @@ def join_activity(activity_id, user_id):
     
     return (joined == 1)
 
-def leave_activity(user_id, activity_id):
+def leave_activity(activity_id, user_id):
     query = """DELETE FROM participants WHERE user_id = %s AND activity_id = %s"""
     left = db_execute(sql_query=query, params=[user_id, activity_id], fetch=None)
     

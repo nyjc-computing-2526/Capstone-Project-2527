@@ -83,6 +83,7 @@ def create_activities():
     return render_template('createactivity.html')
 
 @bp.route('/<int:id>')
+@bp.route('/<int:id>')
 def activity_details(id):
     try:
         activity_data = activities_resource.activity(id).get()
@@ -100,12 +101,29 @@ def activity_details(id):
         except ValueError:
             organizer_email = None
 
+    # determine status
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    started_at = activity_data.get('started_at')
+    ended_at = activity_data.get('ended_at')
+
+    if started_at and ended_at:
+        if now < started_at:
+            status = 'upcoming'
+        elif started_at <= now <= ended_at:
+            status = 'ongoing'
+        else:
+            status = 'completed'
+    else:
+        status = 'upcoming'
+
     return render_template(
         'activitydetails.html',
         data=activity_data,
         schedule=schedule_for_detail(activity_data),
         organizer_email=organizer_email or '',
-        participants=participants or []
+        participants=participants or [],
+        status=status
     )
 
 
