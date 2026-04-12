@@ -104,12 +104,16 @@ def join_activity(id):
     """allows user to join acitivity with that id and redirects them to /activities"""
     user_id = current_user.id
     activity_resource = activities_resource.activity(id)
-    success = activity_resource.join(user_id)
-
-    if success:
-        return redirect(url_for('activities.activities'))
-    else:
-        return redirect(url_for('activities.activity_details', id=id))
+    
+    try:
+        success = activity_resource.join(user_id)
+        if success:
+            return redirect(url_for('activities.activities'))
+    except ValueError as e:
+        print(e)
+        flash(str(e), 'error') 
+        
+    return redirect(url_for('activities.activity_details', id=id))
     
 @bp.route('/leave/<int:id>', methods=['POST'])
 @login_required

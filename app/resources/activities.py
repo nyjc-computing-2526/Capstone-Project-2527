@@ -280,7 +280,7 @@ class ActivityResource:
                 raise ValueError("Invalid user ID: must be a positive integer")
             
             if db.get_participant(self.activity_id, user_id):
-                raise ValueError(f"User {user_id} has already joined Activity {self.activity_id}")
+                raise ValueError(f"You have already joined this activity!")
         
             success = db.join_activity(self.activity_id, user_id)
             if not success:
