@@ -12,7 +12,7 @@
     {% macro nav_link(item) %}
     <li><a href="{{ item.href }}">{{ item.label }}</a></li>
 {% endmacro %} {% macro activity_card(activity) %}
-<a href="/activity" class="activity-card-link">
+<a href="{ url_for('activities.create_activities') }" class="activity-card-link">
   <div class="activity-card">
     <h3>{{ activity.title }}</h3>
     <p>Time: {{ activity.time }}</p>
