@@ -77,6 +77,7 @@ def create_activities():
 def activity_details(id):
     try:
         activity_data = activities_resource.activity(id).get()
+        participants = activities_resource.activity(id).get_participants()
     except ValueError:
         flash("Activity not found.", "error")
         return redirect(url_for('activities.activities'))
@@ -95,6 +96,7 @@ def activity_details(id):
         data=activity_data,
         schedule=schedule_for_detail(activity_data),
         organizer_email=organizer_email or '',
+        participants=participants or []
     )
 
 

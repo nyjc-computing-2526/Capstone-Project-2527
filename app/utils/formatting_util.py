@@ -19,7 +19,9 @@ def parse_activity_dt(value) -> datetime | None:
 
 def enrich_row_for_card(activity: dict) -> dict:
     row = dict(activity)
+    print(row)
     start = parse_activity_dt(row.get("started_at") or row.get("date"))
+    print(start)
     row["display_time"] = start.strftime("%H:%M") if start else "—"
     row["display_date"] = start.strftime("%d %b %Y") if start else "—"
     return row

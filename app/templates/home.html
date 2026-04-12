@@ -3,23 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <title>{{ page_title | default('Activity Management') }}</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
   <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">
+              <span>{{ message }}</span>
+              <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
     {% macro nav_link(item) %}
-    <li><a href="{{ item.href }}">{{ item.label }}</a></li>
-{% endmacro %} {% macro activity_card(activity) %}
-<a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
-  <div class="activity-card">
-    <h3>{{ activity.title }}</h3>
-    <p>Time: {{ activity.time }}</p>
-    <p>Date: {{ activity.date }}</p>
-  </div>
-</a>
+      <li><a href="{{ item.href }}">{{ item.label }}</a></li>
     {% endmacro %}
+
+    {% macro activity_card(activity) %}
+      <a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
+        <div class="activity-card">
+          <h3>{{ activity.title | default('Untitled') }}</h3>
+          <p>{{ activity.display_time }}</p>
+          <p>{{ activity.display_date }}</p>
+        </div>
+      </a>
+    {% endmacro %}
+
     {% set nav_items = nav_items or [
       {'href': url_for('landing.homepage'), 'label': 'Home'},
       {'href': url_for('activities.activities'), 'label': 'All Activities'},
@@ -27,45 +40,47 @@
       {'href': url_for('activities.create_activities'), 'label': 'Create Activity'},
       {'href': url_for('auth.view_profile', id=current_user.id), 'label': 'View Profile'},
     ] %}
-    {% set activities = activities or [ {'id': 1, 'title': 'Activity 1',
-    'time': '00:00', 'date': '6th July 2025'}, {'id': 2, 'title': 'Activity 2', 'time':
-    '00:00', 'date': '6th July 2025'}, ] %}
+
     {% set sidebar_actions = sidebar_actions or [
       {'label': 'Create Event', 'href': url_for('activities.create_activities')},
     ] %}
 
-    <!-- Navigation Bar -->
     <header>
       <ul>
-        {% for item in nav_items %} {{ nav_link(item) }} {% endfor %}
+        {% for item in nav_items %}{{ nav_link(item) }}{% endfor %}
       </ul>
-      <a href="{{ logout_url | default(url_for('auth.login')) }}" class="logout"
-        >{{ logout_label | default('Log Out') }}</a
-      >
+      <form action="{{ url_for('auth.logout') }}" method="POST" style="margin-left: auto;">
+        <button type="submit" class="logout" style="background:none; border:none; color:red; font-weight:bold; font-size:1rem; cursor:pointer; padding:0; width:auto; max-width:none;">Log Out</button>
+      </form>
     </header>
 
-    <!-- Main Content -->
     <main>
       <div class="content">
         <h1>{{ page_heading | default('Home') }}</h1>
-        <h2 class="section-title">
-          {{ section_title | default('Upcoming Activities') }}
-        </h2>
+        <h2 class="section-title">{{ section_title | default('Upcoming Activities') }}</h2>
 
         <section class="activities">
-          {% if activities %} {% for activity in activities %} {{
-          activity_card(activity) }} {% endfor %} {% else %}
-          <p class="empty-state">No upcoming activities yet.</p>
+          {% if activities %}
+            {% for activity in activities %}
+              {{ activity_card(activity) }}
+            {% endfor %}
+          {% else %}
+            <p class="empty-state">No upcoming activities yet.</p>
           {% endif %}
         </section>
       </div>
 
-      <!-- Sidebar -->
       <aside class="sidebar">
         {% for action in sidebar_actions %}
-        <a href="{{ action.href }}" class="button">{{ action.label }}</a>
+          <a href="{{ action.href }}" class="button">{{ action.label }}</a>
         {% endfor %}
       </aside>
     </main>
+
+    <script>
+      document.querySelectorAll('.toast').forEach(toast => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+    </script>
   </body>
 </html>

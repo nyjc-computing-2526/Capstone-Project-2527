@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 from app.resources.activities import ActivitiesResource
+from app.utils.formatting_util import enrich_for_cards
+
 from email.message import EmailMessage
+
 import smtplib
 import os
 
@@ -67,6 +70,6 @@ def features():
 def homepage():
     activities_resource = ActivitiesResource()
     upcoming_activities = activities_resource.get_upcoming()
-    return render_template('home.html', activities=upcoming_activities)
+    return render_template('home.html', activities=enrich_for_cards(upcoming_activities))
 
 
