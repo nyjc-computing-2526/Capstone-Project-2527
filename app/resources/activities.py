@@ -248,11 +248,11 @@ class ActivityResource:
             ValueError: If deletion fails.
         """
         try:
-            success = db.delete_activity(self.activity_id)
+            success = db.delete_participant_activity(self.activity_id)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or delete failed")
             
-            success = db.delete_participant_activity(self.activity_id)
+            success = db.delete_activity(self.activity_id)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found in Participant")
             return success

@@ -237,7 +237,6 @@
 
       function closeModal() {
         modal.classList.remove('active');
-        // reset to step 1
         setTimeout(() => {
           goToStep1();
           document.getElementById('current-password').value = '';
@@ -267,35 +266,44 @@
       document.getElementById('close-modal').addEventListener('click', closeModal);
       document.getElementById('back-step').addEventListener('click', goToStep1);
 
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-      });
 
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeModal();
-      });
-
-      document.getElementById('next-step').addEventListener('click', () => {
+      // Single async handler — no duplicate listener
+      document.getElementById('next-step').addEventListener('click', async () => {
         const current = document.getElementById('current-password').value;
         const error = document.getElementById('step1-error');
+
         if (!current) {
           error.textContent = 'Please enter your current password.';
           error.style.display = 'block';
           return;
         }
-        document.getElementById('hidden-current-password').value = current;
-        error.style.display = 'none';
-        goToStep2();
-      });
 
-      document.getElementById('password-form').addEventListener('submit', (e) => {
-        const newPass = document.getElementById('new-password').value;
-        const confirm = document.getElementById('confirm-password').value;
-        const error = document.getElementById('step2-error');
-        if (newPass !== confirm) {
-          e.preventDefault();
-          error.textContent = 'Passwords do not match.';
+        const btn = document.getElementById('next-step');
+        btn.textContent = 'Checking...';
+        btn.disabled = true;
+
+        try {
+          const res = await fetch('{{ url_for("auth.verify_password") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: current })
+          });
+          const data = await res.json();
+
+          if (data.valid) {
+            document.getElementById('hidden-current-password').value = current;
+            error.style.display = 'none';
+            goToStep2();
+          } else {
+            error.textContent = 'Incorrect password. Please try again.';
+            error.style.display = 'block';
+          }
+        } catch (e) {
+          error.textContent = 'Something went wrong. Please try again.';
           error.style.display = 'block';
+        } finally {
+          btn.textContent = 'Continue →';
+          btn.disabled = false;
         }
       });
     </script>
