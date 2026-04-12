@@ -133,9 +133,11 @@ def get_participant(activity_id, user_id):
     
 
 def get_participants(activity_id):
-    query = """SELECT * FROM participants WHERE activity_id = %s"""
-    params = [activity_id]
-    return db_execute(sql_query=query, params=params, fetch="all")
+    query = """SELECT users.id, users.name, users.email 
+               FROM participants 
+               JOIN users ON users.id = participants.user_id
+               WHERE participants.activity_id = %s"""
+    return db_execute(sql_query=query, params=[activity_id], fetch="all")
 
 def join_activity(activity_id, user_id):
     query = """INSERT INTO participants (user_id, activity_id) VALUES (%s, %s)"""
