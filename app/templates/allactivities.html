@@ -42,7 +42,8 @@
               <span>View by:</span>
               <div class="input-group">
                 <select name="status" id="status-filter">
-                  <option value="upcoming" selected>Upcoming</option>
+                  <option value="all" selected>All</option>
+                  <option value="upcoming">Upcoming</option>
                   <option value="ongoing">Ongoing</option>
                   <option value="completed">Completed</option>
                 </select>
@@ -60,9 +61,11 @@
         {% set upcoming = upcoming or [] %}
         {% set ongoing = ongoing or [] %}
         {% set completed = completed or [] %}
+        
+        {% set all = upcoming + ongoing + completed %}
 
         <!-- Upcoming -->
-        <div id="upcoming-cards" class="cards-section">
+        <div id="upcoming-cards" class="cards-section" style="display: none">
           {% set mid = ((upcoming | length) + 1) // 2 %}
           <div class="left-activities">
             <div class="activities-grid">
@@ -163,6 +166,39 @@
           </div>
         </div>
 
+        <!-- Completed -->
+        <div id="all-cards" class="cards-section">
+          {% set mid = ((all | length) + 1) // 2 %}
+          <div class="left-activities">
+            <div class="activities-grid">
+              {% for activity in all[:mid] %}
+              <a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
+                <div class="activity-card">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% endfor %}
+              {% if not all %}
+              <p style="color:#7c6c55;">No activities.</p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="right-activities">
+            <div class="activities-grid">
+              {% for activity in all[mid:] %}
+              <a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
+                <div class="activity-card">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -175,6 +211,7 @@
         document.getElementById('upcoming-cards').style.display = 'none';
         document.getElementById('ongoing-cards').style.display = 'none';
         document.getElementById('completed-cards').style.display = 'none';
+        document.getElementById('all-cards').style.display = 'none';
         document.getElementById(this.value + '-cards').style.display = 'flex';
         document.getElementById('search-input').value = '';
       });
@@ -182,7 +219,7 @@
       document.getElementById('search-input').addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         const activeGrid = document.querySelector(
-          '#upcoming-cards:not([style*="none"]), #ongoing-cards:not([style*="none"]), #completed-cards:not([style*="none"])'
+          '#upcoming-cards:not([style*="none"]), #ongoing-cards:not([style*="none"]), #completed-cards:not([style*="none"]), #all-cards:not([style*="none"])'
         );
         if (!activeGrid) return;
         activeGrid.querySelectorAll('.activity-card-link').forEach(card => {
