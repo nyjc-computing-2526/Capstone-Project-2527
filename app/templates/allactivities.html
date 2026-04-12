@@ -45,6 +45,7 @@
                   <option value="upcoming" selected>Upcoming</option>
                   <option value="ongoing">Ongoing</option>
                   <option value="completed">Completed</option>
+                  <option value="all">All</option>
                 </select>
               </div>
             </div>
@@ -63,6 +64,7 @@
 
         {% set upcoming = upcoming or [] %}
         {% set completed = completed or [] %}
+        {% set all = upcoming + ongoing + completed %}
 
         <!-- Upcoming Cards -->
         <div id="upcoming-cards" class="cards-section">
@@ -165,7 +167,43 @@
             </div>
           </div>
         </div>
+
+        <!-- All Cards -->
+        <div id="all-cards" class="cards-section" style="display: none;">
+          {% set mid = ((all | length) + 1) // 2 %}
+          <div class="left-activities">
+            <div class="activities-grid">
+              {% for activity in all[:mid] %}
+              <a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
+                <div class="activity-card">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% endfor %}
+              {% if not all %}
+              <p style="color: #7c6c55;">No activities.</p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="right-activities">
+            <div class="activities-grid">
+              {% for activity in all[mid:] %}
+              <a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
+                <div class="activity-card">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
       </div>
+      </div>
+
     </main>
 
     <script>
@@ -177,6 +215,7 @@
       document.getElementById('upcoming-cards').style.display = 'none';
       document.getElementById('ongoing-cards').style.display = 'none';
       document.getElementById('completed-cards').style.display = 'none';
+      document.getElementById('all-cards').style.display = 'none';
       document.getElementById(this.value + '-cards').style.display = 'flex';
     });
     </script>
