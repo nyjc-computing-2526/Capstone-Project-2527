@@ -234,5 +234,13 @@ def verify_token(token: str, type: str) -> dict | None:
 def invalidate_token(token: str):
     query = """DELETE FROM verification_tokens WHERE token = %s"""
     result = db_execute(sql_query=query, params=[token], fetch=None)
+    
+    if result == 0:
+        return False
+    
+    # Clear all tokens that are invalid
+    query = """DELETE FROM verification_tokens WHERE expiry < NOW()"""
+    result = db_execute(sql_query=query, params=None, fetch=None)
 
     return (result == 1)
+
