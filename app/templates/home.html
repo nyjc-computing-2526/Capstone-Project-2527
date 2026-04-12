@@ -25,7 +25,7 @@
       {'href': url_for('activities.activities'), 'label': 'All Activities'},
       {'href': url_for('activities.my_activities'), 'label': 'My Activities'},
       {'href': url_for('activities.create_activities'), 'label': 'Create Activity'},
-      {'href': '/auth/view', 'label': 'View Profile'},
+      {'href': url_for('auth.view_profile', id=current_user.id), 'label': 'View Profile'},
     ] %}
     {% set activities = activities or [ {'title': 'Activity 1',
     'time': '00:00', 'date': '6th July 2025'}, {'title': 'Activity 2', 'time':
