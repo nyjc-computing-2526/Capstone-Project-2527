@@ -70,6 +70,10 @@ def get_upcoming_activities():
     query = """SELECT * FROM activities WHERE started_at > NOW()"""
     return db_execute(sql_query=query, params=None, fetch="all")
 
+def get_ongoing_activities():
+    query = """SELECT * FROM activities WHERE started_at <= NOW() AND ended_at >= NOW()"""
+    return db_execute(sql_query=query, params=None, fetch="all")
+
 def create_activity(data: dict):
     for col in data.keys():
         if col not in ALLOWED_COLUMNS_ACTIVITIES:

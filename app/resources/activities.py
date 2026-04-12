@@ -48,6 +48,20 @@ class ActivitiesResource:
             return db.get_upcoming_activities()
         except Exception as e:
             raise ValueError(f"Failed to retrieve upcoming activities: {str(e)}")
+        
+    def get_ongoing(self) -> list[dict]:
+        """Retrieve all ongoing activities.
+
+        Returns:
+            list[dict]: A list of ongoing activities.
+
+        Raises:
+            ValueError: If retrieval fails.
+        """
+        try:
+            return db.get_ongoing_activities()
+        except Exception as e:
+            raise ValueError(f"Failed to retrieve ongoing activities: {str(e)}")
     
     def get_owned(self, user_id: int) -> list[dict]:
         """Retrieve activities owned by a specific user.

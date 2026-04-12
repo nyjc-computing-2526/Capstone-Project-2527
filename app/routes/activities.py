@@ -14,11 +14,18 @@ users_resource = UsersResource()
 @bp.route('')
 def activities():
     try:
-        rows = activities_resource.get_all()
-    except ValueError:
-        flash("Could not load activities.", "error")
-        rows = []
-    return render_template('allactivities.html', data=enrich_for_cards(rows))
+        upcoming = activities_resource.get_upcoming()
+        completed = activities_resource.get_completed()
+        ongoing = activities_resource.get_ongoing()
+    except ValueError as e:
+        flash(f"Could not load activities.", "error")
+        print(str(e))
+        upcoming, completed, ongoing = [], [], []
+    return render_template('allactivities.html', 
+        upcoming=enrich_for_cards(upcoming), 
+        completed=enrich_for_cards(completed),
+        ongoing=enrich_for_cards(ongoing)
+    )
 
 
 @bp.route('/myactivities')
@@ -37,7 +44,11 @@ def my_activities():
 @login_required
 def create_activities():
     """create new activity"""
+    print(len(activities_resource.get_owned(current_user.id)))
     if request.method == 'POST':
+        if len(activities_resource.get_owned(current_user.id)) >= 5:
+            flash ("You have reached the maximum number of activities you can create (5).", "error")
+            return render_template('createactivity.html')
         title = request.form['title']
         description  = request.form['description']
         start_date  = request.form['start_date']
@@ -45,12 +56,14 @@ def create_activities():
         venue = request.form['venue']
         created_by = current_user.id
     
-        activity_data = {'title': title,
-                        'description': description,
-                        'started_at': start_date,
-                        'ended_at': end_date,
-                        'venue': venue,
-                        'created_by': created_by}
+        activity_data = {
+            'title': title,
+            'description': description,
+            'started_at': start_date,
+            'ended_at': end_date,
+            'venue': venue,
+            'created_by': created_by
+        } 
         
         activity_id = activities_resource.create_activity(activity_data)
 
