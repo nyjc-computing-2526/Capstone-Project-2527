@@ -3,21 +3,135 @@
   <head>
     <meta charset="UTF-8" />
     <title>Profile</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <style>
+      .delete-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+
+      .delete-modal-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .delete-modal-card {
+        background-color: #ece5db;
+        padding: 2.5rem;
+        border-radius: 1.25rem;
+        width: min(420px, 90vw);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        overflow: hidden;
+        position: relative;
+      }
+
+      .delete-step {
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+        width: 100%;
+      }
+
+      .delete-step.hidden-right {
+        transform: translateX(110%);
+        opacity: 0;
+        position: absolute;
+        top: 2.5rem;
+        left: 2.5rem;
+        right: 2.5rem;
+      }
+
+      .delete-step.hidden-left {
+        transform: translateX(-110%);
+        opacity: 0;
+        position: absolute;
+        top: 2.5rem;
+        left: 2.5rem;
+        right: 2.5rem;
+      }
+
+      .delete-step.active {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      #delete-confirm-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 1rem;
+        border-radius: 1rem;
+        border: 2px solid #d9c8ae;
+        background-color: white;
+        font-family: inherit;
+        font-size: 1rem;
+        color: #000;
+        transition: border-color 0.2s ease;
+        letter-spacing: 0.1em;
+        font-weight: 700;
+      }
+
+      #delete-confirm-input:focus {
+        outline: none;
+        border-color: #ff1111;
+      }
+
+      #delete-confirm-input.valid {
+        border-color: #ff1111;
+        background-color: #fff5f5;
+      }
+
+      .delete-submit-btn {
+        width: 100%;
+        max-width: none;
+        text-align: center;
+        background-color: #ff1111;
+        color: #fff;
+        border: none;
+        border-radius: 1rem;
+        padding: 1rem;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        opacity: 0.4;
+        transition: opacity 0.2s ease;
+      }
+
+      .delete-submit-btn.enabled {
+        opacity: 1;
+      }
+    </style>
   </head>
   <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">
+              <span>{{ message }}</span>
+              <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
     <header>
       <ul>
         <li><a href="{{ url_for('landing.homepage') }}">Home</a></li>
         <li><a href="{{ url_for('activities.activities') }}">All Activities</a></li>
         <li><a href="{{ url_for('activities.my_activities') }}">My Activities</a></li>
         <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
-        <li><a href="{{ url_for('auth.view_profile', id=current_user.id)}}">View Profile</a></li>
+        <li><a href="{{ url_for('auth.view_profile', id=current_user.id) }}">View Profile</a></li>
       </ul>
-      <a href="{{ url_for('auth.logout') }}" class="logout">Log Out</a>
+      <form action="{{ url_for('auth.logout') }}" method="POST" style="margin-left: auto;">
+        <button type="submit" class="logout" style="background:none; border:none; color:red; font-weight:bold; font-size:1rem; cursor:pointer; padding:0; width:auto; max-width:none;">Log Out</button>
+      </form>
     </header>
 
     <main class="profile-page">
@@ -27,53 +141,145 @@
         <div class="profile-avatar" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" role="img">
             <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="2" />
-            <path
-              d="M5 19v-1c0-2.8 3.1-4.5 7-4.5s7 1.7 7 4.5v1"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
+            <path d="M5 19v-1c0-2.8 3.1-4.5 7-4.5s7 1.7 7 4.5v1"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </div>
 
         <p class="profile-name">{{ user_data.name }}</p>
-        <a href="mailto:{{ user_data.email }}" class="profile-email"
-          >{{ user_data.email }}</a
-        >
+        <a href="mailto:{{ user_data.email }}" class="profile-email">{{ user_data.email }}</a>
+
         {% if user_data.id == current_user.id %}
         <div class="profile-actions-row">
-          <button type="button" class="profile-delete-btn">
+          <button type="button" class="profile-delete-btn" id="open-delete-modal">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M4 7h16M9 7V5h6v2M8 7v11m4-11v11m4-11v11M7 20h10"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
+              <path d="M4 7h16M9 7V5h6v2M8 7v11m4-11v11m4-11v11M7 20h10"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             <span>Delete Account</span>
           </button>
-          <a
-            href="{{ url_for('auth.update_user') }}"
-            class="profile-edit-btn"
-            aria-label="Edit profile"
-          >
+          <a href="{{ url_for('auth.update_user') }}" class="profile-edit-btn" aria-label="Edit profile">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
+              <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             <span>Edit profile</span>
           </a>
         </div>
+        {% endif %}
+
       </section>
-      {% endif %}
     </main>
+
+    <!-- Delete Modal -->
+    <div id="delete-modal" class="delete-modal-overlay">
+      <div class="delete-modal-card">
+
+        <!-- Step 1: Warning -->
+        <div class="delete-step active" id="delete-step-1">
+          <div style="font-size:2.5rem; margin-bottom:1rem;">⚠️</div>
+          <h2 style="margin:0 0 0.5rem; color:#991b1b;">Delete account</h2>
+          <p style="color:#7c6c55; font-size:0.95rem; margin:0 0 1.5rem; line-height:1.6;">
+            This will permanently delete your account and all your data. 
+            This action <strong>cannot be undone</strong>.
+          </p>
+          <div style="display:flex; gap:0.75rem;">
+            <button type="button" id="delete-next-step"
+              style="flex:1; max-width:none; text-align:center; background-color:#ff1111; color:#fff; border:none; border-radius:1rem; padding:1rem; font-weight:bold; font-size:1rem; cursor:pointer;">
+              I understand, continue
+            </button>
+            <button type="button" id="close-delete-modal"
+              style="flex:0 0 auto; background-color:transparent; border:none; border-radius:1rem; padding:1rem; font-weight:600; font-size:1rem; color:#7c6c55; cursor:pointer; width:auto; max-width:none;">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Type DELETE -->
+        <div class="delete-step hidden-right" id="delete-step-2">
+          <h2 style="margin:0 0 0.5rem; color:#991b1b;">Are you sure?</h2>
+          <p style="color:#7c6c55; font-size:0.95rem; margin:0 0 1.5rem; line-height:1.6;">
+            Type <strong style="color:#991b1b; letter-spacing:0.1em;">DELETE</strong> to confirm.
+          </p>
+          <div style="margin-bottom:1rem;">
+            <input type="text" id="delete-confirm-input" placeholder="Type DELETE here" autocomplete="off" />
+          </div>
+          <form method="POST" action="{{ url_for('auth.delete_user', id=current_user.id) }}" id="delete-form">
+            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+              <button type="submit" class="delete-submit-btn" id="delete-submit-btn" disabled>
+                🗑 Delete my account
+              </button>
+              <button type="button" id="delete-back-step"
+                style="background-color:transparent; border:none; padding:0.5rem; font-weight:600; font-size:0.95rem; color:#7c6c55; cursor:pointer; width:auto; max-width:none; text-align:center;">
+                ← Go back
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll('.toast').forEach(toast => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+
+      const modal = document.getElementById('delete-modal');
+      const step1 = document.getElementById('delete-step-1');
+      const step2 = document.getElementById('delete-step-2');
+
+      function openModal() {
+        modal.classList.add('active');
+      }
+
+      function closeModal() {
+        modal.classList.remove('active');
+        setTimeout(() => {
+          step1.className = 'delete-step active';
+          step2.className = 'delete-step hidden-right';
+          document.getElementById('delete-confirm-input').value = '';
+          document.getElementById('delete-submit-btn').disabled = true;
+          document.getElementById('delete-submit-btn').classList.remove('enabled');
+        }, 300);
+      }
+
+      function goToStep2() {
+        step1.className = 'delete-step hidden-left';
+        step2.className = 'delete-step active';
+        setTimeout(() => document.getElementById('delete-confirm-input').focus(), 350);
+      }
+
+      function goToStep1() {
+        step1.className = 'delete-step active';
+        step2.className = 'delete-step hidden-right';
+      }
+
+      document.getElementById('open-delete-modal').addEventListener('click', openModal);
+      document.getElementById('close-delete-modal').addEventListener('click', closeModal);
+      document.getElementById('delete-next-step').addEventListener('click', goToStep2);
+      document.getElementById('delete-back-step').addEventListener('click', goToStep1);
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+      });
+
+      document.getElementById('delete-confirm-input').addEventListener('input', function() {
+        const btn = document.getElementById('delete-submit-btn');
+        if (this.value === 'DELETE') {
+          btn.disabled = false;
+          btn.classList.add('enabled');
+          this.classList.add('valid');
+        } else {
+          btn.disabled = true;
+          btn.classList.remove('enabled');
+          this.classList.remove('valid');
+        }
+      });
+    </script>
   </body>
 </html>
