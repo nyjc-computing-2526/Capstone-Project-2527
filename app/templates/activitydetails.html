@@ -33,16 +33,17 @@
     </header>
 
     <main class="activity-card-page">
-      <div class="page-card">
-        <section class="activity-card-list">
+      <div class="page-card" style="display:flex; gap:2rem; align-items:flex-start;">
+
+        <!-- Left: Activity Details -->
+        <section class="activity-card-list" style="flex:2;">
           <article class="activity-detail-card">
 
-            <!-- Title row with edit button -->
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
               <h2 style="margin:0;">{{ data.title | default('Activity') }}</h2>
               {% if current_user.is_authenticated and current_user.id == data.created_by %}
               <a href="{{ url_for('activities.update_activity', id=data.id) }}"
-                 style="display:inline-flex; align-items:center; gap:0.4rem; background-color:#d9c8ae; color:#1a1a1a; text-decoration:none; font-weight:bold; font-size:0.85rem; padding:0.5rem 1rem; border-radius:0.75rem; white-space:nowrap;">
+                style="display:inline-flex; align-items:center; gap:0.4rem; background-color:#d9c8ae; color:#1a1a1a; text-decoration:none; font-weight:bold; font-size:0.85rem; padding:0.5rem 1rem; border-radius:0.75rem; white-space:nowrap;">
                 ✏️ Edit
               </a>
               {% endif %}
@@ -69,6 +70,34 @@
             </form>
           </article>
         </section>
+
+        <!-- Divider -->
+        <div style="width:1px; background-color:#d9c8ae; align-self:stretch;"></div>
+
+        <!-- Right: Participants -->
+        <aside style="flex:1; min-width:200px;">
+          <h3 style="margin:0 0 1rem; font-size:1.1rem; font-weight:700; color:#000;">
+            Participants
+            <span style="font-size:0.85rem; color:#7c6c55; font-weight:500;">
+              ({{ participants | length }})
+            </span>
+          </h3>
+          {% if participants %}
+            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+              {% for p in participants %}
+              <div style="display:flex; align-items:center; gap:0.75rem; background-color:#ece5db; padding:0.75rem 1rem; border-radius:0.75rem;">
+                <div style="width:2rem; height:2rem; border-radius:50%; background-color:#d9c8ae; display:flex; align-items:center; justify-content:center; font-weight:700; color:#7c6c55; font-size:0.9rem; flex-shrink:0;">
+                  {{ p.name[0].upper() if p.name else '?' }}
+                </div>
+                <span style="font-weight:500; font-size:0.95rem;">{{ p.name | default('Unknown') }}</span>
+              </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p style="color:#7c6c55; font-size:0.9rem;">No participants yet.</p>
+          {% endif %}
+        </aside>
+
       </div>
     </main>
 
