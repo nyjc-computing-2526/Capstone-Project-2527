@@ -158,28 +158,49 @@ def update_user():
     user_resource = users_resource.user(current_user.id)
 
     if request.method == 'POST':
+        form_type = request.form.get('form_type', 'profile')
         email = request.form.get('email')
         password = request.form.get('password')
         name = request.form.get('name')
         user_class = request.form.get('class')
         confirm_password = request.form.get('confirm_password')
+        current_password = request.form.get('current_password')
 
         user_data = {}
 
-        if email and email.strip():
-            user_data['email'] = email.strip()
+        if form_type == 'profile':
+            if email and email.strip():
+                user_data['email'] = email.strip()
 
-        if name and name.strip():
-            user_data['name'] = name.strip()
+            if name and name.strip():
+                user_data['name'] = name.strip()
 
-        if user_class and user_class.strip():
-            user_data['user_class'] = user_class.strip()
+            if user_class and user_class.strip():
+                user_data['user_class'] = user_class.strip()
 
-        if password:
+        elif form_type == 'password':
+            if not current_password:
+                flash("Current password is required", "error")
+                return render_template('editprofile.html')
+
+            try:
+                users_resource.authenticate(current_user.email, current_password)
+            except ValueError:
+                flash("Current password is incorrect", "error")
+                return render_template('editprofile.html')
+
+            if not password:
+                flash("New password is required", "error")
+                return render_template('editprofile.html')
+
             if password != confirm_password:
                 flash("Passwords do not match", "error")
-                return render_template('updateuser.html')
+                return render_template('editprofile.html')
             user_data['password'] = password
+
+        else:
+            flash("Invalid update request", "error")
+            return render_template('editprofile.html')
 
         if not user_data:
             flash("No valid fields provided for update", "error")
