@@ -49,12 +49,16 @@
               </div>
             </div>
           </div>
-          <div class="search-section">
-            <h2 class="search-heading">Search for an activity</h2>
-            <div class="search-container">
-              <input type="text" id="search-input" placeholder="Enter search query" />
-            </div>
+          
+            <div class="search-section">
+              <h2 class="search-heading">Search for an activity</h2>
+              <div class="search-container">
+                <form action="{{ url_for('activities.activities')}}" method="get">
+                  <input name="query" type="text" id="search-input" placeholder="Enter search query" value="{{search_query if search_query else ''}}" />
+                </form>
+              </div>
           </div>
+  
         </div>
 
         {% set upcoming = upcoming or [] %}

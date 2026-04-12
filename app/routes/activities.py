@@ -13,10 +13,19 @@ users_resource = UsersResource()
 @bp.route('/')
 @bp.route('')
 def activities():
+    search_query = request.args.get("query")
+    if search_query: 
+        search_query = search_query.lower()
     try:
         upcoming = activities_resource.get_upcoming()
         completed = activities_resource.get_completed()
         ongoing = activities_resource.get_ongoing()
+        
+        if search_query:
+            upcoming = list(filter(lambda row: row['title'].lower().startswith(search_query), upcoming))
+            completed = list(filter(lambda row: row['title'].lower().startswith(search_query), completed))
+            ongoing = list(filter(lambda row: row['title'].lower().startswith(search_query), ongoing))
+            
     except ValueError as e:
         flash(f"Could not load activities.", "error")
         print(str(e))
@@ -24,7 +33,8 @@ def activities():
     return render_template('allactivities.html', 
         upcoming=enrich_for_cards(upcoming), 
         completed=enrich_for_cards(completed),
-        ongoing=enrich_for_cards(ongoing)
+        ongoing=enrich_for_cards(ongoing),
+        search_query=search_query
     )
 
 
