@@ -27,8 +27,8 @@
       {'href': url_for('activities.create_activities'), 'label': 'Create Activity'},
       {'href': url_for('auth.view_profile', id=current_user.id), 'label': 'View Profile'},
     ] %}
-    {% set activities = activities or [ {'title': 'Activity 1',
-    'time': '00:00', 'date': '6th July 2025'}, {'title': 'Activity 2', 'time':
+    {% set activities = activities or [ {'id': 1, 'title': 'Activity 1',
+    'time': '00:00', 'date': '6th July 2025'}, {'id': 2, 'title': 'Activity 2', 'time':
     '00:00', 'date': '6th July 2025'}, ] %}
     {% set sidebar_actions = sidebar_actions or [
       {'label': 'Create Event', 'href': url_for('activities.create_activities')},
