@@ -120,6 +120,7 @@
           {% if participants %}
             <div style="display:flex; flex-direction:column; gap:0.75rem;">
               {% for p in participants %}
+              <a href="{{url_for('auth.view_profile', id=p.id)}}" style="color: inherit;">
               <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; background-color:#ece5db; padding:0.75rem 1.25rem; border-radius:0.75rem;">
                 <div style="display:flex; align-items:center; gap:0.75rem;">
                   <div style="width:2rem; height:2rem; border-radius:50%; background-color:#d9c8ae; display:flex; align-items:center; justify-content:center; font-weight:700; color:#7c6c55; font-size:0.9rem; flex-shrink:0;">
@@ -131,6 +132,7 @@
                 <span class="organizer-badge">✦ Organizer</span>
                 {% endif %}
               </div>
+              </a>
               {% endfor %}
             </div>
           {% else %}
