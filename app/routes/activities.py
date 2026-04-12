@@ -37,8 +37,10 @@ def my_activities():
     except ValueError:
         flash("Could not load your activities.", "error")
         owned, joined = [], []
-    combined = merge_by_id(owned, joined)
-    return render_template('myactivities.html', activities=enrich_for_cards(combined))
+    return render_template('myactivities.html',
+        owned=enrich_for_cards(owned),
+        joined=enrich_for_cards(joined)
+    )
 
 @bp.route('/create', methods = ['POST', 'GET'])
 @login_required
