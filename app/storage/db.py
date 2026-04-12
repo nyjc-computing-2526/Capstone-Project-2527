@@ -123,7 +123,7 @@ def get_joined (user_id: int):
 
 ## ========= Participants Functions ===========
 
-def get_participant(activity_id):
+def get_participants(activity_id):
     query = """SELECT * FROM participants WHERE id = %s"""
     params = [activity_id]
     return db_execute(sql_query=query, params=params, fetch="one")
