@@ -42,10 +42,10 @@
               <span>View by:</span>
               <div class="input-group">
                 <select name="status" id="status-filter">
-                  <option value="upcoming" selected>Upcoming</option>
+                  <option value="all" selected>All</option>
+                  <option value="upcoming">Upcoming</option>
                   <option value="ongoing">Ongoing</option>
                   <option value="completed">Completed</option>
-                  <option value="all">All</option>
                 </select>
               </div>
             </div>
@@ -67,7 +67,7 @@
         {% set all = upcoming + ongoing + completed %}
 
         <!-- Upcoming Cards -->
-        <div id="upcoming-cards" class="cards-section">
+        <div id="upcoming-cards" class="cards-section" style="display: none;">
           {% set mid = ((upcoming | length) + 1) // 2 %}
           <div class="left-activities">
             <div class="activities-grid">
@@ -169,7 +169,7 @@
         </div>
 
         <!-- All Cards -->
-        <div id="all-cards" class="cards-section" style="display: none;">
+        <div id="all-cards" class="cards-section">
           {% set mid = ((all | length) + 1) // 2 %}
           <div class="left-activities">
             <div class="activities-grid">
