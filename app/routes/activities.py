@@ -56,7 +56,6 @@ def my_activities():
 @login_required
 def create_activities():
     """create new activity"""
-    print(len(activities_resource.get_owned(current_user.id)))
     if request.method == 'POST':
         if len(activities_resource.get_owned(current_user.id)) >= 5:
             flash ("You have reached the maximum number of activities you can create (5).", "error")
