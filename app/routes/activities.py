@@ -57,28 +57,32 @@ def my_activities():
 def create_activities():
     """create new activity"""
     if request.method == 'POST':
-        if len(activities_resource.get_owned(current_user.id)) >= 5:
-            flash ("You have reached the maximum number of activities you can create (5).", "error")
-            return render_template('createactivity.html')
-        title = request.form['title']
-        description  = request.form['description']
-        start_date  = request.form['start_date']
-        end_date  = request.form['end_date']
-        venue = request.form['venue']
-        created_by = current_user.id
-    
-        activity_data = {
-            'title': title,
-            'description': description,
-            'started_at': start_date,
-            'ended_at': end_date,
-            'venue': venue,
-            'created_by': created_by
-        } 
+        try:
+            if len(activities_resource.get_owned(current_user.id)) >= 5:
+                flash ("You have reached the maximum number of activities you can create (5).", "error")
+                return render_template('createactivity.html')
+            title = request.form['title']
+            description  = request.form['description']
+            start_date  = request.form['start_date']
+            end_date  = request.form['end_date']
+            venue = request.form['venue']
+            created_by = current_user.id
         
-        activity_id = activities_resource.create_activity(activity_data)
+            activity_data = {
+                'title': title,
+                'description': description,
+                'started_at': start_date,
+                'ended_at': end_date,
+                'venue': venue,
+                'created_by': created_by
+            } 
+            
+            activity_id = activities_resource.create_activity(activity_data)
 
-        return redirect(url_for('activities.activity_details', id=activity_id))
+            return redirect(url_for('activities.activity_details', id=activity_id))
+        except Exception as e:
+            flash(str(e))
+            return render_template("createactivity.html")
 
     return render_template('createactivity.html')
 
