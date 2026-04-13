@@ -24,7 +24,7 @@
 }
 
 .hero h2 {
-  color: #4a3728;
+  color: var(--detail-heading);
   font-size: clamp(1.3rem, 3.5vw, 1.9rem);
   margin: 0.5rem 0 0;
   line-height: 1.25;
@@ -47,22 +47,22 @@
   font-size: 0.92rem;
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: #4a3728;
+  color: var(--detail-heading);
 }
 
 .hero-edit-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background-color: #d9c8ae;
-  color: #4a3728;
+  background-color: var(--btn-fill);
+  color: var(--detail-heading);
   text-decoration: none;
   font-weight: bold;
   font-size: 0.82rem;
   padding: 0.45rem 0.9rem;
   border-radius: 0.65rem;
   white-space: nowrap;
-  border: 1.5px solid #c9b89e;
+  border: 1.5px solid var(--border-moss);
 }
 
 /* Status pills — warm palette only, no one-off greens/blues */
@@ -108,17 +108,17 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #7c6c55;
+  color: var(--text-accent);
   margin-bottom: 0.65rem;
 }
 
 .description-box {
-  background-color: #ece5db;
+  background-color: var(--surface-sage);
   border-radius: 0.75rem;
   padding: 1rem 1.25rem;
   line-height: 1.65;
   font-size: 0.95rem;
-  color: #3d2f1e;
+  color: var(--detail-body);
 }
 
 /* Sign up / leave buttons use the site-standard warm palette */
@@ -127,8 +127,8 @@
   max-width: none;
   margin-top: 1.25rem;
   padding: 1rem;
-  background-color: #d9c8ae;
-  color: #7c6c55;
+  background-color: var(--btn-fill);
+  color: var(--text-accent);
   border: none;
   border-radius: 1rem;
   font-weight: bold;
@@ -138,11 +138,11 @@
 }
 
 .signup-btn:hover {
-  background-color: #c9b89e;
+  background-color: var(--btn-fill-hover-mid);
 }
 
 .signup-btn:active {
-  background-color: #7c6c55;
+  background-color: var(--btn-fill-press);
   color: #fff;
 }
 
@@ -151,8 +151,8 @@
   max-width: none;
   margin-top: 1.25rem;
   padding: 1rem;
-  background-color: #e8d5d5;
-  color: #991b1b;
+  background-color: var(--leave-action-bg);
+  color: var(--toast-error-fg);
   border: none;
   border-radius: 1rem;
   font-weight: bold;
@@ -179,7 +179,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  background-color: #ece5db;
+  background-color: var(--surface-sage);
   padding: 0.65rem 1rem;
   border-radius: 0.75rem;
   text-decoration: none;
@@ -188,7 +188,7 @@
 
 .p-item.is-organizer {
   background-color: #fff;
-  border: 1.5px solid #d9c8ae;
+  border: 1.5px solid var(--border-warm);
 }
 
 .p-left {
@@ -201,29 +201,29 @@
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background-color: #d9c8ae;
+  background-color: var(--btn-fill);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: #7c6c55;
+  color: var(--text-accent);
   font-size: 0.85rem;
   flex-shrink: 0;
 }
 
 .p-item.is-organizer .p-avatar {
-  background-color: #d9c8ae;
-  color: #7c6c55;
+  background-color: var(--btn-fill);
+  color: var(--text-accent);
 }
 
 .p-name {
   font-weight: 500;
   font-size: 0.92rem;
-  color: #3d2f1e;
+  color: var(--detail-body);
 }
 
 .p-item.is-organizer .p-name {
-  color: #4a3728;
+  color: var(--detail-heading);
 }
 
 /* Organizer badge — warm palette, consistent with the dark hero row */
@@ -235,7 +235,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
-  background-color: #d9c8ae;
-  color: #7c6c55;
+  background-color: var(--btn-fill);
+  color: var(--text-accent);
   border: none;
 }

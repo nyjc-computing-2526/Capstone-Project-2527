@@ -19,11 +19,11 @@
   box-sizing: border-box;
   padding: 1rem;
   border-radius: 1rem;
-  border: 1px solid #d9c8ae;
+  border: 1px solid var(--border-warm);
   background-color: white;
   font-family: inherit;
   font-size: 1rem;
-  color: #000;
+  color: var(--text-primary);
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
@@ -33,8 +33,8 @@
 
 .message-group textarea:focus {
   outline: none;
-  border-color: #7c6c55;
-  background-color: #fbf7f1;
+  border-color: var(--border-focus);
+  background-color: var(--surface-muted);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
@@ -45,11 +45,11 @@
   box-sizing: border-box;
   padding: 1rem;
   border-radius: 1rem;
-  border: 1px solid #d9c8ae;
+  border: 1px solid var(--border-warm);
   background-color: white;
   font-family: inherit;
   font-size: 1rem;
-  color: #000;
+  color: var(--text-primary);
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
@@ -60,7 +60,7 @@
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 6'%3E%3Cpath d='M1 1 L4 4 L7 1' fill='none' stroke='%237c6c55' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 6'%3E%3Cpath d='M1 1 L4 4 L7 1' fill='none' stroke='%235a6b4c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: 1rem center;
   background-size: 0.75rem 0.75rem;
@@ -69,15 +69,15 @@
 }
 
 .input-group select:hover {
-  border-color: #b69b7d;
+  border-color: var(--border-moss);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .input-group select:active,
 .input-group select:focus {
-  background-color: #fbf7f1;
+  background-color: var(--surface-muted);
   outline: none;
-  border-color: #7c6c55;
+  border-color: var(--border-focus);
 }
 
 .input-row {
@@ -91,7 +91,7 @@
 .input-row span {
   font-size: 1rem;
   font-weight: 600;
-  color: #000;
+  color: var(--text-primary);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -102,12 +102,12 @@
 }
 
 .filler {
-  background-color: #ece5db;
+  background-color: var(--surface-panel);
   flex: 1;
 }
 
 .login-card {
-  background-color: #ece5db;
+  background-color: var(--surface-panel);
   padding: 2rem;
   border-radius: 1.25rem;
   width: 28rem;
@@ -126,7 +126,7 @@
   width: 100%;
   padding: 1rem;
   border-radius: 1rem;
-  border: 1px solid #d9c8ae;
+  border: 1px solid var(--border-warm);
   background-color: white;
   font-size: 1rem;
 }
@@ -134,11 +134,12 @@
 .forgot-pass {
   display: inline-block;
   margin-top: 1.5rem;
-  color: #7c6c55;
+  color: var(--text-accent);
   font-weight: 600;
 }
 
 .authcontainer {
+  background-color: white;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -162,7 +163,7 @@
   padding: 1rem 0.5rem;
   font-size: medium;
   text-align: center;
-  background-color: #d9c8ae;
+  background-color: var(--btn-fill);
   border: 0;
   border-radius: 1rem;
   transition: background-color 0.2s ease;
@@ -173,7 +174,7 @@
 }
 
 .verify-btn:active {
-  background-color: #7c6c55;
+  background-color: var(--btn-fill-press);
 }
 
 .landing-btn {
@@ -214,18 +215,18 @@
   box-sizing: border-box;
   padding: 1rem;
   border-radius: 1rem;
-  border: 1px solid #d9c8ae;
+  border: 1px solid var(--border-warm);
   background-color: white;
   font-family: inherit;
   font-size: 1rem;
-  color: #000;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .contact-field:focus {
   outline: none;
-  border-color: #7c6c55;
-  background-color: #fbf7f1;
+  border-color: var(--border-focus);
+  background-color: var(--surface-muted);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 

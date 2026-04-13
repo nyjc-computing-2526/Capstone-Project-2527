@@ -1,7 +1,84 @@
 /* Base: document, header shell, footer, landing layout, global buttons. */
+/* Design tokens: alligator olive accents + cream neutrals. */
+
+:root {
+  --surface-page: #f8f5ee;
+  --surface-panel: #f1ece1;
+  --surface-muted: #fdfaf4;
+  --surface-sage: #dde4d5;
+  --surface-header: #c8d1bd;
+  --surface-footer: #bec7b2;
+  --surface-pill: #e5ebda;
+
+  --olive-950: #16180f;
+  --olive-900: #212717;
+  --olive-800: #2d3720;
+  --olive-700: #3a472a;
+  --olive-600: #485736;
+  --sage-500: #5f6e47;
+  --sage-muted: #76885d;
+  --sage-soft: #8f9f75;
+
+  --text-primary: #12140d;
+  --text-heading: #1b2014;
+  --text-accent: #39492c;
+  --text-accent-deep: #2a371f;
+  --text-muted: #59634c;
+  --text-placeholder: #747d66;
+
+  --border-warm: #b8bea9;
+  --border-moss: #9ca98a;
+  --border-focus: #455638;
+
+  --btn-fill: var(--surface-header);
+  --btn-fill-press: var(--olive-700);
+  --btn-fill-hover-mid: #7a8763;
+
+  --shadow-soft: 0 4px 8px rgba(22, 31, 20, 0.14);
+  --shadow-lift: 0 4px 8px rgba(18, 28, 17, 0.18);
+  --shadow-card: 0 6px 18px rgba(18, 28, 17, 0.12);
+  --shadow-card-hover: 0 6px 14px rgba(18, 28, 17, 0.14);
+  --overlay-scrim: rgba(12, 18, 11, 0.45);
+
+  --btn-secondary: #4a5d3a;
+  --btn-secondary-hover: #3c4c2f;
+  --btn-secondary-active: #2f3c25;
+
+  --danger: #141814;
+  --danger-hover: #0b0f0b;
+  --danger-soft-bg: #f7f3eb;
+  --leave-action-bg: #ebe4d8;
+
+  --logout-text: #6b1616;
+  --logout-hover: #d81d1d;
+
+  --toast-success-bg: #e8eddf;
+  --toast-success-fg: #2f4023;
+  --toast-success-border: #667a4a;
+
+  --toast-error-bg: #f1eee7;
+  --toast-error-fg: #2c3223;
+  --toast-error-border: #6b7558;
+
+  --toast-info-bg: #e9eee4;
+  --toast-info-fg: #2d3d25;
+  --toast-info-border: #718560;
+
+  --detail-heading: #232a1c;
+  --detail-body: #2c3324;
+
+  --divider-neutral: #8a917c;
+
+  --status-ongoing-bg: rgba(95, 110, 71, 0.18);
+  --status-complete-bg: rgba(58, 71, 42, 0.2);
+  --status-complete-fg: var(--sage-muted);
+  --status-upcoming-bg: rgba(143, 159, 117, 0.24);
+  --status-upcoming-fg: var(--sage-soft);
+}
 
 html {
-  font-family: Inter, sans-serif;
+  font-family: Manrope, sans-serif;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -9,10 +86,15 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--surface-page);
+}
+
+body.landing-page {
+  background-color: #fff;
 }
 
 header {
-  background-color: #d9c8ae;
+  background-color: var(--surface-header);
   padding: 1em;
   display: flex;
   flex-direction: row;
@@ -33,22 +115,84 @@ a {
   padding-left: 0.5em;
 }
 
+header[data-nav-profile] .nav-primary {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-highlight-pill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--surface-pill);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  box-sizing: border-box;
+  transform: translate3d(0, 0, 0);
+  will-change: left, top, width, height;
+  backface-visibility: hidden;
+  transition:
+    left 0.4s cubic-bezier(0.33, 1, 0.68, 1),
+    top 0.4s cubic-bezier(0.33, 1, 0.68, 1),
+    width 0.4s cubic-bezier(0.33, 1, 0.68, 1),
+    height 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.nav-highlight-pill--no-transition {
+  transition: none !important;
+}
+
+header[data-nav-profile] .nav-primary li {
+  position: relative;
+  z-index: 1;
+}
+
 header ul {
   list-style: none;
   display: flex;
+  flex-wrap: nowrap;
   gap: 2em;
   margin: 0;
   padding: 0;
 }
 
 header li a {
-  color: #7c6c55;
+  color: var(--text-accent);
   font-weight: bold;
+  font-size: 1.14rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  padding: 0.5em 0.9em;
+  border-radius: 0.5rem;
+  display: inline-block;
+  transition: color 0.25s ease;
+}
+
+header li a:hover,
+header li a:focus-visible {
+  color: var(--text-accent-deep);
+}
+
+header li a.nav-active {
+  background-color: var(--surface-pill);
+  color: var(--text-accent-deep);
+}
+
+html.nav-highlight-prepared header li a.nav-active {
+  background-color: transparent;
 }
 
 footer {
   padding: 0.75em 1.5em;
-  background-color: #d9c8af;
+  background-color: var(--surface-footer);
 }
 
 .description {
@@ -57,7 +201,7 @@ footer {
 }
 
 .bottomhalf {
-  background-color: #ece5db;
+  background-color: var(--surface-panel);
   display: flex;
   flex-direction: row;
   padding-left: 1em;
@@ -85,16 +229,16 @@ button {
   padding: 1em;
   width: 100%;
   max-width: 20rem;
-  background-color: #d9c8ae;
+  background-color: var(--btn-fill);
   transition: background-color 0.2s ease;
   cursor: pointer;
 }
 
 button:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-lift);
 }
 
 button:active {
-  background-color: #7c6c55;
+  background-color: var(--btn-fill-press);
 }
 
