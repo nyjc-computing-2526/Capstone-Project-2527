@@ -86,9 +86,7 @@
           <!-- Left: Description + action -->
           <div class="main-card">
             <p class="section-label">About</p>
-            <div class="description-box">
-              {{ data.description | default('No description provided.') }}
-            </div>
+            <div class="description-box"><md>{{ data.description | default('No description provided.') }}</md></div>
 
             {% if current_user.is_authenticated %}
               {% if current_user.id in participants | map(attribute='id') | list %}
@@ -139,5 +137,6 @@
         setTimeout(() => toast.remove(), 4000);
       });
     </script>
+    <script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag.js"></script> 
   </body>
 </html>
