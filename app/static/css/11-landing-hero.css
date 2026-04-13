@@ -3,6 +3,9 @@
 .landing-page {
   font-family: "Manrope", Inter, sans-serif;
   background: radial-gradient(circle at 12% 12%, #f7f1e9 0%, #f1e8dd 40%, #ece5db 100%);
+  background:
+    radial-gradient(120% 85% at 8% 6%, rgba(255, 248, 238, 0.85) 0%, rgba(255, 248, 238, 0) 58%),
+    linear-gradient(180deg, #f3ebdf 0%, #ece5db 100%);
   color: #3f3529;
 }
 
@@ -106,10 +109,12 @@
 
 .landing-page .hero-image-shell {
   position: relative;
-  border-radius: 1.7rem;
+  border-radius: 2.4rem;
   overflow: hidden;
   background: linear-gradient(160deg, #f9f2e8 0%, #e4d7c5 100%);
-  box-shadow: 0 24px 46px rgba(58, 44, 22, 0.18);
+  box-shadow:
+    0 28px 60px -18px rgba(58, 44, 22, 0.28),
+    0 10px 24px -14px rgba(58, 44, 22, 0.22);
   transform-style: preserve-3d;
   transition: transform 220ms ease;
 }
@@ -131,7 +136,7 @@
   padding: 0.5rem 0.9rem;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(197, 169, 129, 0.45);
-  box-shadow: 0 8px 22px rgba(58, 44, 22, 0.2);
+  box-shadow: 0 12px 30px -16px rgba(58, 44, 22, 0.3);
   font-size: 0.8rem;
   font-weight: 700;
   color: #5f472c;
