@@ -63,15 +63,19 @@ def get_activity_by_id(id):
     return db_execute(sql_query=query, params=params, fetch="one")
 
 def get_completed_activities():
-    query = """SELECT * FROM activities WHERE ended_at < NOW()"""
+    query = """SELECT * FROM activities WHERE ended_at < NOW() AT TIME ZONE 'Asia/Singapore';"""
     return db_execute(sql_query=query, params=None, fetch="all")
 
 def get_upcoming_activities():
-    query = """SELECT * FROM activities WHERE started_at > NOW()"""
+    query = """SELECT * FROM activities WHERE started_at > NOW() AT TIME ZONE 'Asia/Singapore';"""
     return db_execute(sql_query=query, params=None, fetch="all")
 
 def get_ongoing_activities():
-    query = """SELECT * FROM activities WHERE started_at <= NOW() AND ended_at >= NOW()"""
+    query = """
+        SELECT * FROM activities 
+        WHERE started_at <= (NOW() AT TIME ZONE 'Asia/Singapore')
+        AND ended_at >= (NOW() AT TIME ZONE 'Asia/Singapore');
+    """
     return db_execute(sql_query=query, params=None, fetch="all")
 
 def create_activity(data: dict):

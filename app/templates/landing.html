@@ -1,33 +1,64 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://gstatic.com" crossorigin />
-    <link href="https://googleapis.com" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     {% include "partials/stylesheets.html" %}
     <title>Welcome to Capstone Project</title>
   </head>
   <body class="landing-page">
-    {% include "partials/navbar-landing.html" %} {% block content %}
-    <h1 class="headline">The one-stop platform to see your events.</h1>
-    <div class="bottomhalf">
-      <p class="description">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae
-        metus tempus, semper ante ac, tristique tortor. Vestibulum ante ipsum
-        primis in faucibus orci luctus et ultrices posuere cubilia curae;
-        Aliquam risus elit, hendrerit sit amet ultricies in, gravida id lectus.
-        Praesent suscipit tincidunt lectus, a rhoncus diam lacinia ac.
-      </p>
-      <div class="buttonstack">
-        <form action="{{ url_for('auth.login') }}" method="GET">
-          <button class="landing-btn">Log In</button>
-        </form>
-        <form action="{{ url_for('auth.register') }}" method="GET">
-          <button class="landing-btn">Register</button>
-        </form>
-      </div>
-    </div>
-    <div class="filler"></div>
-    {% include "partials/footer.html" %} {% endblock %}
+    {% include "partials/navbar-landing.html" %}
+
+    <main class="landing-main">
+      <section class="hero" aria-labelledby="landing-title">
+        <div class="hero-copy">
+          <p class="hero-kicker" data-reveal>Plan Less. Experience More.</p>
+          <h1 id="landing-title" class="hero-title" data-reveal>
+            Your events in one clear, calm timeline.
+          </h1>
+          <p class="hero-description" data-reveal>
+            Organize activity details, stay ahead of upcoming plans, and keep
+            every event in one place built for fast decisions.
+          </p>
+
+          <div class="hero-actions" data-reveal>
+            <form action="{{ url_for('auth.login') }}" method="GET">
+              <button class="landing-btn landing-btn-primary">Log In</button>
+            </form>
+            <form action="{{ url_for('auth.register') }}" method="GET">
+              <button class="landing-btn landing-btn-secondary">
+                Register
+              </button>
+            </form>
+          </div>
+
+          <div class="hero-meta" data-reveal>
+            <span>Fast setup</span>
+            <span>Clean schedule view</span>
+            <span>Mobile ready</span>
+          </div>
+        </div>
+
+        <div class="hero-media" data-reveal>
+          <div class="hero-image-shell">
+            <img
+              src="{{ url_for('static', filename='images/Alligator Hero Image.png') }}"
+              alt="People organizing upcoming activities on a shared event board"
+              class="hero-image"
+            />
+            <div class="hero-badge" aria-hidden="true">Live activity feed</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    {% include "partials/footer.html" %}
+    <script src="{{ url_for('static', filename='js/landing-hero.js') }}"></script>
   </body>
 </html>
