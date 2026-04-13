@@ -1,0 +1,141 @@
+/* Distinct page treatments for About, Features, and Contact. */
+
+.landing-page .marketing-main {
+  width: min(1120px, calc(100% - 2.5rem));
+  margin: 2.5rem auto 4rem;
+  display: grid;
+  gap: 1.4rem;
+}
+
+.landing-page .marketing-hero {
+  border-radius: 2rem;
+  padding: clamp(1.4rem, 2.4vw, 2.2rem);
+  color: #3f3529;
+  box-shadow:
+    0 22px 46px -20px rgba(55, 43, 24, 0.28),
+    0 8px 18px -12px rgba(55, 43, 24, 0.2);
+}
+
+.landing-page .marketing-kicker {
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-weight: 800;
+  color: #7a5e3d;
+}
+
+.landing-page .marketing-hero h1 {
+  margin: 0.65rem 0 0;
+  font-size: clamp(1.7rem, 3.2vw, 2.75rem);
+}
+
+.landing-page .marketing-hero p {
+  margin: 0.8rem 0 0;
+  max-width: 65ch;
+  line-height: 1.7;
+}
+
+.landing-page .about-hero {
+  background: linear-gradient(135deg, #f8f1e8, #efe4d4);
+}
+
+.landing-page .features-hero {
+  background: linear-gradient(135deg, #efe7dc, #e7dbc8);
+}
+
+.landing-page .contact-hero {
+  background: linear-gradient(135deg, #f4eee4, #e9decc);
+}
+
+.landing-page .marketing-grid,
+.landing-page .feature-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.landing-page .feature-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.landing-page .marketing-card,
+.landing-page .feature-item {
+  background: #fffaf3;
+  border: 1px solid #e2cfb4;
+  border-radius: 1.6rem;
+  padding: 1.1rem 1rem;
+  box-shadow:
+    0 14px 28px -20px rgba(60, 44, 22, 0.3),
+    0 6px 14px -10px rgba(60, 44, 22, 0.2);
+}
+
+.landing-page .marketing-card h2,
+.landing-page .feature-item h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.landing-page .marketing-card p,
+.landing-page .feature-item p {
+  margin: 0.55rem 0 0;
+  line-height: 1.6;
+  color: #5e4f3d;
+}
+
+.landing-page .contact-panel {
+  background: #f8f1e6;
+  border: 1px solid #e0cdb2;
+  border-radius: 2rem;
+  box-shadow:
+    0 20px 42px -22px rgba(58, 44, 22, 0.3),
+    0 8px 16px -12px rgba(58, 44, 22, 0.2);
+  padding: clamp(1.1rem, 2.4vw, 2rem);
+}
+
+.landing-page .contact-panel .contact-form {
+  margin: 0;
+  width: 100%;
+  max-width: none;
+}
+
+.landing-page .contact-status {
+  margin: 0 0 0.8rem;
+  border-radius: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  font-weight: 600;
+}
+
+.landing-page .contact-status-success {
+  color: #23573b;
+  background: #e4f4e9;
+  border: 1px solid #9cc9aa;
+}
+
+.landing-page .contact-status-error {
+  color: #742f2f;
+  background: #f9e8e8;
+  border: 1px solid #dcaaaa;
+}
+
+.landing-page .contact-panel .contact-fields-grid {
+  margin-bottom: 1rem;
+}
+
+.landing-page .contact-panel .contact-field {
+  background: #fff;
+}
+
+@media (max-width: 900px) {
+  .landing-page .marketing-grid,
+  .landing-page .feature-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .landing-page .marketing-main {
+    width: min(100%, calc(100% - 1.5rem));
+    margin-top: 1.75rem;
+  }
+}
