@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Edit profile</title>
+    {% include "partials/stylesheets.html" %}
+  </head>
+  <body>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="toast-container">
+      {% for category, message in messages %}
+      <div class="toast toast-{{ category }}">
+        <span>{{ message }}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          ✕
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% include "partials/navbar-user.html" %}
+
+    <main class="profile-page">
+      <section class="page-card profile-card">
+        <h1>Edit profile</h1>
+
+        <div class="profile-avatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" role="img">
+            <circle
+              cx="12"
+              cy="8"
+              r="3.5"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+            <path
+              d="M5 19v-1c0-2.8 3.1-4.5 7-4.5s7 1.7 7 4.5v1"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <form method="post" action="{{ url_for('auth.update_user') }}">
+          <input type="hidden" name="form_type" value="profile" />
+          <div class="stack-field-gap">
+            <div class="input-group">
+              <label class="field-label">Name</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                value="{{ current_user.name | default('') }}"
+                autocomplete="name"
+              />
+            </div>
+            <div class="input-group">
+              <label class="field-label">Email</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value="{{ current_user.email | default('') }}"
+                autocomplete="email"
+              />
+            </div>
+            <div class="input-group">
+              <label class="field-label">Class</label>
+              <input
+                type="text"
+                name="class"
+                placeholder="Class"
+                value="{{ current_user.user_class | default('') }}"
+              />
+            </div>
+          </div>
+          <button type="submit" class="btn-primary-block">
+            Apply changes
+          </button>
+        </form>
+
+        <div class="profile-divider-actions">
+          <button
+            type="button"
+            id="open-password-modal"
+            class="btn-secondary-block"
+          >
+            🔒 Change Password
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Password Modal -->
+    <div id="password-modal" class="password-modal-overlay">
+      <div class="password-modal-card">
+        <!-- Step indicators -->
+        <div class="step-indicator">
+          <div class="step-dot active" id="dot-1"></div>
+          <div class="step-dot" id="dot-2"></div>
+        </div>
+
+        <!-- Step 1: Current Password -->
+        <div class="modal-step active" id="step-1">
+          <h2 class="modal-heading-tight">Verify identity</h2>
+          <p class="modal-lead">
+            Enter your current password to continue.
+          </p>
+          <div class="input-group input-group--mb">
+            <label class="field-label">Current password</label>
+            <input
+              type="password"
+              id="current-password"
+              placeholder="Enter current password"
+            />
+          </div>
+          <p id="step1-error" class="form-error-text"></p>
+          <div class="btn-row">
+            <button type="button" id="next-step" class="btn-primary-flex">
+              Continue →
+            </button>
+            <button type="button" id="close-modal" class="btn-ghost-flex">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: New Password -->
+        <div class="modal-step hidden-right" id="step-2">
+          <h2 class="modal-heading-tight">New password</h2>
+          <p class="modal-lead">
+            Choose a strong new password.
+          </p>
+          <form
+            method="post"
+            action="{{ url_for('auth.update_user') }}"
+            id="password-form"
+          >
+            <input type="hidden" name="form_type" value="password" />
+            <input
+              type="hidden"
+              name="current_password"
+              id="hidden-current-password"
+            />
+            <div class="stack-field-gap stack-field-gap--tight">
+              <div class="input-group">
+                <label class="field-label">New password</label>
+                <input
+                  type="password"
+                  name="password"
+                  id="new-password"
+                  placeholder="Enter new password"
+                  required
+                />
+              </div>
+              <div class="input-group">
+                <label class="field-label">Confirm new password</label>
+                <input
+                  type="password"
+                  name="confirm_password"
+                  id="confirm-password"
+                  placeholder="Confirm new password"
+                  required
+                />
+              </div>
+            </div>
+            <p id="step2-error" class="form-error-text"></p>
+            <div class="btn-row">
+              <button type="submit" class="btn-primary-flex">
+                Update password
+              </button>
+              <button type="button" id="back-step" class="btn-ghost-flex">
+                ← Back
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll(".toast").forEach((toast) => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+
+      const modal = document.getElementById("password-modal");
+      const step1 = document.getElementById("step-1");
+      const step2 = document.getElementById("step-2");
+      const dot1 = document.getElementById("dot-1");
+      const dot2 = document.getElementById("dot-2");
+
+      function openModal() {
+        modal.classList.add("active");
+        document.getElementById("current-password").focus();
+      }
+
+      function closeModal() {
+        modal.classList.remove("active");
+        setTimeout(() => {
+          goToStep1();
+          document.getElementById("current-password").value = "";
+          document.getElementById("new-password").value = "";
+          document.getElementById("confirm-password").value = "";
+          document.getElementById("step1-error").style.display = "none";
+          document.getElementById("step2-error").style.display = "none";
+        }, 300);
+      }
+
+      function goToStep1() {
+        step1.className = "modal-step active";
+        step2.className = "modal-step hidden-right";
+        dot1.classList.add("active");
+        dot2.classList.remove("active");
+      }
+
+      function goToStep2() {
+        step1.className = "modal-step hidden-left";
+        step2.className = "modal-step active";
+        dot1.classList.remove("active");
+        dot2.classList.add("active");
+        document.getElementById("new-password").focus();
+      }
+
+      document
+        .getElementById("open-password-modal")
+        .addEventListener("click", openModal);
+      document
+        .getElementById("close-modal")
+        .addEventListener("click", closeModal);
+      document.getElementById("back-step").addEventListener("click", goToStep1);
+
+      // Single async handler — no duplicate listener
+      document
+        .getElementById("next-step")
+        .addEventListener("click", async () => {
+          const current = document.getElementById("current-password").value;
+          const error = document.getElementById("step1-error");
+
+          if (!current) {
+            error.textContent = "Please enter your current password.";
+            error.style.display = "block";
+            return;
+          }
+
+          const btn = document.getElementById("next-step");
+          btn.textContent = "Checking...";
+          btn.disabled = true;
+
+          try {
+            const res = await fetch('{{ url_for("auth.verify_password") }}', {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ password: current }),
+            });
+            const data = await res.json();
+
+            if (data.valid) {
+              document.getElementById("hidden-current-password").value =
+                current;
+              error.style.display = "none";
+              goToStep2();
+            } else {
+              error.textContent = "Incorrect password. Please try again.";
+              error.style.display = "block";
+            }
+          } catch (e) {
+            error.textContent = "Something went wrong. Please try again.";
+            error.style.display = "block";
+          } finally {
+            btn.textContent = "Continue →";
+            btn.disabled = false;
+          }
+        });
+    </script>
+  </body>
+</html>

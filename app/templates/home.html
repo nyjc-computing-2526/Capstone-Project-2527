@@ -3,42 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <title>{{ page_title | default('Activity Management') }}</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    {% include "partials/stylesheets.html" %}
   </head>
   <body>
-    {% macro nav_link(item) %}
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="toast-container">
+      {% for category, message in messages %}
+      <div class="toast toast-{{ category }}">
+        <span>{{ message }}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          ✕
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% macro nav_link(item) %}
     <li><a href="{{ item.href }}">{{ item.label }}</a></li>
-{% endmacro %} {% macro activity_card(activity) %}
-<a href="/activity" class="activity-card-link">
-  <div class="activity-card">
-    <h3>{{ activity.title }}</h3>
-    <p>Time: {{ activity.time }}</p>
-    <p>Date: {{ activity.date }}</p>
-  </div>
-</a>
-    {% endmacro %} {% set nav_items = nav_items or [ {'href': '/', 'label':
-    'Home'}, {'href': '/allactivities', 'label': 'All Activities'}, {'href':
-    '/myactivities', 'label': 'My Activities'}, {'href': '/create', 'label': 'Create
-    Activity'}, ] %} {% set activities = activities or [ {'title': 'Activity 1',
-    'time': '00:00', 'date': '6th July 2025'}, {'title': 'Activity 2', 'time':
-    '00:00', 'date': '6th July 2025'}, ] %} {% set sidebar_actions =
-    sidebar_actions or [ {'label': 'View Profile', 'href': '/auth/view'}, {'label':
-    'Create Event', 'href': '/create'}, ] %}
+    {% endmacro %} {% macro activity_card(activity) %}
+    <a
+      href="{{ url_for('activities.activity_details', id=activity.id) }}"
+      class="activity-card-link"
+    >
+      <div class="activity-card">
+        <h3>{{ activity.title | default('Untitled') }}</h3>
+        <p>{{ activity.display_time }}</p>
+        <p>{{ activity.display_date }}</p>
+      </div>
+    </a>
+    {% endmacro %} {% set nav_items = nav_items or [ {'href':
+    url_for('landing.homepage'), 'label': 'Home'}, {'href':
+    url_for('activities.activities'), 'label': 'All Activities'}, {'href':
+    url_for('activities.my_activities'), 'label': 'My Activities'}, {'href':
+    url_for('activities.create_activities'), 'label': 'Create Activity'},
+    {'href': url_for('auth.view_profile', id=current_user.id), 'label': 'View
+    Profile'}, ] %} {% set sidebar_actions = sidebar_actions or [ {'label':
+    'Create Event', 'href': url_for('activities.create_activities')}, ] %}
 
     <!-- Navigation Bar -->
-    <header>
-      <ul>
-        {% for item in nav_items %} {{ nav_link(item) }} {% endfor %}
-      </ul>
-      <a href="{{ logout_url | default('/auth/login') }}" class="logout"
-        >{{ logout_label | default('Log Out') }}</a
-      >
-    </header>
+    {% include "partials/navbar-user.html" %}
 
-    <!-- Main Content -->
     <main>
       <div class="content">
         <h1>{{ page_heading | default('Home') }}</h1>
@@ -54,12 +58,17 @@
         </section>
       </div>
 
-      <!-- Sidebar -->
       <aside class="sidebar">
         {% for action in sidebar_actions %}
         <a href="{{ action.href }}" class="button">{{ action.label }}</a>
         {% endfor %}
       </aside>
     </main>
+
+    <script>
+      document.querySelectorAll(".toast").forEach((toast) => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+    </script>
   </body>
 </html>

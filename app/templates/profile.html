@@ -3,54 +3,176 @@
   <head>
     <meta charset="UTF-8" />
     <title>Profile</title>
-    <link rel="stylesheet" href="/static/styles.css" />
+    {% include "partials/stylesheets.html" %}
   </head>
   <body>
-    <header>
-      <ul>
-        <li><a href="/home">Home</a></li>
-        <li><a href="/allactivities">All Activities</a></li>
-        <li><a href="/myactivities">My Activities</a></li>
-        <li><a href="/create">Create activity</a></li>
-      </ul>
-      <a href="/login" class="logout">Log Out</a>
-    </header>
+    {% include "partials/navbar-user.html" %}
 
     <main class="profile-page">
-      <section class="page-card profile-card">
-        <h1>Profile</h1>
+      <section class="page-card profile-card profile-card--split">
+        <div>
+          <h1>Profile</h1>
 
-        <div class="profile-avatar" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" role="img">
-            <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="2" />
-            <path
-              d="M5 19v-1c0-2.8 3.1-4.5 7-4.5s7 1.7 7 4.5v1"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
+          <div class="profile-avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" role="img">
+              <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="2" />
+              <path d="M5 19v-1c0-2.8 3.1-4.5 7-4.5s7 1.7 7 4.5v1"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+
+          <p class="profile-name">{{ user_data.name }}</p>
+          <a href="mailto:{{ user_data.email }}" class="profile-email">{{ user_data.email }}</a>
+
+          {% if user_data.id == current_user.id %}
+          <div class="profile-actions-row">
+            <button type="button" class="profile-delete-btn" id="open-delete-modal">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 7h16M9 7V5h6v2M8 7v11m4-11v11m4-11v11M7 20h10"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>Delete Account</span>
+            </button>
+            <a href="{{ url_for('auth.update_user') }}" class="profile-edit-btn" aria-label="Edit profile">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>Edit profile</span>
+            </a>
+          </div>
+          {% endif %}
         </div>
-
-        <p class="profile-name">Jeff Wong</p>
-        <a href="mailto:jeff.wong_2025@nyjc.edu.sg" class="profile-email"
-          >jeff.wong_2025@nyjc.edu.sg</a
-        >
-
-        <button type="button" class="profile-delete-btn">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M4 7h16M9 7V5h6v2M8 7v11m4-11v11m4-11v11M7 20h10"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <span>Delete Account</span>
-        </button>
+        <div class="profile-activities-column">
+          <div class="profile-activities-stack">
+            <h2 class="profile-activities-title">Activities created</h2>
+            <div class="activities" id="joined-list">
+              {% for activity in activity_data or [] %}
+              <a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
+                <div class="activity-card activity-card--block">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% else %}
+              <p class="muted-text">No joined activities.</p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
       </section>
     </main>
+
+    <!-- Delete Modal -->
+    <div id="delete-modal" class="delete-modal-overlay">
+      <div class="delete-modal-card">
+
+        <!-- Step 1: Warning -->
+        <div class="delete-step active" id="delete-step-1">
+          <div class="delete-modal-icon">⚠️</div>
+          <h2 class="delete-danger-heading">Delete account</h2>
+          <p class="delete-danger-text">
+            This will permanently delete your account and all your data.
+            This action <strong>cannot be undone</strong>.
+          </p>
+          <div class="delete-modal-actions">
+            <button type="button" id="delete-next-step" class="delete-btn-danger">
+              I understand, continue
+            </button>
+            <button type="button" id="close-delete-modal" class="delete-btn-ghost">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Type DELETE -->
+        <div class="delete-step hidden-right" id="delete-step-2">
+          <h2 class="delete-danger-heading">Are you sure?</h2>
+          <p class="delete-danger-text">
+            Type <strong class="delete-confirm-strong">DELETE</strong> to confirm.
+          </p>
+          <div class="delete-input-wrap">
+            <input type="text" id="delete-confirm-input" placeholder="Type DELETE here" autocomplete="off" />
+          </div>
+          <form method="POST" action="{{ url_for('auth.delete_user', id=current_user.id) }}" id="delete-form">
+            <div class="delete-step-stack">
+              <button type="submit" class="delete-submit-btn" id="delete-submit-btn" disabled>
+                🗑 Delete my account
+              </button>
+              <button type="button" id="delete-back-step" class="delete-back-link">
+                ← Go back
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll('.toast').forEach(toast => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+
+      const modal = document.getElementById('delete-modal');
+      const step1 = document.getElementById('delete-step-1');
+      const step2 = document.getElementById('delete-step-2');
+
+      function openModal() {
+        modal.classList.add('active');
+      }
+
+      function closeModal() {
+        modal.classList.remove('active');
+        setTimeout(() => {
+          step1.className = 'delete-step active';
+          step2.className = 'delete-step hidden-right';
+          document.getElementById('delete-confirm-input').value = '';
+          document.getElementById('delete-submit-btn').disabled = true;
+          document.getElementById('delete-submit-btn').classList.remove('enabled');
+        }, 300);
+      }
+
+      function goToStep2() {
+        step1.className = 'delete-step hidden-left';
+        step2.className = 'delete-step active';
+        setTimeout(() => document.getElementById('delete-confirm-input').focus(), 350);
+      }
+
+      function goToStep1() {
+        step1.className = 'delete-step active';
+        step2.className = 'delete-step hidden-right';
+      }
+
+      const openDelete = document.getElementById('open-delete-modal');
+      if (openDelete) {
+        openDelete.addEventListener('click', openModal);
+        document.getElementById('close-delete-modal').addEventListener('click', closeModal);
+        document.getElementById('delete-next-step').addEventListener('click', goToStep2);
+        document.getElementById('delete-back-step').addEventListener('click', goToStep1);
+
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') closeModal();
+        });
+
+        document.getElementById('delete-confirm-input').addEventListener('input', function() {
+          const btn = document.getElementById('delete-submit-btn');
+          if (this.value === 'DELETE') {
+            btn.disabled = false;
+            btn.classList.add('enabled');
+            this.classList.add('valid');
+          } else {
+            btn.disabled = true;
+            btn.classList.remove('enabled');
+            this.classList.remove('valid');
+          }
+        });
+      }
+    </script>
   </body>
 </html>

@@ -3,18 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <title>Activity Card</title>
-    <link rel="stylesheet" href="/static/styles.css" />
+    {% include "partials/stylesheets.html" %}
   </head>
   <body>
-    <header>
-      <ul>
-        <li><a href="/home">Home</a></li>
-        <li><a href="/activities/allactivities">All Activities</a></li>
-        <li><a href="/activities/myactivities">My Activities</a></li>
-        <li><a href="/activities/create">Create activity</a></li>
-      </ul>
-      <a href="/auth/logout" class="logout">Log Out</a>
-    </header>
+    {% include "partials/navbar-user.html" %}
 
     <main class="activity-card-page">
       <div class="page-card">
@@ -34,10 +26,10 @@
             </div>
             <p class="activity-location">ITR 1</p>
             <p class="activity-description">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae
-              metus tempus, semper ante ac, tristique tortor. Vestibulum ante
-              ipsum primis in faucibus orci luctus et ultrices posuere cubilia
-              curae.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
+              vitae metus tempus, semper ante ac, tristique tortor. Vestibulum
+              ante ipsum primis in faucibus orci luctus et ultrices posuere
+              cubilia curae.
             </p>
             <p class="activity-contact">v_surya@moe.edu.sg</p>
             <button type="button" class="activity-signup-btn">+ Sign Up</button>

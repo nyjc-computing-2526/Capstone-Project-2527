@@ -48,6 +48,20 @@ class ActivitiesResource:
             return db.get_upcoming_activities()
         except Exception as e:
             raise ValueError(f"Failed to retrieve upcoming activities: {str(e)}")
+        
+    def get_ongoing(self) -> list[dict]:
+        """Retrieve all ongoing activities.
+
+        Returns:
+            list[dict]: A list of ongoing activities.
+
+        Raises:
+            ValueError: If retrieval fails.
+        """
+        try:
+            return db.get_ongoing_activities()
+        except Exception as e:
+            raise ValueError(f"Failed to retrieve ongoing activities: {str(e)}")
     
     def get_owned(self, user_id: int) -> list[dict]:
         """Retrieve activities owned by a specific user.
@@ -115,8 +129,8 @@ class ActivitiesResource:
 
         required_fields = ['started_at', 'ended_at', 'title', 'description', 'created_by', 'venue']
         for field in required_fields:
-            if field not in activity_data or not isinstance(activity_data[field], str):
-                raise ValueError(f"Missing or invalid {field}: must be a string")
+            if field not in activity_data or not (isinstance(activity_data[field], str) or isinstance(activity_data[field], int)):
+                raise ValueError(f"Missing or invalid {field}: must be a string or integer")
             
         invalid = activity_data.keys() - ALLOWED_ACTIVITY_COLUMNS
         if invalid:
@@ -209,12 +223,13 @@ class ActivityResource:
             raise ValueError(f"Invalid column(s): {invalid}")
 
         activity_data = {k: v for k, v in activity_data.items() if v is not None}
+        activity_data["id"] = self.activity_id
 
         if not activity_data:
             raise ValueError("No valid fields to update")
             
         try:
-            success = db.update_activity(self.activity_id, activity_data)
+            success = db.update_activity(activity_data)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or update failed")
             return success
@@ -233,11 +248,11 @@ class ActivityResource:
             ValueError: If deletion fails.
         """
         try:
-            success = db.delete_activity(self.activity_id)
+            success = db.delete_participant_activity(self.activity_id)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or delete failed")
             
-            success = db.delete_participant_activity(self.activity_id)
+            success = db.delete_activity(self.activity_id)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found in Participant")
             return success
@@ -263,6 +278,10 @@ class ActivityResource:
                 user_id = int(user_id)
             if user_id < 0:
                 raise ValueError("Invalid user ID: must be a positive integer")
+            
+            if db.get_participant(self.activity_id, user_id):
+                raise ValueError(f"You have already joined this activity!")
+        
             success = db.join_activity(self.activity_id, user_id)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or join failed")

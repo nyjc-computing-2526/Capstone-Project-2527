@@ -5,7 +5,7 @@ import secrets
 
 import app.storage.db as db
 
-ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'class'}
+ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'user_class', 'verified'}
 
 
 class UsersResource:
@@ -26,7 +26,7 @@ class UsersResource:
         try:
             users = db.get_users()
             return [
-                {k: v for k, v in user.items() if k != 'password'}
+                {k: v for k, v in user.items()}
                 for user in users
             ]
         except Exception as e:
@@ -64,8 +64,6 @@ class UsersResource:
             )
 
             if hmac.compare_digest(hashed_input.hex(), hash_hex):
-                # Remove password before returning user data
-                user = {k: v for k, v in user.items() if k != 'password'}
                 return user
 
             raise ValueError("Invalid email or password")
@@ -82,7 +80,7 @@ class UsersResource:
 
         sanitized_data = {k: v for k, v in user_data.items() if k in ALLOWED_USER_COLUMNS}
 
-        for field in ['email', 'password', 'name']:
+        for field in ['email', 'password', 'name', 'user_class']:
             val = sanitized_data.get(field)
             if not isinstance(val, str) or not val.strip():
                 raise ValueError(f"Field '{field}' must be a non-empty string")
@@ -90,12 +88,10 @@ class UsersResource:
         sanitized_data['email'] = sanitized_data['email'].strip().lower()
         sanitized_data['name'] = sanitized_data['name'].strip()
 
-        # Check for duplicate email
         if self.get_user_by_email(sanitized_data['email']):
             raise ValueError("A user with this email already exists")
 
         try:
-            # Hashing password
             salt = secrets.token_bytes(32)
             hashed_password = hashlib.pbkdf2_hmac(
                 'sha256',
@@ -107,8 +103,8 @@ class UsersResource:
 
             return db.create_user(sanitized_data)
 
-        except Exception:
-            raise ValueError("Could not complete registration") from None
+        except Exception as e:
+            raise ValueError(e) from None
     
     def verify_token(self, token: str, type: str) -> dict | None:
         """Verify a password reset token.
@@ -127,6 +123,12 @@ class UsersResource:
             return db.verify_token(token, type)
         except Exception as e:
             raise ValueError("Failed to verify token") from None
+    
+    def invalidate_token(self, token: str):
+        try:
+            db.invalidate_token(token)
+        except Exception as e:
+            raise ValueError("Failed to invalidate token") from None
 
 
 class UserResource:
@@ -161,8 +163,6 @@ class UserResource:
             user = db.get_user_by_id(self.user_id)
             if user is None:
                 raise ValueError(f"User {self.user_id} not found")
-            # Remove password before returning
-            user = {k: v for k, v in user.items() if k != 'password'}
             return user
         except ValueError:
             raise
@@ -184,10 +184,12 @@ class UserResource:
         if not isinstance(user_data, dict):
             raise ValueError("Update data must be a dictionary")
 
-        updates = {}
+        updates = {"id": self.user_id}
         for k in ALLOWED_USER_COLUMNS:
             if k in user_data and user_data[k] is not None:
                 val = user_data[k]
+                if isinstance(val, bool):
+                    updates[k] = val
                 if isinstance(val, str) and val.strip():
                     updates[k] = val.strip()
 
@@ -208,11 +210,12 @@ class UserResource:
             updates['password'] = f"{salt.hex()}:{hashed.hex()}"
 
         try:
-            success = db.update_user(self.user_id, updates)
+            success = db.update_user(updates)
             if not success:
                 raise ValueError("User not found")
             return success
         except Exception as e:
+            print("Actual error: " + str(e))
             raise ValueError("Update failed") from None
 
     def delete(self) -> bool:
@@ -238,7 +241,7 @@ class UserResource:
         except Exception as e:
             raise ValueError("Delete failed") from None
         
-    def create_verification_token(self, token: str, expires_at, type: str):
+    def create_verification_token(self, data: dict):
         """Create a verification token for password reset.
 
         Args:
@@ -251,7 +254,8 @@ class UserResource:
             ValueError: If token creation fails.
         """
         try:
-            db.create_verification_token(self.user_id, token, expires_at, type)
+            data['user_id'] = self.user_id
+            db.create_verification_token(data)
         except Exception as e:
             raise ValueError("Failed to create verification token") from None
 

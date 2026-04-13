@@ -3,24 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <title>All Activities</title>
-    <link rel="stylesheet" href="/static/styles.css" />
+    {% include "partials/stylesheets.html" %}
   </head>
   <body>
-    <!-- Navigation Bar -->
-    <header>
-      <ul>
-        <li><a href="/home">Home</a></li>
-        <li><a href="#">All Activities</a></li>
-        <li><a href="/activities/personal">My Activities</a></li>
-        <li><a href="/activities/create">Create activity</a></li>
-      </ul>
-      <a href="/auth/logout" class="logout">Log Out</a>
-    </header>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="toast-container">
+      {% for category, message in messages %}
+      <div class="toast toast-{{ category }}">
+        <span>{{ message }}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          ✕
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% include "partials/navbar-user.html" %}
 
-    <!-- Main Content -->
     <main class="all-activities">
       <div class="page-card">
-        <!-- Top Section: Headers and Search -->
         <div class="top-section">
           <div class="header-section">
             <h1>All activities</h1>
@@ -29,7 +30,9 @@
               <span>View by:</span>
               <div class="input-group">
                 <select name="status" id="status-filter">
-                  <option value="upcoming" selected>Upcoming</option>
+                  <option value="all" selected>All</option>
+                  <option value="upcoming">Upcoming</option>
+                  <option value="ongoing">Ongoing</option>
                   <option value="completed">Completed</option>
                 </select>
               </div>
@@ -38,52 +41,210 @@
           <div class="search-section">
             <h2 class="search-heading">Search for an activity</h2>
             <div class="search-container">
-              <input type="text" placeholder="Enter search query" />
+              <input
+                type="text"
+                id="search-input"
+                placeholder="Enter search query"
+              />
             </div>
           </div>
         </div>
 
-        <!-- Cards Section: Activity Cards -->
-        <div class="cards-section">
+        {% set upcoming = upcoming or [] %} {% set ongoing = ongoing or [] %} {%
+        set completed = completed or [] %} {% set all = upcoming + ongoing +
+        completed %}
+
+        <!-- Upcoming -->
+        <div id="upcoming-cards" class="cards-section cards-section--hidden">
+          {% set mid = ((upcoming | length) + 1) // 2 %}
           <div class="left-activities">
             <div class="activities-grid">
-              <a href="/activity" class="activity-card-link">
+              {% for activity in upcoming[:mid] %}
+              <a
+                href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                class="activity-card-link"
+              >
                 <div class="activity-card">
-                  <h3>Activity 1</h3>
-                  <p>00:00</p>
-                  <p>6th July 2025</p>
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
                 </div>
               </a>
-              <a href="/activity" class="activity-card-link">
-                <div class="activity-card">
-                  <h3>Activity 1</h3>
-                  <p>00:00</p>
-                  <p>6th July 2025</p>
-                </div>
-              </a>
+              {% endfor %}               {% if not upcoming %}
+              <p class="muted-text muted-text--inline">No upcoming activities.</p>
+              {% endif %}
             </div>
           </div>
-
           <div class="right-activities">
             <div class="activities-grid">
-              <a href="/activity" class="activity-card-link">
+              {% for activity in upcoming[mid:] %}
+              <a
+                href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                class="activity-card-link"
+              >
                 <div class="activity-card">
-                  <h3>Activity 1</h3>
-                  <p>00:00</p>
-                  <p>6th July 2025</p>
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
                 </div>
               </a>
-              <a href="/activity" class="activity-card-link">
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Ongoing -->
+        <div id="ongoing-cards" class="cards-section cards-section--hidden">
+          {% set mid = ((ongoing | length) + 1) // 2 %}
+          <div class="left-activities">
+            <div class="activities-grid">
+              {% for activity in ongoing[:mid] %}
+              <a
+                href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                class="activity-card-link"
+              >
                 <div class="activity-card">
-                  <h3>Activity 1</h3>
-                  <p>00:00</p>
-                  <p>6th July 2025</p>
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
                 </div>
               </a>
+              {% endfor %}               {% if not ongoing %}
+              <p class="muted-text muted-text--inline">No ongoing activities.</p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="right-activities">
+            <div class="activities-grid">
+              {% for activity in ongoing[mid:] %}
+              <a
+                href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                class="activity-card-link"
+              >
+                <div class="activity-card">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed -->
+        <div id="completed-cards" class="cards-section cards-section--hidden">
+          {% set mid = ((completed | length) + 1) // 2 %}
+          <div class="left-activities">
+            <div class="activities-grid">
+              {% for activity in completed[:mid] %}
+              <a
+                href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                class="activity-card-link"
+              >
+                <div class="activity-card">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% endfor %}               {% if not completed %}
+              <p class="muted-text muted-text--inline">No completed activities.</p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="right-activities">
+            <div class="activities-grid">
+              {% for activity in completed[mid:] %}
+              <a
+                href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                class="activity-card-link"
+              >
+                <div class="activity-card">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed -->
+        <div id="all-cards" class="cards-section">
+          {% set mid = ((all | length) + 1) // 2 %}
+          <div class="left-activities">
+            <div class="activities-grid">
+              {% for activity in all[:mid] %}
+              <a
+                href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                class="activity-card-link"
+              >
+                <div class="activity-card">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% endfor %}               {% if not all %}
+              <p class="muted-text muted-text--inline">No activities.</p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="right-activities">
+            <div class="activities-grid">
+              {% for activity in all[mid:] %}
+              <a
+                href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                class="activity-card-link"
+              >
+                <div class="activity-card">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% endfor %}
             </div>
           </div>
         </div>
       </div>
     </main>
+
+    <script>
+      document.querySelectorAll(".toast").forEach((toast) => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+
+      document
+        .getElementById("status-filter")
+        .addEventListener("change", function () {
+          document.getElementById("upcoming-cards").classList.add("cards-section--hidden");
+          document.getElementById("ongoing-cards").classList.add("cards-section--hidden");
+          document.getElementById("completed-cards").classList.add("cards-section--hidden");
+          document.getElementById("all-cards").classList.add("cards-section--hidden");
+          document.getElementById(this.value + "-cards").classList.remove("cards-section--hidden");
+          document.getElementById("search-input").value = "";
+        });
+
+      document
+        .getElementById("search-input")
+        .addEventListener("input", function () {
+          const query = this.value.toLowerCase().trim();
+          const activeGrid = document.querySelector(
+            "#upcoming-cards:not(.cards-section--hidden), #ongoing-cards:not(.cards-section--hidden), #completed-cards:not(.cards-section--hidden), #all-cards:not(.cards-section--hidden)",
+          );
+          if (!activeGrid) return;
+          activeGrid.querySelectorAll(".activity-card-link").forEach((card) => {
+            const title = card.querySelector("h3").textContent.toLowerCase();
+            const date = card
+              .querySelector("p:last-child")
+              .textContent.toLowerCase();
+            card.style.display =
+              title.includes(query) || date.includes(query) ? "" : "none";
+          });
+        });
+    </script>
   </body>
 </html>

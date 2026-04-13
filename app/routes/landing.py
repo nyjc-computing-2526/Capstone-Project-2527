@@ -1,5 +1,10 @@
 from flask import Blueprint, render_template, request
+from flask_login import login_required, current_user
+from app.resources.activities import ActivitiesResource
+from app.utils.formatting_util import enrich_for_cards
+
 from email.message import EmailMessage
+
 import smtplib
 import os
 
@@ -13,8 +18,8 @@ def index():
 def about():
     return render_template('about.html')
 
-@bp.route('/privacy-policy', methods=["GET"])
-def privacy_policy():
+@bp.route('/legal', methods=["GET"])
+def legal():
     return render_template('legal.html')
 
 @bp.route('/contact', methods=["GET", "POST"])
@@ -40,7 +45,7 @@ def contact():
                 {message}
             """
         )
-
+        
         try:
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
                 smtp.login(
@@ -60,5 +65,11 @@ def contact():
 def features():
     return render_template('features.html')
 
+@bp.route('/home', methods=["GET"])
+@login_required
+def homepage():
+    activities_resource = ActivitiesResource()
+    upcoming_activities = activities_resource.get_upcoming()
+    return render_template('home.html', activities=enrich_for_cards(upcoming_activities))
 
 
