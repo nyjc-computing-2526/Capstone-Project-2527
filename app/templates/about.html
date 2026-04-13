@@ -1,20 +1,36 @@
-<!doctype html>
-<html>
-  {% extends "landing.html" %}
-  {% block content %}
-  <body>
-    <h1 class="headline">What is (insert name) about?</h1>
-    <div class="bottomhalf">
-      <p class="description">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae
-        metus tempus, semper ante ac, tristique tortor. Vestibulum ante ipsum
-        primis in faucibus orci luctus et ultrices posuere cubilia curae;
-        Aliquam risus elit, hendrerit sit amet ultricies in, gravida id lectus.
-        Praesent suscipit tincidunt lectus, a rhoncus diam lacinia ac.
+{% extends "landing.html" %}
+{% block content %}
+  <main class="marketing-main about-main">
+    <section class="marketing-hero about-hero">
+      <p class="marketing-kicker">About Us</p>
+      <h1>Built to make planning activities feel simple.</h1>
+      <p>
+        We made this platform to reduce the noise around scheduling, tracking,
+        and managing events. The goal is a clean workflow from idea to event day.
       </p>
-    </div>
-    <div class="filler"></div>
-    {% include "partials/footer.html" %}
-  </body>
-  {% endblock %}
-</html>
+    </section>
+
+    <section class="marketing-grid">
+      <article class="marketing-card">
+        <h2>Our mission</h2>
+        <p>
+          Give people and teams one dependable place to organize events and
+          stay in sync.
+        </p>
+      </article>
+      <article class="marketing-card">
+        <h2>Our approach</h2>
+        <p>
+          Keep the interface focused, the actions obvious, and the experience
+          fast on every device.
+        </p>
+      </article>
+      <article class="marketing-card">
+        <h2>Our promise</h2>
+        <p>
+          Keep improving with practical updates that save users time every week.
+        </p>
+      </article>
+    </section>
+  </main>
+{% endblock %}

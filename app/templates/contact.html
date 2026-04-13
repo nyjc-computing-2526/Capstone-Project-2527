@@ -1,38 +1,53 @@
 {% extends "landing.html" %}
 {% block content %}
-    <h1 class="headline">Contact Us</h1>
-    <div class="filler contact-filler">
+  <main class="marketing-main contact-main">
+    <section class="marketing-hero contact-hero">
+      <p class="marketing-kicker">Contact</p>
+      <h1>Send us a message.</h1>
+      <p>
+        Questions, feedback, or feature requests are welcome. We usually reply
+        as soon as possible.
+      </p>
+    </section>
+
+    <section class="contact-panel">
+      {% if success %}
+        <p class="contact-status contact-status-success">Message sent successfully.</p>
+      {% endif %}
+      {% if error %}
+        <p class="contact-status contact-status-error">Unable to send message: {{ error }}</p>
+      {% endif %}
       <form
         class="contact-form"
         action="{{ url_for('landing.contact') }}"
         method="POST"
       >
-        <div class="input-fields-container">
-          <div class="contact-fields-grid">
-            <input
-              class="contact-field"
-              type="email"
-              name="email"
-              placeholder="Email"
-              required
-            />
-            <input
-              class="contact-field"
-              type="text"
-              name="name"
-              placeholder="Name"
-              required
-            />
-            <textarea
-              class="contact-field contact-field--message"
-              name="message"
-              placeholder="Message"
-              required
-            ></textarea>
-          </div>
-          <button type="submit">Send</button>
+        <div class="contact-fields-grid">
+          <input
+            class="contact-field"
+            type="email"
+            name="email"
+            placeholder="Email"
+            required
+          />
+          <input
+            class="contact-field"
+            type="text"
+            name="name"
+            placeholder="Name"
+            required
+          />
+          <textarea
+            class="contact-field contact-field--message"
+            name="message"
+            placeholder="Message"
+            required
+          ></textarea>
         </div>
+        <button type="submit" class="landing-btn landing-btn-primary">
+          Send
+        </button>
       </form>
-    </div>
-    {% include "partials/footer.html" %}
+    </section>
+  </main>
 {% endblock %}
