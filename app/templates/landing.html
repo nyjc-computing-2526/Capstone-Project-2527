@@ -4,22 +4,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://gstatic.com" crossorigin />
     <link href="https://googleapis.com" rel="stylesheet" />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    {% include "partials/stylesheets.html" %}
     <title>Welcome to Capstone Project</title>
   </head>
   <body>
-    <header>
-      <ul>
-        <li><a href="{{ url_for('landing.index') }}">Website name</a></li>
-        <li><a href="{{ url_for('landing.about') }}">About Us</a></li>
-        <li><a href="{{ url_for('landing.features') }}">Features</a></li>
-        <li><a href="{{ url_for('landing.contact') }}">Contact</a></li>
-      </ul>
-    </header>
-    {% block content %}
+    {% include "partials/navbar-landing.html" %} {% block content %}
     <h1 class="headline">The one-stop platform to see your events.</h1>
     <div class="bottomhalf">
       <p class="description">
@@ -39,8 +28,6 @@
       </div>
     </div>
     <div class="filler"></div>
-    {% include "partials/footer.html" %}
-    {% endblock %}
+    {% include "partials/footer.html" %} {% endblock %}
   </body>
-  
 </html>

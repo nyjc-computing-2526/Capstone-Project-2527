@@ -1,0 +1,257 @@
+/* Forms: inputs, selects, login card, auth layout, verify buttons. */
+
+.input-fields-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.input-group {
+  width: 100%;
+  max-width: 20rem;
+}
+
+.message-group textarea {
+  width: 100%;
+  max-width: 40rem;
+  min-height: 8rem;
+  box-sizing: border-box;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #d9c8ae;
+  background-color: white;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #000;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+  resize: vertical;
+}
+
+.message-group textarea:focus {
+  outline: none;
+  border-color: #7c6c55;
+  background-color: #fbf7f1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  max-width: 20rem;
+  box-sizing: border-box;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #d9c8ae;
+  background-color: white;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #000;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.input-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 6'%3E%3Cpath d='M1 1 L4 4 L7 1' fill='none' stroke='%237c6c55' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 1rem center;
+  background-size: 0.75rem 0.75rem;
+  padding-left: 2.75rem;
+  cursor: pointer;
+}
+
+.input-group select:hover {
+  border-color: #b69b7d;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.input-group select:active,
+.input-group select:focus {
+  background-color: #fbf7f1;
+  outline: none;
+  border-color: #7c6c55;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.input-row span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.input-row .input-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.filler {
+  background-color: #ece5db;
+  flex: 1;
+}
+
+.login-card {
+  background-color: #ece5db;
+  padding: 2rem;
+  border-radius: 1.25rem;
+  width: 28rem;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.login-card h1 {
+  margin-bottom: 1.75rem;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #d9c8ae;
+  background-color: white;
+  font-size: 1rem;
+}
+
+.forgot-pass {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: #7c6c55;
+  font-weight: 600;
+}
+
+.authcontainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.email-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.email-group input {
+  flex: 1;
+  width: auto;
+}
+
+.verify-btn {
+  width: 6rem;
+  padding: 1rem 0.5rem;
+  font-size: medium;
+  text-align: center;
+  background-color: #d9c8ae;
+  border: 0;
+  border-radius: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.verify-btn:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.verify-btn:active {
+  background-color: #7c6c55;
+}
+
+.landing-btn {
+  width: 14em;
+  max-width: 14em;
+}
+
+/* Contact page (landing): grid = email/name + message share one width; ~25% narrower block */
+.contact-filler {
+  padding: 3rem 1.5rem 2rem;
+  box-sizing: border-box;
+}
+
+.contact-form {
+  width: 100%;
+  max-width: min(60rem, 100%);
+  margin: 0 auto;
+}
+
+.contact-form .input-fields-container {
+  max-width: min(60rem, 100%);
+  width: 100%;
+  align-items: flex-start;
+}
+
+.contact-fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 0.75rem;
+  row-gap: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.contact-field {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #d9c8ae;
+  background-color: white;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #000;
+  margin: 0;
+}
+
+.contact-field:focus {
+  outline: none;
+  border-color: #7c6c55;
+  background-color: #fbf7f1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.contact-field--message {
+  grid-column: 1 / -1;
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.contact-form .input-fields-container > button[type="submit"] {
+  width: min(100%, 22rem);
+  min-width: min(14rem, 100%);
+  max-width: none;
+  align-self: flex-start;
+  margin-top: 1rem;
+  text-align: center;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+@media (max-width: 520px) {
+  .contact-fields-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-field--message {
+    grid-column: 1;
+  }
+}

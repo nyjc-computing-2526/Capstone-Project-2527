@@ -3,48 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <title>My activities</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    {% include "partials/stylesheets.html" %}
   </head>
   <body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="toast-container">
-          {% for category, message in messages %}
-            <div class="toast toast-{{ category }}">
-              <span>{{ message }}</span>
-              <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-
-    <header>
-      <ul>
-        <li><a href="{{ url_for('landing.homepage') }}">Home</a></li>
-        <li><a href="{{ url_for('activities.activities') }}">All Activities</a></li>
-        <li><a href="{{ url_for('activities.my_activities') }}">My Activities</a></li>
-        <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
-        <li><a href="{{ url_for('auth.view_profile', id=current_user.id) }}">View Profile</a></li>
-      </ul>
-      <form action="{{ url_for('auth.logout') }}" method="POST" style="margin-left: auto;">
-        <button type="submit" class="logout" style="background:none; border:none; color:red; font-weight:bold; font-size:1rem; cursor:pointer; padding:0; width:auto; max-width:none;">Log Out</button>
-      </form>
-    </header>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="toast-container">
+      {% for category, message in messages %}
+      <div class="toast toast-{{ category }}">
+        <span>{{ message }}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          ✕
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% include "partials/navbar-user.html" %}
 
     <main>
       <div class="content">
         <h1>My activities</h1>
 
-        <div style="display:flex; gap:3rem; align-items:flex-start;">
-
+        <div class="my-activities-columns">
           <!-- Joined -->
-          <div style="flex:1;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:2rem;">
-              <h2 style="margin:0; font-size:1.3rem; font-weight:700; color:#000;">Joined</h2>
-              <div class="input-row" style="margin:0;">
-                <span style="font-size:0.85rem;">Sort by:</span>
-                <div class="input-group" style="max-width:10rem;">
+          <div class="my-activities-column">
+            <div class="my-activities-head">
+              <h2 class="my-activities-heading">
+                Joined
+              </h2>
+              <div class="input-row input-row--flush input-row--compact">
+                <span>Sort by:</span>
+                <div class="input-group input-group--sort">
                   <select id="sort-joined">
                     <option value="earliest" selected>Earliest first</option>
                     <option value="latest">Latest first</option>
@@ -54,7 +43,10 @@
             </div>
             <div class="activities" id="joined-list">
               {% for activity in joined or [] %}
-              <a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
+              <a
+                href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                class="activity-card-link"
+              >
                 <div class="activity-card">
                   <h3>{{ activity.title | default('Untitled') }}</h3>
                   <p>{{ activity.display_time }}</p>
@@ -62,21 +54,25 @@
                 </div>
               </a>
               {% else %}
-              <p style="color:#7c6c55; font-size:0.9rem;">No joined activities.</p>
+              <p class="muted-text">
+                No joined activities.
+              </p>
               {% endfor %}
             </div>
           </div>
 
           <!-- Divider -->
-          <div style="width:1px; background-color:#d9c8ae; align-self:stretch;"></div>
+          <div class="my-activities-divider" aria-hidden="true"></div>
 
           <!-- Created -->
-          <div style="flex:1;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:2rem;">
-              <h2 style="margin:0; font-size:1.3rem; font-weight:700; color:#000;">Created</h2>
-              <div class="input-row" style="margin:0;">
-                <span style="font-size:0.85rem;">Sort by:</span>
-                <div class="input-group" style="max-width:10rem;">
+          <div class="my-activities-column">
+            <div class="my-activities-head">
+              <h2 class="my-activities-heading">
+                Created
+              </h2>
+              <div class="input-row input-row--flush input-row--compact">
+                <span>Sort by:</span>
+                <div class="input-group input-group--sort">
                   <select id="sort-created">
                     <option value="earliest" selected>Earliest first</option>
                     <option value="latest">Latest first</option>
@@ -86,7 +82,10 @@
             </div>
             <div class="activities" id="created-list">
               {% for activity in owned or [] %}
-              <a href="{{ url_for('activities.activity_details', id=activity.id) }}" class="activity-card-link">
+              <a
+                href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                class="activity-card-link"
+              >
                 <div class="activity-card">
                   <h3>{{ activity.title | default('Untitled') }}</h3>
                   <p>{{ activity.display_time }}</p>
@@ -94,38 +93,43 @@
                 </div>
               </a>
               {% else %}
-              <p style="color:#7c6c55; font-size:0.9rem;">No created activities.</p>
+              <p class="muted-text">
+                No created activities.
+              </p>
               {% endfor %}
             </div>
           </div>
-
         </div>
       </div>
     </main>
 
     <script>
-      document.querySelectorAll('.toast').forEach(toast => {
+      document.querySelectorAll(".toast").forEach((toast) => {
         setTimeout(() => toast.remove(), 4000);
       });
 
       function sortCards(listId, order) {
         const list = document.getElementById(listId);
-        const cards = Array.from(list.querySelectorAll('.activity-card-link'));
+        const cards = Array.from(list.querySelectorAll(".activity-card-link"));
         cards.sort((a, b) => {
-          const dateA = new Date(a.querySelector('p:last-child').textContent);
-          const dateB = new Date(b.querySelector('p:last-child').textContent);
-          return order === 'earliest' ? dateA - dateB : dateB - dateA;
+          const dateA = new Date(a.querySelector("p:last-child").textContent);
+          const dateB = new Date(b.querySelector("p:last-child").textContent);
+          return order === "earliest" ? dateA - dateB : dateB - dateA;
         });
-        cards.forEach(card => list.appendChild(card));
+        cards.forEach((card) => list.appendChild(card));
       }
 
-      document.getElementById('sort-joined').addEventListener('change', function() {
-        sortCards('joined-list', this.value);
-      });
+      document
+        .getElementById("sort-joined")
+        .addEventListener("change", function () {
+          sortCards("joined-list", this.value);
+        });
 
-      document.getElementById('sort-created').addEventListener('change', function() {
-        sortCards('created-list', this.value);
-      });
+      document
+        .getElementById("sort-created")
+        .addEventListener("change", function () {
+          sortCards("created-list", this.value);
+        });
     </script>
   </body>
 </html>

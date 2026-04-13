@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>{{ data.title | default('Activity') }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    {% include "partials/stylesheets.html" %}
   </head>
   <body>
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -27,13 +27,13 @@
         <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
         <li><a href="{{ url_for('auth.view_profile', id=current_user.id) }}">View Profile</a></li>
       </ul>
-      <form action="{{ url_for('auth.logout') }}" method="POST" style="margin-left: auto;">
-        <button type="submit" class="logout" style="background:none; border:none; color:red; font-weight:bold; font-size:1rem; cursor:pointer; padding:0; width:auto; max-width:none;">Log Out</button>
+      <form action="{{ url_for('auth.logout') }}" method="POST">
+        <button type="submit" class="logout">Log Out</button>
       </form>
     </header>
 
     <main class="activity-card-page">
-      <div style="max-width:960px; margin:0 auto; padding: 0 1rem;">
+      <div class="activity-detail-container">
 
         <!-- Hero -->
         <div class="hero">
@@ -43,16 +43,16 @@
           <div class="hero-top">
             <div>
               {% if status == 'ongoing' %}
-                <div class="status-pill" style="background-color:rgba(217,200,174,0.15); color:#d9c8ae;">
-                  <span class="status-dot" style="background-color:#d9c8ae;"></span> Ongoing
+                <div class="status-pill status-pill--ongoing">
+                  <span class="status-dot"></span> Ongoing
                 </div>
               {% elif status == 'completed' %}
-                <div class="status-pill" style="background-color:rgba(124,108,85,0.2); color:#b0a08a;">
-                  <span class="status-dot" style="background-color:#b0a08a;"></span> Completed
+                <div class="status-pill status-pill--completed">
+                  <span class="status-dot"></span> Completed
                 </div>
               {% else %}
-                <div class="status-pill" style="background-color:rgba(217,200,174,0.10); color:#b0a08a;">
-                  <span class="status-dot" style="background-color:#b0a08a;"></span> Upcoming
+                <div class="status-pill status-pill--upcoming">
+                  <span class="status-dot"></span> Upcoming
                 </div>
               {% endif %}
               <h2>{{ data.title | default('Activity') }}</h2>
@@ -107,7 +107,7 @@
           <div class="participants-card">
             <p class="section-label">
               Participants
-              <span style="font-weight:500; text-transform:none; letter-spacing:0;">({{ participants | length }})</span>
+              <span class="section-label-count">({{ participants | length }})</span>
             </p>
             {% if participants %}
               <div class="p-list">
@@ -124,7 +124,7 @@
                 {% endfor %}
               </div>
             {% else %}
-              <p style="color:#7c6c55; font-size:0.9rem; margin-top:0.75rem;">No participants yet.</p>
+              <p class="muted-text muted-text--tight-top">No participants yet.</p>
             {% endif %}
           </div>
 

@@ -1,29 +1,38 @@
-<!doctype html>
-<html>
-  <head>
-    {% extends "landing.html" %}
-    {% block content %}
-    <body>
-      <h1 class="headline">Contact Us</h1>
-      <div class="filler">
-        <form action="{{ url_for('landing.contact') }}" method="POST">
-            <div class="input-fields-container">
-              <div class="input-group" max>
-                <table>
-                  <tr>
-                    <td><input type="email" name="email" placeholder="Email" required /></td>
-                    <td><input type="text" name="name" placeholder="Name" required /></td>
-                  </tr>
-                </table>
-                <div class="input-group message-group">
-                  <textarea name="message" placeholder="Message" required></textarea>
-                </div>
-              </div>
-              <button type="submit">Send</button>
-            </div>
-        </form>
-      </div>
+{% extends "landing.html" %}
+{% block content %}
+    <h1 class="headline">Contact Us</h1>
+    <div class="filler contact-filler">
+      <form
+        class="contact-form"
+        action="{{ url_for('landing.contact') }}"
+        method="POST"
+      >
+        <div class="input-fields-container">
+          <div class="contact-fields-grid">
+            <input
+              class="contact-field"
+              type="email"
+              name="email"
+              placeholder="Email"
+              required
+            />
+            <input
+              class="contact-field"
+              type="text"
+              name="name"
+              placeholder="Name"
+              required
+            />
+            <textarea
+              class="contact-field contact-field--message"
+              name="message"
+              placeholder="Message"
+              required
+            ></textarea>
+          </div>
+          <button type="submit">Send</button>
+        </div>
+      </form>
+    </div>
     {% include "partials/footer.html" %}
-  </body>
-  {% endblock %}
-</html>
+{% endblock %}

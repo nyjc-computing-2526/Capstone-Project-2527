@@ -3,31 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <title>Create activity</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    {% include "partials/stylesheets.html" %}
   </head>
   <body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="toast-container">
-          {% for category, message in messages %}
-            <div class="toast toast-{{ category }}">
-              <span>{{ message }}</span>
-              <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-    <header>
-      <ul>
-        <li><a href="{{ url_for('landing.homepage') }}">Home</a></li>
-        <li><a href="{{ url_for('activities.activities') }}">All Activities</a></li>
-        <li><a href="{{ url_for('activities.my_activities') }}">My Activities</a></li>
-        <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
-        <li><a href="{{ url_for('auth.view_profile', id=current_user.id) }}">View Profile</a></li>
-      </ul>
-      <a href="{{ url_for('auth.logout') }}" class="logout">Log Out</a>
-    </header>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="toast-container">
+      {% for category, message in messages %}
+      <div class="toast toast-{{ category }}">
+        <span>{{ message }}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          ✕
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% include "partials/navbar-user.html" %}
 
     <main class="create-activity">
       <div class="page-card">
@@ -57,11 +48,11 @@
 
           <div class="create-activity-date-row">
             <div class="input-group">
-              <label style="font-size:0.85rem; color:#7c6c55; font-weight:600;">Start</label>
+              <label class="field-label">Start</label>
               <input type="datetime-local" name="start_date" required />
             </div>
             <div class="input-group">
-              <label style="font-size:0.85rem; color:#7c6c55; font-weight:600;">End</label>
+              <label class="field-label">End</label>
               <input type="datetime-local" name="end_date" required />
             </div>
           </div>
@@ -91,13 +82,25 @@
 
             <div class="verify-code-row">
               <div class="input-group">
-                <input type="text" name="verification_code" placeholder="Enter code" />
+                <input
+                  type="text"
+                  name="verification_code"
+                  placeholder="Enter code"
+                />
               </div>
-              <button type="button" class="verify-btn verify-send-btn">Send</button>
+              <button type="button" class="verify-btn verify-send-btn">
+                Send
+              </button>
             </div>
 
-            <button type="submit" class="verify-btn verify-submit-btn">Submit</button>
-            <button type="button" id="close-verify-modal" class="verify-close-btn">
+            <button type="submit" class="verify-btn verify-submit-btn">
+              Submit
+            </button>
+            <button
+              type="button"
+              id="close-verify-modal"
+              class="verify-close-btn"
+            >
               Close
             </button>
           </form>
@@ -106,31 +109,31 @@
     </main>
 
     <script>
-      const verifyModal = document.getElementById('verify-modal');
-      const openVerifyModalBtn = document.getElementById('open-verify-modal');
-      const closeVerifyModalBtn = document.getElementById('close-verify-modal');
+      const verifyModal = document.getElementById("verify-modal");
+      const openVerifyModalBtn = document.getElementById("open-verify-modal");
+      const closeVerifyModalBtn = document.getElementById("close-verify-modal");
 
       const closeVerifyModal = () => {
         verifyModal.hidden = true;
       };
 
-      openVerifyModalBtn.addEventListener('click', () => {
+      openVerifyModalBtn.addEventListener("click", () => {
         verifyModal.hidden = false;
       });
 
-      closeVerifyModalBtn.addEventListener('click', (event) => {
+      closeVerifyModalBtn.addEventListener("click", (event) => {
         event.preventDefault();
         closeVerifyModal();
       });
 
-      verifyModal.addEventListener('click', (event) => {
+      verifyModal.addEventListener("click", (event) => {
         if (event.target === verifyModal) {
           closeVerifyModal();
         }
       });
 
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && !verifyModal.hidden) {
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !verifyModal.hidden) {
           closeVerifyModal();
         }
       });
