@@ -1,12 +1,40 @@
-<header>
+<header data-nav-profile="user">
+  <div class="nav-primary">
+    <span class="nav-highlight-pill" aria-hidden="true"></span>
     <ul>
-      <li><a href="{{ url_for('landing.homepage') }}">Home</a></li>
-      <li><a href="{{ url_for('activities.activities') }}">All Activities</a></li>
-      <li><a href="{{ url_for('activities.my_activities') }}">My Activities</a></li>
-      <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
-      <li><a href="{{ url_for('auth.view_profile', id=current_user.id) }}">View Profile</a></li>
+      <li>
+        <a
+          href="{{ url_for('landing.homepage') }}"
+          {% if request.endpoint == 'landing.homepage' %}class="nav-active"{% endif %}
+          >Home</a>
+      </li>
+      <li>
+        <a
+          href="{{ url_for('activities.activities') }}"
+          {% if request.endpoint == 'activities.activities' %}class="nav-active"{% endif %}
+          >All Activities</a>
+      </li>
+      <li>
+        <a
+          href="{{ url_for('activities.my_activities') }}"
+          {% if request.endpoint == 'activities.my_activities' %}class="nav-active"{% endif %}
+          >My Activities</a>
+      </li>
+      <li>
+        <a
+          href="{{ url_for('activities.create_activities') }}"
+          {% if request.endpoint == 'activities.create_activities' %}class="nav-active"{% endif %}
+          >Create Activity</a>
+      </li>
+      <li>
+        <a
+          href="{{ url_for('auth.view_profile', id=current_user.id) }}"
+          {% if request.endpoint in ('auth.view_profile', 'auth.update_user') %}class="nav-active"{% endif %}
+          >View Profile</a>
+      </li>
     </ul>
-    <form action="{{ url_for('auth.logout') }}" method="POST">
-      <button type="submit" class="logout">Log Out</button>
-    </form>
-  </header>
+  </div>
+  <form action="{{ url_for('auth.logout') }}" method="POST">
+    <button type="submit" class="logout">Log Out</button>
+  </form>
+</header>

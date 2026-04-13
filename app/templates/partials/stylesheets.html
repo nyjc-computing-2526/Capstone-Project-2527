@@ -1,4 +1,8 @@
 {# Site styles — split under static/css/; order matters for cascade. #}
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/01-base.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/02-forms.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/03-layout-content.css') }}" />
@@ -9,4 +13,5 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/08-toasts.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/09-activity-detail.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/10-utilities-and-modals.css') }}" />
+<script src="{{ url_for('static', filename='js/nav-highlight.js') }}" defer></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/11-landing-hero.css') }}" />
