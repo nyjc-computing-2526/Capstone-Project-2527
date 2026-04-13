@@ -108,31 +108,7 @@
     </style>
   </head>
   <body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="toast-container">
-          {% for category, message in messages %}
-            <div class="toast toast-{{ category }}">
-              <span>{{ message }}</span>
-              <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-
-    <header>
-      <ul>
-        <li><a href="{{ url_for('landing.homepage') }}">Home</a></li>
-        <li><a href="{{ url_for('activities.activities') }}">All Activities</a></li>
-        <li><a href="{{ url_for('activities.my_activities') }}">My Activities</a></li>
-        <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
-        <li><a href="{{ url_for('auth.view_profile', id=current_user.id) }}">View Profile</a></li>
-      </ul>
-      <form action="{{ url_for('auth.logout') }}" method="POST" style="margin-left: auto;">
-        <button type="submit" class="logout" style="background:none; border:none; color:red; font-weight:bold; font-size:1rem; cursor:pointer; padding:0; width:auto; max-width:none;">Log Out</button>
-      </form>
-    </header>
+    {% include "partials/navbar-user.html" %}
 
     <main class="profile-page">
       <section style="display:flex; gap:3rem; align-items:flex-start; flex-direction: row;" class="page-card profile-card">
