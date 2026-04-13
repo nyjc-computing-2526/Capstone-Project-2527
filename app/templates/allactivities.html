@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>All Activities</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    {% include "partials/stylesheets.html" %}
   </head>
   <body>
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
@@ -58,7 +55,7 @@
         completed %}
 
         <!-- Upcoming -->
-        <div id="upcoming-cards" class="cards-section" style="display: none">
+        <div id="upcoming-cards" class="cards-section cards-section--hidden">
           {% set mid = ((upcoming | length) + 1) // 2 %}
           <div class="left-activities">
             <div class="activities-grid">
@@ -73,8 +70,8 @@
                   <p>{{ activity.display_date }}</p>
                 </div>
               </a>
-              {% endfor %} {% if not upcoming %}
-              <p style="color: #7c6c55">No upcoming activities.</p>
+              {% endfor %}               {% if not upcoming %}
+              <p class="muted-text muted-text--inline">No upcoming activities.</p>
               {% endif %}
             </div>
           </div>
@@ -97,7 +94,7 @@
         </div>
 
         <!-- Ongoing -->
-        <div id="ongoing-cards" class="cards-section" style="display: none">
+        <div id="ongoing-cards" class="cards-section cards-section--hidden">
           {% set mid = ((ongoing | length) + 1) // 2 %}
           <div class="left-activities">
             <div class="activities-grid">
@@ -112,8 +109,8 @@
                   <p>{{ activity.display_date }}</p>
                 </div>
               </a>
-              {% endfor %} {% if not ongoing %}
-              <p style="color: #7c6c55">No ongoing activities.</p>
+              {% endfor %}               {% if not ongoing %}
+              <p class="muted-text muted-text--inline">No ongoing activities.</p>
               {% endif %}
             </div>
           </div>
@@ -136,7 +133,7 @@
         </div>
 
         <!-- Completed -->
-        <div id="completed-cards" class="cards-section" style="display: none">
+        <div id="completed-cards" class="cards-section cards-section--hidden">
           {% set mid = ((completed | length) + 1) // 2 %}
           <div class="left-activities">
             <div class="activities-grid">
@@ -151,8 +148,8 @@
                   <p>{{ activity.display_date }}</p>
                 </div>
               </a>
-              {% endfor %} {% if not completed %}
-              <p style="color: #7c6c55">No completed activities.</p>
+              {% endfor %}               {% if not completed %}
+              <p class="muted-text muted-text--inline">No completed activities.</p>
               {% endif %}
             </div>
           </div>
@@ -190,8 +187,8 @@
                   <p>{{ activity.display_date }}</p>
                 </div>
               </a>
-              {% endfor %} {% if not all %}
-              <p style="color: #7c6c55">No activities.</p>
+              {% endfor %}               {% if not all %}
+              <p class="muted-text muted-text--inline">No activities.</p>
               {% endif %}
             </div>
           </div>
@@ -223,11 +220,11 @@
       document
         .getElementById("status-filter")
         .addEventListener("change", function () {
-          document.getElementById("upcoming-cards").style.display = "none";
-          document.getElementById("ongoing-cards").style.display = "none";
-          document.getElementById("completed-cards").style.display = "none";
-          document.getElementById("all-cards").style.display = "none";
-          document.getElementById(this.value + "-cards").style.display = "flex";
+          document.getElementById("upcoming-cards").classList.add("cards-section--hidden");
+          document.getElementById("ongoing-cards").classList.add("cards-section--hidden");
+          document.getElementById("completed-cards").classList.add("cards-section--hidden");
+          document.getElementById("all-cards").classList.add("cards-section--hidden");
+          document.getElementById(this.value + "-cards").classList.remove("cards-section--hidden");
           document.getElementById("search-input").value = "";
         });
 
@@ -236,7 +233,7 @@
         .addEventListener("input", function () {
           const query = this.value.toLowerCase().trim();
           const activeGrid = document.querySelector(
-            '#upcoming-cards:not([style*="none"]), #ongoing-cards:not([style*="none"]), #completed-cards:not([style*="none"]), #all-cards:not([style*="none"])',
+            "#upcoming-cards:not(.cards-section--hidden), #ongoing-cards:not(.cards-section--hidden), #completed-cards:not(.cards-section--hidden), #all-cards:not(.cards-section--hidden)",
           );
           if (!activeGrid) return;
           activeGrid.querySelectorAll(".activity-card-link").forEach((card) => {

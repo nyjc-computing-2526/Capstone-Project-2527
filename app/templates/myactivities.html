@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>My activities</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    {% include "partials/stylesheets.html" %}
   </head>
   <body>
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
@@ -27,31 +24,16 @@
       <div class="content">
         <h1>My activities</h1>
 
-        <div style="display: flex; gap: 3rem; align-items: flex-start">
+        <div class="my-activities-columns">
           <!-- Joined -->
-          <div style="flex: 1">
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 1rem;
-                gap: 2rem;
-              "
-            >
-              <h2
-                style="
-                  margin: 0;
-                  font-size: 1.3rem;
-                  font-weight: 700;
-                  color: #000;
-                "
-              >
+          <div class="my-activities-column">
+            <div class="my-activities-head">
+              <h2 class="my-activities-heading">
                 Joined
               </h2>
-              <div class="input-row" style="margin: 0">
-                <span style="font-size: 0.85rem">Sort by:</span>
-                <div class="input-group" style="max-width: 10rem">
+              <div class="input-row input-row--flush input-row--compact">
+                <span>Sort by:</span>
+                <div class="input-group input-group--sort">
                   <select id="sort-joined">
                     <option value="earliest" selected>Earliest first</option>
                     <option value="latest">Latest first</option>
@@ -72,7 +54,7 @@
                 </div>
               </a>
               {% else %}
-              <p style="color: #7c6c55; font-size: 0.9rem">
+              <p class="muted-text">
                 No joined activities.
               </p>
               {% endfor %}
@@ -80,34 +62,17 @@
           </div>
 
           <!-- Divider -->
-          <div
-            style="width: 1px; background-color: #d9c8ae; align-self: stretch"
-          ></div>
+          <div class="my-activities-divider" aria-hidden="true"></div>
 
           <!-- Created -->
-          <div style="flex: 1">
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 1rem;
-                gap: 2rem;
-              "
-            >
-              <h2
-                style="
-                  margin: 0;
-                  font-size: 1.3rem;
-                  font-weight: 700;
-                  color: #000;
-                "
-              >
+          <div class="my-activities-column">
+            <div class="my-activities-head">
+              <h2 class="my-activities-heading">
                 Created
               </h2>
-              <div class="input-row" style="margin: 0">
-                <span style="font-size: 0.85rem">Sort by:</span>
-                <div class="input-group" style="max-width: 10rem">
+              <div class="input-row input-row--flush input-row--compact">
+                <span>Sort by:</span>
+                <div class="input-group input-group--sort">
                   <select id="sort-created">
                     <option value="earliest" selected>Earliest first</option>
                     <option value="latest">Latest first</option>
@@ -128,7 +93,7 @@
                 </div>
               </a>
               {% else %}
-              <p style="color: #7c6c55; font-size: 0.9rem">
+              <p class="muted-text">
                 No created activities.
               </p>
               {% endfor %}

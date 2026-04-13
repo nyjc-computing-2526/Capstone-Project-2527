@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>{{ page_title | default('Activity Management') }}</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    {% include "partials/stylesheets.html" %}
   </head>
   <body>
     {% with messages = get_flashed_messages(with_categories=true) %} {% if

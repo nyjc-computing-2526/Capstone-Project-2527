@@ -1,0 +1,285 @@
+/* All Activities Page */
+/* All activities listing, create activity, verify-email modal. */
+
+.all-activities {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  gap: 2em;
+  flex: 1;
+  background-color: #ece5db;
+}
+
+.top-section {
+  display: flex;
+  flex-direction: row;
+  gap: 3em;
+  align-items: flex-start;
+}
+
+.header-section {
+  flex: 1;
+  max-width: 50%;
+}
+
+.search-section {
+  flex: 1;
+  max-width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cards-section {
+  display: flex;
+  flex-direction: row;
+  gap: 3em;
+  width: 100%;
+}
+
+.left-activities,
+.right-activities {
+  flex: 1;
+  min-width: 0;
+}
+
+.all-activities h1 {
+  margin-top: 0;
+  margin-bottom: 1.5em;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #000;
+}
+
+.all-activities .page-card,
+.create-activity .page-card,
+.activity-card-page .page-card,
+.profile-page .page-card {
+  background-color: white;
+  border-radius: 1.25rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  padding: 2rem;
+  box-sizing: border-box;
+  width: auto;
+  max-width: 100%;
+}
+
+.all-activities h2 {
+  margin-top: 0;
+  margin-bottom: 1.25em;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000;
+}
+
+.search-heading {
+  text-align: center;
+  margin-top: auto;
+  margin-bottom: 1.5em;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000;
+}
+
+.all-activities .activities-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25em;
+}
+
+.search-container {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: none;
+  background-color: #ece5db;
+  font-size: 1rem;
+  color: #7c6c55;
+  box-sizing: border-box;
+}
+
+.search-container input::placeholder {
+  color: #b0a08a;
+}
+
+/* Create Activity Page */
+.create-activity {
+  display: flex;
+  flex: 1;
+  background-color: #ece5db;
+  padding: 1em;
+}
+
+.create-activity .page-card {
+  flex: 1;
+}
+
+.create-activity h1 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #000;
+}
+
+.create-activity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.create-activity-top-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.create-activity-name {
+  flex: 2;
+}
+
+.create-activity .input-group,
+.create-activity .input-group input,
+.create-activity .input-group textarea {
+  max-width: none;
+}
+
+.create-activity .input-group input,
+.create-activity .input-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: none;
+  background-color: #ece5db;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #000;
+}
+
+.create-activity .input-group textarea {
+  min-height: 7.5rem;
+  resize: vertical;
+}
+
+.create-activity .input-group input::placeholder,
+.create-activity .input-group textarea::placeholder {
+  color: #8d8374;
+}
+
+.create-activity-date-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.create-activity-date-row .input-group {
+  flex: 1;
+}
+
+.create-activity-verify-btn {
+  flex: 1;
+  width: 100%;
+  max-width: none;
+  height: 3.25rem;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.create-activity-submit {
+  width: 100%;
+  max-width: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.create-activity-submit .plus-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.verify-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2rem;
+  z-index: 1000;
+}
+
+.verify-modal-overlay[hidden] {
+  display: none;
+}
+
+.verify-modal-overlay .verify-modal-card {
+  flex: 0 1 auto;
+  width: min(50vw, 42rem);
+  max-width: calc(100vw - 4rem);
+  min-width: 0;
+  padding-left: 3rem;
+  padding-right: 3rem;
+  box-sizing: border-box;
+}
+
+.verify-modal-card h1 {
+  margin-bottom: 2rem;
+}
+
+.verify-modal-card .create-activity-form {
+  gap: 1.25rem;
+}
+
+.verify-modal-card .input-group input {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.verify-code-row {
+  display: flex;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.verify-code-row .input-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.verify-send-btn {
+  flex: 0 0 9rem;
+  width: 9rem;
+  max-width: 9rem;
+  text-align: center;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.verify-submit-btn {
+  width: 100%;
+  max-width: none;
+  text-align: center;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.verify-close-btn {
+  border: none;
+  background: transparent;
+  color: #7c6c55;
+  font-weight: 600;
+  align-self: center;
+  width: auto;
+  max-width: none;
+  padding: 0.25rem 0.5rem;
+  margin-top: 0.25rem;
+  cursor: pointer;
+  text-decoration: underline;
+}

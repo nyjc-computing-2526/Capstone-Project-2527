@@ -1,0 +1,100 @@
+/* Base: document, header shell, footer, landing layout, global buttons. */
+
+html {
+  font-family: Inter, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background-color: #d9c8ae;
+  padding: 1em;
+  display: flex;
+  flex-direction: row;
+  gap: 6em;
+  align-items: center;
+}
+
+unselect {
+  font-weight: lighter;
+  font-size: 20px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.headline {
+  padding-left: 0.5em;
+}
+
+header ul {
+  list-style: none;
+  display: flex;
+  gap: 2em;
+  margin: 0;
+  padding: 0;
+}
+
+header li a {
+  color: #7c6c55;
+  font-weight: bold;
+}
+
+footer {
+  padding: 0.75em 1.5em;
+  background-color: #d9c8af;
+}
+
+.description {
+  max-width: 50%;
+  font-size: medium;
+}
+
+.bottomhalf {
+  background-color: #ece5db;
+  display: flex;
+  flex-direction: row;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 0.5em;
+  gap: 4em;
+}
+
+.buttonstack {
+  justify-content: center;
+  display: flex;
+  gap: 0.75rem;
+  flex-direction: column;
+  padding: 1em 0 0;
+  width: 100%;
+  align-items: stretch;
+}
+
+button {
+  text-align: start;
+  font-size: medium;
+  font-weight: bold;
+  border: 0;
+  border-radius: 1em;
+  padding: 1em;
+  width: 100%;
+  max-width: 20rem;
+  background-color: #d9c8ae;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+button:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+  background-color: #7c6c55;
+}
+
