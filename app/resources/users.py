@@ -228,13 +228,13 @@ class UserResource:
             ValueError: If deletion fails.
         """
         try:
-            success = db.delete_user(self.user_id)
+            success = db.delete_participant_user(self.user_id)
+            
             if not success:
                 raise ValueError(f"User {self.user_id} not found")
+
+            success = db.delete_user(self.user_id)
             
-            success = db.delete_participant_user(self.user_id)
-            if not success:
-                raise ValueError(f"User {self.user_id} not found in Participant")
             return success
         except ValueError:
             raise
