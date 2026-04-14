@@ -40,11 +40,12 @@
   function geometry(shell, el) {
     var sr = shell.getBoundingClientRect();
     var ar = el.getBoundingClientRect();
+    var underlineHeight = 2;
     return {
       left: ar.left - sr.left + shell.scrollLeft,
-      top: ar.top - sr.top + shell.scrollTop,
+      top: ar.bottom - sr.top + shell.scrollTop - underlineHeight,
       width: ar.width,
-      height: ar.height,
+      height: underlineHeight,
     };
   }
 

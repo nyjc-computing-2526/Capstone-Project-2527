@@ -1,28 +1,117 @@
-/* Landing-page hero polish and responsive behavior. */
+/* Landing home: full-page alligator background + minimal hero copy. */
 
-.landing-page {
-  font-family: "Manrope", Inter, sans-serif;
-  background:
-    radial-gradient(100% 80% at 10% 10%, rgba(221, 228, 213, 0.55) 0%, rgba(221, 228, 213, 0) 56%),
-    linear-gradient(180deg, var(--surface-page) 0%, var(--surface-panel) 100%);
+.landing-home {
+  position: relative;
+  background: transparent;
   color: var(--text-heading);
 }
 
-.landing-page .landing-main {
-  width: min(1120px, calc(100% - 2.5rem));
-  margin: 2.5rem auto 4rem;
+.landing-home header {
+  background: rgba(137, 169, 141, 0.6);
+  backdrop-filter: blur(4px);
+  border-bottom: 1px solid rgba(21, 38, 31, 0.16);
 }
 
-.landing-page .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  gap: clamp(1.5rem, 4vw, 4rem);
+header[data-nav-profile="landing"] {
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+header[data-nav-profile="landing"] .nav-primary {
+  flex: 1;
+  min-width: 0;
+}
+
+header[data-nav-profile="landing"] .nav-auth-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+header[data-nav-profile="landing"] .nav-auth-btn {
+  border-radius: 999px;
+  padding: 0.5rem 0.95rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  line-height: 1.1;
+}
+
+header[data-nav-profile="landing"] .nav-auth-btn-login {
+  border: 1px solid rgba(33, 57, 46, 0.24);
+  background: rgba(247, 250, 244, 0.92);
+  color: var(--text-accent-deep);
+}
+
+header[data-nav-profile="landing"] .nav-auth-btn-register {
+  border: 1px solid transparent;
+  background: linear-gradient(125deg, var(--btn-secondary), var(--sage-muted));
+  color: #fff;
+}
+
+.landing-home footer {
+  background: rgba(174, 191, 170, 0.58);
+  backdrop-filter: blur(4px);
+}
+
+.landing-home .landing-main {
+  width: min(1180px, calc(100% - 2.4rem));
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+  background: transparent;
+  position: relative;
+  isolation: isolate;
+}
+
+.landing-home .landing-bg-viewport {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.landing-home .landing-bg-viewport::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    rgba(18, 34, 28, 0.58) 0%,
+    rgba(18, 34, 28, 0.34) 36%,
+    rgba(18, 34, 28, 0.08) 66%
+  );
+}
+
+.landing-home .landing-bg-viewport img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 88% center;
+  display: block;
+}
+
+.landing-home .hero-home {
+  width: 100%;
+  min-height: clamp(420px, calc(100vh - 12.5rem), 760px);
+  display: flex;
   align-items: center;
 }
 
-.landing-page .hero-kicker {
+.landing-home .hero-home-copy {
+  max-width: 34rem;
+  background: linear-gradient(155deg, rgba(247, 250, 244, 0.88), rgba(236, 244, 236, 0.8));
+  border: 1px solid rgba(166, 184, 168, 0.9);
+  border-radius: 1.35rem;
+  padding: clamp(1rem, 2.4vw, 1.75rem);
+}
+
+.landing-home .hero-home-kicker {
   margin: 0;
-  display: inline-block;
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -30,203 +119,76 @@
   color: var(--text-accent);
 }
 
-.landing-page .hero-title {
-  margin: 0.7rem 0 0;
-  font-size: clamp(2rem, 5vw, 3.7rem);
-  line-height: 1.08;
+.landing-home .hero-home-title {
+  margin: 0.6rem 0 0;
+  font-size: clamp(2rem, 5vw, 3.35rem);
+  line-height: 1.06;
+  color: var(--text-heading);
 }
 
-.landing-page .hero-description {
-  margin: 1rem 0 0;
-  max-width: 56ch;
-  font-size: clamp(1rem, 1.9vw, 1.2rem);
-  line-height: 1.7;
+.landing-home .hero-home-subtitle {
+  margin: 0.78rem 0 0;
+  font-size: clamp(0.98rem, 2vw, 1.2rem);
   color: var(--text-muted);
 }
 
-.landing-page .hero-actions {
-  margin-top: 1.7rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.9rem;
-}
-
-.landing-page .hero-actions form {
-  margin: 0;
-}
-
-.landing-page .landing-btn {
-  min-width: 10.5rem;
-  width: auto;
-  max-width: none;
-  border-radius: 999px;
-  padding: 0.85rem 1.4rem;
-  text-align: center;
-  transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
-}
-
-.landing-page .landing-btn:hover {
-  transform: translateY(-2px);
-}
-
-.landing-page .landing-btn-primary {
-  color: #fff;
-  background: linear-gradient(125deg, var(--btn-secondary), var(--sage-muted));
-}
-
-.landing-page .landing-btn-primary:active {
-  background: var(--btn-secondary-active);
-}
-
-.landing-page .landing-btn-secondary {
-  background: var(--surface-muted);
-  border: 1px solid var(--border-warm);
-  color: var(--text-accent);
-}
-
-.landing-page .hero-meta {
-  margin-top: 1.4rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.landing-page .hero-meta span {
-  border-radius: 999px;
-  border: 1px solid var(--border-warm);
-  background: var(--surface-muted);
-  padding: 0.42rem 0.85rem;
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--text-accent);
-}
-
-.landing-page .hero-media {
-  justify-self: end;
-  width: min(100%, 530px);
-  animation: hero-float 8s ease-in-out infinite;
-}
-
-.landing-page .hero-image-shell {
-  position: relative;
-  border-radius: 2.4rem;
-  overflow: hidden;
-  background: linear-gradient(160deg, var(--surface-muted) 0%, var(--surface-panel) 100%);
-  border: 1px solid var(--border-warm);
-  box-shadow: none;
-  transform-style: preserve-3d;
-  transition: transform 220ms ease;
-}
-
-.landing-page .hero-image {
-  width: 100%;
-  display: block;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  transform: translateY(var(--hero-drift, 0px)) scale(1.01);
-  transition: transform 280ms ease;
-}
-
-.landing-page .hero-badge {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  border-radius: 999px;
-  padding: 0.5rem 0.9rem;
-  background: rgba(253, 250, 244, 0.94);
-  border: 1px solid var(--border-warm);
-  box-shadow: none;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-accent);
-}
-
-.landing-page [data-reveal] {
+.landing-home [data-reveal] {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 550ms ease, transform 650ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateY(16px);
+  transition: opacity 400ms ease, transform 460ms ease;
 }
 
-.landing-page [data-reveal].is-visible {
+.landing-home [data-reveal].is-visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-@keyframes hero-float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-@media (max-width: 960px) {
-  .landing-page .hero {
-    grid-template-columns: 1fr;
-  }
-
-  .landing-page .hero-media {
-    justify-self: center;
-    width: min(100%, 640px);
-  }
-}
-
-@media (max-width: 720px) {
-  .landing-page header {
+@media (max-width: 760px) {
+  .landing-home header {
     padding: 0.8rem;
   }
 
-  .landing-page header ul {
+  .landing-home header ul {
     flex-wrap: wrap;
-    gap: 0.75rem 1rem;
+    gap: 0.7rem 1rem;
   }
 
-  .landing-page .landing-main {
-    width: min(100%, calc(100% - 1.5rem));
-    margin-top: 1.75rem;
-  }
-
-  .landing-page .hero-title {
-    font-size: clamp(1.8rem, 9vw, 2.5rem);
-  }
-
-  .landing-page .hero-description {
-    max-width: none;
-    line-height: 1.6;
-  }
-
-  .landing-page .hero-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .landing-page .landing-btn {
+  header[data-nav-profile="landing"] .nav-auth-actions {
     width: 100%;
-    text-align: center;
+    margin: 0.35rem 0 0;
+    justify-content: flex-end;
   }
 
-  .landing-page .hero-badge {
-    right: 0.75rem;
-    bottom: 0.75rem;
-    font-size: 0.74rem;
+  .landing-home .landing-bg-viewport img {
+    object-position: 82% center;
+  }
+
+  .landing-home .landing-main {
+    width: min(100%, calc(100% - 1.3rem));
+    padding: 1.2rem 0;
+  }
+
+  .landing-home .hero-home {
+    min-height: calc(100vh - 13.5rem);
+    align-items: flex-start;
+    padding-top: 0.4rem;
+  }
+
+  .landing-home .hero-home-copy {
+    max-width: 100%;
+  }
+}
+
+@media (max-aspect-ratio: 4/3) {
+  .landing-home .landing-bg-viewport img {
+    object-position: 80% center;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .landing-page [data-reveal] {
+  .landing-home [data-reveal] {
     opacity: 1;
     transform: none;
     transition: none;
-  }
-
-  .landing-page .landing-btn,
-  .landing-page .hero-image,
-  .landing-page .hero-image-shell,
-  .landing-page .hero-media {
-    animation: none;
-    transition: none;
-    transform: none;
   }
 }

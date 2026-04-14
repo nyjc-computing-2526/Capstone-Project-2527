@@ -54,7 +54,8 @@
 .create-activity .page-card,
 .activity-card-page .page-card,
 .profile-page .page-card {
-  background-color: white;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-warm);
   border-radius: 1.25rem;
   box-shadow: var(--shadow-card);
   padding: 2rem;
@@ -95,8 +96,8 @@
   width: 100%;
   padding: 1rem;
   border-radius: 1rem;
-  border: none;
-  background-color: var(--surface-panel);
+  border: 1px solid var(--border-warm);
+  background-color: var(--surface-muted);
   font-size: 1rem;
   color: var(--text-accent);
   box-sizing: border-box;
@@ -154,8 +155,8 @@
   box-sizing: border-box;
   padding: 1rem;
   border-radius: 1rem;
-  border: none;
-  background-color: var(--surface-panel);
+  border: 1px solid var(--border-warm);
+  background-color: var(--surface-muted);
   font-family: inherit;
   font-size: 1rem;
   color: var(--text-heading);

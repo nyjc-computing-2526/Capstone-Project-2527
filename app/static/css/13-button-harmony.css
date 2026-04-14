@@ -1,28 +1,45 @@
-/* Harmonize primary action buttons with landing CTA styling. */
+/* Harmonize button motion with role-specific interactions. */
 
-button:where(:not(.landing-btn)):where(:not(.toast-close)):where(:not(.logout)):where(:not(.verify-close-btn)):where(:not(.btn-ghost-flex)):where(:not(.delete-btn-ghost)):where(:not(.delete-back-link)):where(:not(.profile-delete-btn)):where(:not(.delete-btn-danger)):where(:not(.delete-submit-btn)):where(:not(.btn-delete-activity)):where(:not(.leave-btn)),
+:root {
+  --motion-fast: 110ms;
+  --motion-base: 150ms;
+  --motion-ease-snap: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+button,
+button:hover,
+button:active {
+  transform: none;
+  box-shadow: none;
+}
+
+button:where(:not(.landing-btn)):where(:not(.toast-close)):where(:not(.logout)):where(:not(.verify-close-btn)):where(:not(.btn-ghost-flex)):where(:not(.delete-btn-ghost)):where(:not(.delete-back-link)):where(:not(.profile-delete-btn)):where(:not(.delete-btn-danger)):where(:not(.delete-submit-btn)):where(:not(.btn-delete-activity)):where(:not(.leave-btn)):where(:not(.btn-action-secondary)):where(:not(.btn-secondary-block)),
 .sidebar .button,
 a.profile-edit-btn {
   border-radius: 999px;
   border: 1px solid transparent;
-  background: linear-gradient(125deg, var(--btn-secondary), var(--sage-muted));
+  background-image: none;
+  background-color: var(--btn-secondary);
   color: #fff;
   text-align: center;
-  transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+  transition:
+    background-color var(--motion-fast) var(--motion-ease-snap),
+    border-color var(--motion-fast) var(--motion-ease-snap),
+    color var(--motion-fast) var(--motion-ease-snap);
 }
 
-button:where(:not(.landing-btn)):where(:not(.toast-close)):where(:not(.logout)):where(:not(.verify-close-btn)):where(:not(.btn-ghost-flex)):where(:not(.delete-btn-ghost)):where(:not(.delete-back-link)):where(:not(.profile-delete-btn)):where(:not(.delete-btn-danger)):where(:not(.delete-submit-btn)):where(:not(.btn-delete-activity)):where(:not(.leave-btn)):hover,
+button:where(:not(.landing-btn)):where(:not(.toast-close)):where(:not(.logout)):where(:not(.verify-close-btn)):where(:not(.btn-ghost-flex)):where(:not(.delete-btn-ghost)):where(:not(.delete-back-link)):where(:not(.profile-delete-btn)):where(:not(.delete-btn-danger)):where(:not(.delete-submit-btn)):where(:not(.btn-delete-activity)):where(:not(.leave-btn)):where(:not(.btn-action-secondary)):where(:not(.btn-secondary-block)):hover,
 .sidebar .button:hover,
 a.profile-edit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lift);
+  background-color: var(--btn-secondary-hover);
+  box-shadow: none;
 }
 
-button:where(:not(.landing-btn)):where(:not(.toast-close)):where(:not(.logout)):where(:not(.verify-close-btn)):where(:not(.btn-ghost-flex)):where(:not(.delete-btn-ghost)):where(:not(.delete-back-link)):where(:not(.profile-delete-btn)):where(:not(.delete-btn-danger)):where(:not(.delete-submit-btn)):where(:not(.btn-delete-activity)):where(:not(.leave-btn)):active,
+button:where(:not(.landing-btn)):where(:not(.toast-close)):where(:not(.logout)):where(:not(.verify-close-btn)):where(:not(.btn-ghost-flex)):where(:not(.delete-btn-ghost)):where(:not(.delete-back-link)):where(:not(.profile-delete-btn)):where(:not(.delete-btn-danger)):where(:not(.delete-submit-btn)):where(:not(.btn-delete-activity)):where(:not(.leave-btn)):where(:not(.btn-action-secondary)):where(:not(.btn-secondary-block)):active,
 .sidebar .button:active,
 a.profile-edit-btn:active {
-  background: var(--btn-secondary-active);
-  transform: translateY(0);
+  background-color: var(--btn-secondary-active);
+  box-shadow: none;
 }
 
 button.btn-action-secondary,
@@ -31,12 +48,109 @@ button.btn-action-secondary,
   background: var(--surface-muted);
   border: 1px solid var(--border-warm);
   color: var(--text-accent);
+  transition:
+    background-color var(--motion-fast) var(--motion-ease-snap),
+    border-color var(--motion-fast) var(--motion-ease-snap),
+    color var(--motion-fast) var(--motion-ease-snap);
+}
+
+button.btn-action-secondary:hover,
+.btn-secondary-block:hover,
+.update-cancel-link:hover {
+  background: var(--surface-panel);
+  border-color: var(--border-focus);
 }
 
 button.btn-action-secondary:active,
 .btn-secondary-block:active,
 .update-cancel-link:active {
   background: var(--surface-panel);
+}
+
+.profile-delete-btn,
+.delete-btn-danger,
+.delete-submit-btn.enabled,
+.btn-delete-activity,
+.leave-btn {
+  transition:
+    background-color var(--motion-fast) var(--motion-ease-snap),
+    border-color var(--motion-fast) var(--motion-ease-snap),
+    color var(--motion-fast) var(--motion-ease-snap);
+}
+
+.profile-delete-btn:hover,
+.delete-btn-danger:hover,
+.delete-submit-btn.enabled:hover,
+.btn-delete-activity:hover,
+.leave-btn:hover {
+  filter: none;
+}
+
+.profile-delete-btn:active,
+.delete-btn-danger:active,
+.delete-submit-btn.enabled:active,
+.btn-delete-activity:active,
+.leave-btn:active {
+  filter: none;
+}
+
+.btn-ghost-flex,
+.delete-btn-ghost,
+.delete-back-link,
+.verify-close-btn {
+  transition:
+    color var(--motion-fast) var(--motion-ease-snap),
+    background-color var(--motion-fast) var(--motion-ease-snap),
+    text-decoration-color var(--motion-fast) var(--motion-ease-snap);
+}
+
+.btn-ghost-flex:hover,
+.delete-btn-ghost:hover,
+.delete-back-link:hover,
+.verify-close-btn:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.toast-close {
+  transition: opacity var(--motion-fast) var(--motion-ease-snap);
+}
+
+a.nav-auth-btn-login,
+a.nav-auth-btn-register,
+a.hero-edit-btn,
+button.landing-btn {
+  transition:
+    background-color var(--motion-fast) var(--motion-ease-snap),
+    border-color var(--motion-fast) var(--motion-ease-snap),
+    color var(--motion-fast) var(--motion-ease-snap);
+}
+
+a.hero-edit-btn:hover,
+button.landing-btn:hover {
+  background-color: var(--btn-secondary-hover);
+}
+
+a.nav-auth-btn-register:hover {
+  background-color: var(--btn-secondary-hover);
+}
+
+a.nav-auth-btn-login:hover {
+  background-color: var(--surface-panel);
+  border-color: var(--border-focus);
+}
+
+a.hero-edit-btn:active,
+button.landing-btn:active {
+  background-color: var(--btn-secondary-active);
+}
+
+a.nav-auth-btn-register:active {
+  background-color: var(--btn-secondary-active);
+}
+
+a.nav-auth-btn-login:active {
+  background-color: var(--surface-panel);
 }
 
 .sidebar .button {

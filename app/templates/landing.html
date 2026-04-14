@@ -12,49 +12,26 @@
     {% include "partials/stylesheets.html" %}
     <title>Activity Alligator</title>
   </head>
-  <body class="landing-page">
+  <body class="landing-page{% if request.endpoint == 'landing.index' %} landing-home{% endif %}">
+    {% if request.endpoint == 'landing.index' %}
+      <div class="landing-bg-viewport" aria-hidden="true">
+        <img
+          src="{{ url_for('static', filename='images/alligator-hero-image.png') }}"
+          alt=""
+        />
+      </div>
+    {% endif %}
     {% include "partials/navbar-landing.html" %}
     {% block content %}
 
     <main class="landing-main">
-      <section class="hero" aria-labelledby="landing-title">
-        <div class="hero-copy">
-          <p class="hero-kicker" data-reveal>Plan Less. Experience More.</p>
-          <h1 id="landing-title" class="hero-title" data-reveal>
-            Your events in one clear, calm timeline.
+      <section class="hero-home" aria-labelledby="landing-title">
+        <div class="hero-home-copy" data-reveal>
+          <p class="hero-home-kicker">Activity Alligator</p>
+          <h1 id="landing-title" class="hero-home-title">
+            Plan activities without the chaos.
           </h1>
-          <p class="hero-description" data-reveal>
-            Organize activity details, stay ahead of upcoming plans, and keep
-            every event in one place built for fast decisions.
-          </p>
-
-          <div class="hero-actions" data-reveal>
-            <form action="{{ url_for('auth.login') }}" method="GET">
-              <button class="landing-btn landing-btn-primary">Log In</button>
-            </form>
-            <form action="{{ url_for('auth.register') }}" method="GET">
-              <button class="landing-btn landing-btn-secondary">
-                Register
-              </button>
-            </form>
-          </div>
-
-          <div class="hero-meta" data-reveal>
-            <span>Fast setup</span>
-            <span>Clean schedule view</span>
-            <span>Mobile ready</span>
-          </div>
-        </div>
-
-        <div class="hero-media" data-reveal>
-          <div class="hero-image-shell">
-            <img
-              src="{{ url_for('static', filename='images/Alligator Hero Image.png') }}"
-              alt="People organizing upcoming activities on a shared event board"
-              class="hero-image"
-            />
-            <div class="hero-badge" aria-hidden="true">Live activity feed</div>
-          </div>
+          <p class="hero-home-subtitle">Simple timeline. Clear updates.</p>
         </div>
       </section>
     </main>

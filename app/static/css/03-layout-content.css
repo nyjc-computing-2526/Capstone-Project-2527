@@ -17,23 +17,24 @@ header form {
   cursor: pointer;
   box-shadow: none;
   transition:
-    color 0.22s ease,
-    text-shadow 0.22s ease,
-    transform 0.18s ease;
+    color 120ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    text-decoration-color 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 2px;
 }
 
 .logout:hover {
   box-shadow: none;
   color: var(--logout-hover);
-  text-shadow: 0 0 8px rgba(216, 29, 29, 0.45);
-  transform: translateY(-1px);
+  text-decoration-color: currentColor;
 }
 
 .logout:active {
   background: none;
   color: #a31212;
-  text-shadow: none;
-  transform: translateY(0);
+  text-decoration-color: currentColor;
 }
 
 main {
@@ -45,9 +46,10 @@ main {
 
 .content {
   flex: 1;
-  background-color: white;
+  background-color: var(--surface-card);
   padding: 2rem;
   border-radius: 1.25rem;
+  border: 1px solid var(--border-warm);
   box-shadow: var(--shadow-card);
   margin-right: 1em;
 }
@@ -72,9 +74,14 @@ main {
 
 .activity-card {
   background-color: var(--surface-sage);
+  border: 1px solid var(--border-warm);
   padding: 1rem;
   border-radius: 1rem;
   box-shadow: var(--shadow-soft);
+  transition:
+    background-color 150ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 150ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    color 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .activity-card h3 {
@@ -92,14 +99,40 @@ main {
 }
 
 .activity-card-link:hover .activity-card {
-  box-shadow: var(--shadow-card-hover);
+  box-shadow: none;
+}
+
+/* Activity lists: no lift/shadow hover, distinct color accents by card position. */
+.activities .activity-card-link:nth-child(4n + 1):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n + 1):hover .activity-card {
+  background-color: #e6efe5;
+  border-color: #6f927b;
+}
+
+.activities .activity-card-link:nth-child(4n + 2):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n + 2):hover .activity-card {
+  background-color: #e8efe9;
+  border-color: #5f8670;
+}
+
+.activities .activity-card-link:nth-child(4n + 3):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n + 3):hover .activity-card {
+  background-color: #edf1e8;
+  border-color: #7c946b;
+}
+
+.activities .activity-card-link:nth-child(4n):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n):hover .activity-card {
+  background-color: #e4ece5;
+  border-color: #5f7f70;
 }
 
 .sidebar {
   min-width: 250px;
-  background-color: white;
+  background-color: var(--surface-card);
   padding: 2rem 2rem;
   border-radius: 1.25rem;
+  border: 1px solid var(--border-warm);
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
@@ -119,7 +152,7 @@ main {
 }
 
 .sidebar .button:hover {
-  box-shadow: var(--shadow-lift);
+  box-shadow: none;
 }
 
 .sidebar .button:active {

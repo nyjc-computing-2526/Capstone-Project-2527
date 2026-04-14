@@ -1,23 +1,26 @@
-/* Distinct page treatments for About, Features, and Contact. */
+/* Marketing routes (about/features/contact) tuned to the alligator hero palette. */
 
 .landing-page .marketing-main {
   width: min(1120px, calc(100% - 2.5rem));
   margin: 2.5rem auto 4rem;
   display: grid;
-  gap: 1.4rem;
+  gap: 1.2rem;
 }
 
 .landing-page .marketing-hero {
-  border-radius: 2rem;
-  padding: clamp(1.4rem, 2.4vw, 2.2rem);
+  border-radius: 1.9rem;
+  padding: clamp(1.3rem, 2.4vw, 2.2rem);
   color: var(--text-heading);
   border: 1px solid var(--border-warm);
-  box-shadow: none;
+  background:
+    radial-gradient(140% 120% at 0% 0%, rgba(148, 181, 159, 0.28) 0%, rgba(148, 181, 159, 0) 58%),
+    linear-gradient(145deg, var(--surface-muted), var(--surface-card));
+  box-shadow: var(--shadow-soft);
 }
 
 .landing-page .marketing-kicker {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.13em;
   font-weight: 800;
@@ -25,34 +28,40 @@
 }
 
 .landing-page .marketing-hero h1 {
-  margin: 0.65rem 0 0;
-  font-size: clamp(1.7rem, 3.2vw, 2.75rem);
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.75rem, 3.4vw, 2.78rem);
 }
 
 .landing-page .marketing-hero p {
   margin: 0.8rem 0 0;
-  max-width: 65ch;
-  line-height: 1.7;
+  max-width: 66ch;
+  line-height: 1.72;
   color: var(--text-muted);
 }
 
 .landing-page .about-hero {
-  background: linear-gradient(135deg, var(--surface-muted), var(--surface-panel));
+  background:
+    radial-gradient(130% 120% at 0% 0%, rgba(148, 181, 159, 0.35) 0%, rgba(148, 181, 159, 0) 62%),
+    linear-gradient(150deg, var(--surface-muted), var(--surface-panel));
 }
 
 .landing-page .features-hero {
-  background: linear-gradient(135deg, #eef2e7, #e1e8d7);
+  background:
+    radial-gradient(130% 120% at 0% 0%, rgba(120, 158, 133, 0.3) 0%, rgba(120, 158, 133, 0) 60%),
+    linear-gradient(150deg, #eef5ef, #dde8de);
 }
 
 .landing-page .contact-hero {
-  background: linear-gradient(135deg, var(--surface-muted), #e8ecdf);
+  background:
+    radial-gradient(130% 120% at 0% 0%, rgba(202, 217, 200, 0.55) 0%, rgba(202, 217, 200, 0) 58%),
+    linear-gradient(150deg, var(--surface-muted), #e5eee5);
 }
 
 .landing-page .marketing-grid,
 .landing-page .feature-list {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 0.95rem;
 }
 
 .landing-page .feature-list {
@@ -61,32 +70,33 @@
 
 .landing-page .marketing-card,
 .landing-page .feature-item {
-  background: #fff;
+  background: var(--surface-card);
   border: 1px solid var(--border-warm);
-  border-radius: 1.6rem;
-  padding: 1.1rem 1rem;
-  box-shadow: none;
+  border-radius: 1.45rem;
+  padding: 1.05rem 1rem;
+  box-shadow: var(--shadow-soft);
 }
 
 .landing-page .marketing-card h2,
 .landing-page .feature-item h2 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.08rem;
+  color: var(--text-accent-deep);
 }
 
 .landing-page .marketing-card p,
 .landing-page .feature-item p {
-  margin: 0.55rem 0 0;
-  line-height: 1.6;
+  margin: 0.52rem 0 0;
+  line-height: 1.62;
   color: var(--text-muted);
 }
 
 .landing-page .contact-panel {
-  background: var(--surface-muted);
+  background: var(--surface-card);
   border: 1px solid var(--border-warm);
-  border-radius: 2rem;
-  box-shadow: none;
-  padding: clamp(1.1rem, 2.4vw, 2rem);
+  border-radius: 1.9rem;
+  box-shadow: var(--shadow-soft);
+  padding: clamp(1.05rem, 2.4vw, 2rem);
 }
 
 .landing-page .contact-panel .contact-form {

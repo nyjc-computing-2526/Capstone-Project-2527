@@ -3,7 +3,8 @@
 /* Activity detail: hero, status pills, participants. */
 
 .hero {
-  background-color: #fff;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-warm);
   border-radius: 1.25rem;
   padding: clamp(1.25rem, 4vw, 2.25rem) clamp(1.25rem, 4vw, 2.5rem);
   margin-bottom: 1.5rem;
@@ -98,7 +99,8 @@
 }
 
 .main-card {
-  background-color: #fff;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-warm);
   border-radius: 1.25rem;
   padding: 1.75rem;
 }
@@ -162,7 +164,8 @@
 }
 
 .participants-card {
-  background-color: #fff;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-warm);
   border-radius: 1.25rem;
   padding: 1.75rem;
 }
@@ -187,7 +190,7 @@
 }
 
 .p-item.is-organizer {
-  background-color: #fff;
+  background-color: var(--surface-muted);
   border: 1.5px solid var(--border-warm);
 }
 
