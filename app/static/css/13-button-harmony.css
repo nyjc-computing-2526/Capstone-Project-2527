@@ -1,0 +1,47 @@
+/* Harmonize primary action buttons with landing CTA styling. */
+
+button:where(:not(.landing-btn)):where(:not(.toast-close)):where(:not(.logout)):where(:not(.verify-close-btn)):where(:not(.btn-ghost-flex)):where(:not(.delete-btn-ghost)):where(:not(.delete-back-link)):where(:not(.profile-delete-btn)):where(:not(.delete-btn-danger)):where(:not(.delete-submit-btn)):where(:not(.btn-delete-activity)):where(:not(.leave-btn)),
+.sidebar .button,
+a.profile-edit-btn {
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: linear-gradient(125deg, var(--btn-secondary), var(--sage-muted));
+  color: #fff;
+  text-align: center;
+  transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+}
+
+button:where(:not(.landing-btn)):where(:not(.toast-close)):where(:not(.logout)):where(:not(.verify-close-btn)):where(:not(.btn-ghost-flex)):where(:not(.delete-btn-ghost)):where(:not(.delete-back-link)):where(:not(.profile-delete-btn)):where(:not(.delete-btn-danger)):where(:not(.delete-submit-btn)):where(:not(.btn-delete-activity)):where(:not(.leave-btn)):hover,
+.sidebar .button:hover,
+a.profile-edit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
+}
+
+button:where(:not(.landing-btn)):where(:not(.toast-close)):where(:not(.logout)):where(:not(.verify-close-btn)):where(:not(.btn-ghost-flex)):where(:not(.delete-btn-ghost)):where(:not(.delete-back-link)):where(:not(.profile-delete-btn)):where(:not(.delete-btn-danger)):where(:not(.delete-submit-btn)):where(:not(.btn-delete-activity)):where(:not(.leave-btn)):active,
+.sidebar .button:active,
+a.profile-edit-btn:active {
+  background: var(--btn-secondary-active);
+  transform: translateY(0);
+}
+
+button.btn-action-secondary,
+.btn-secondary-block,
+.update-cancel-link {
+  background: var(--surface-muted);
+  border: 1px solid var(--border-warm);
+  color: var(--text-accent);
+}
+
+button.btn-action-secondary:active,
+.btn-secondary-block:active,
+.update-cancel-link:active {
+  background: var(--surface-panel);
+}
+
+.sidebar .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}

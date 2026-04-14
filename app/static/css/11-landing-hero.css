@@ -2,11 +2,10 @@
 
 .landing-page {
   font-family: "Manrope", Inter, sans-serif;
-  background: radial-gradient(circle at 12% 12%, #f7f1e9 0%, #f1e8dd 40%, #ece5db 100%);
   background:
-    radial-gradient(120% 85% at 8% 6%, rgba(255, 248, 238, 0.85) 0%, rgba(255, 248, 238, 0) 58%),
-    linear-gradient(180deg, #f3ebdf 0%, #ece5db 100%);
-  color: #3f3529;
+    radial-gradient(100% 80% at 10% 10%, rgba(221, 228, 213, 0.55) 0%, rgba(221, 228, 213, 0) 56%),
+    linear-gradient(180deg, var(--surface-page) 0%, var(--surface-panel) 100%);
+  color: var(--text-heading);
 }
 
 .landing-page .landing-main {
@@ -28,7 +27,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8c6f49;
+  color: var(--text-accent);
 }
 
 .landing-page .hero-title {
@@ -42,7 +41,7 @@
   max-width: 56ch;
   font-size: clamp(1rem, 1.9vw, 1.2rem);
   line-height: 1.7;
-  color: #5b4d3c;
+  color: var(--text-muted);
 }
 
 .landing-page .hero-actions {
@@ -72,17 +71,17 @@
 
 .landing-page .landing-btn-primary {
   color: #fff;
-  background: linear-gradient(125deg, #8a6a44, #b8966d);
+  background: linear-gradient(125deg, var(--btn-secondary), var(--sage-muted));
 }
 
 .landing-page .landing-btn-primary:active {
-  background: #7d5f3d;
+  background: var(--btn-secondary-active);
 }
 
 .landing-page .landing-btn-secondary {
-  background: #f4ebde;
-  border: 1px solid #d7c1a2;
-  color: #5a4630;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-warm);
+  color: var(--text-accent);
 }
 
 .landing-page .hero-meta {
@@ -94,11 +93,12 @@
 
 .landing-page .hero-meta span {
   border-radius: 999px;
-  border: 1px solid #d9c6ad;
-  background: #f6efe5;
+  border: 1px solid var(--border-warm);
+  background: var(--surface-muted);
   padding: 0.42rem 0.85rem;
   font-size: 0.84rem;
   font-weight: 600;
+  color: var(--text-accent);
 }
 
 .landing-page .hero-media {
@@ -111,10 +111,9 @@
   position: relative;
   border-radius: 2.4rem;
   overflow: hidden;
-  background: linear-gradient(160deg, #f9f2e8 0%, #e4d7c5 100%);
-  box-shadow:
-    0 28px 60px -18px rgba(58, 44, 22, 0.28),
-    0 10px 24px -14px rgba(58, 44, 22, 0.22);
+  background: linear-gradient(160deg, var(--surface-muted) 0%, var(--surface-panel) 100%);
+  border: 1px solid var(--border-warm);
+  box-shadow: none;
   transform-style: preserve-3d;
   transition: transform 220ms ease;
 }
@@ -134,12 +133,12 @@
   bottom: 1rem;
   border-radius: 999px;
   padding: 0.5rem 0.9rem;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(197, 169, 129, 0.45);
-  box-shadow: 0 12px 30px -16px rgba(58, 44, 22, 0.3);
+  background: rgba(253, 250, 244, 0.94);
+  border: 1px solid var(--border-warm);
+  box-shadow: none;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #5f472c;
+  color: var(--text-accent);
 }
 
 .landing-page [data-reveal] {

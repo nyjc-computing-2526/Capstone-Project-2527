@@ -10,10 +10,11 @@
       rel="stylesheet"
     />
     {% include "partials/stylesheets.html" %}
-    <title>Welcome to Capstone Project</title>
+    <title>Activity Alligator</title>
   </head>
   <body class="landing-page">
     {% include "partials/navbar-landing.html" %}
+    {% block content %}
 
     <main class="landing-main">
       <section class="hero" aria-labelledby="landing-title">
@@ -57,6 +58,7 @@
         </div>
       </section>
     </main>
+    {% endblock %}
 
     {% include "partials/footer.html" %}
     <script src="{{ url_for('static', filename='js/landing-hero.js') }}"></script>

@@ -26,6 +26,9 @@
 
     <div class="authcontainer">
       <div class="login-card">
+        <a href="{{ url_for('landing.index') }}" class="login-back-home-link">
+          Back to Home
+        </a>
         <h1>Log In</h1>
         <form action="{{ url_for('auth.login') }}" method="POST">
           <div class="input-fields-container">
@@ -37,7 +40,11 @@
             </div>
             <div class="g-recaptcha" data-sitekey="{{ config['RECAPTCHA_SITE_KEY'] }}"></div>
             <button type="submit">Log In</button>
-            <button type="button" onclick="window.location.href='{{ url_for('auth.register') }}'">
+            <button
+              type="button"
+              class="btn-action-secondary"
+              onclick="window.location.href='{{ url_for('auth.register') }}'"
+            >
               Register
             </button>
           </div>
