@@ -153,7 +153,7 @@ def verify_password():
 def logout():
     logout_user()
     flash("Logged out successfully", "success")
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('landing.index'))
 
 @bp.route('/view/<int:id>')  
 @login_required
