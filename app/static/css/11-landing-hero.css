@@ -12,14 +12,15 @@
   border-bottom: 1px solid rgba(21, 38, 31, 0.16);
 }
 
-header[data-nav-profile="landing"] {
+header[data-nav-profile="landing"],
+header[data-nav-profile="user"] {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: 1rem 1.25rem;
 }
 
-header[data-nav-profile="landing"] .nav-brand {
+header[data-nav-profile] .nav-brand {
   display: inline-flex;
   align-items: center;
   font-size: clamp(1.05rem, 1.3vw + 0.75rem, 1.35rem);
@@ -28,36 +29,41 @@ header[data-nav-profile="landing"] .nav-brand {
   color: var(--olive-950);
 }
 
-header[data-nav-profile="landing"] .nav-brand:hover,
-header[data-nav-profile="landing"] .nav-brand:focus-visible,
-header[data-nav-profile="landing"] .nav-brand-active {
+header[data-nav-profile] .nav-brand:hover,
+header[data-nav-profile] .nav-brand:focus-visible,
+header[data-nav-profile] .nav-brand-active {
   color: var(--olive-950);
 }
 
-header[data-nav-profile="landing"] .nav-panel {
+header[data-nav-profile] .nav-panel {
   display: flex;
   align-items: center;
   gap: 1rem;
   min-width: 0;
 }
 
-header[data-nav-profile="landing"] .nav-primary {
+header[data-nav-profile] .nav-primary {
   flex: 1;
   min-width: 0;
 }
 
-header[data-nav-profile="landing"] .nav-primary ul {
+header[data-nav-profile] .nav-primary ul {
   justify-content: center;
 }
 
-header[data-nav-profile="landing"] .nav-auth-actions {
+header[data-nav-profile] .nav-auth-actions {
   margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
 }
 
-header[data-nav-profile="landing"] .nav-menu-toggle {
+header[data-nav-profile] .nav-auth-form {
+  margin: 0;
+  display: inline-flex;
+}
+
+header[data-nav-profile] .nav-menu-toggle {
   width: auto;
   max-width: none;
   padding: 0.7rem 1rem;
@@ -69,43 +75,56 @@ header[data-nav-profile="landing"] .nav-menu-toggle {
   justify-self: end;
 }
 
-header[data-nav-profile="landing"] .nav-menu-toggle:hover,
-header[data-nav-profile="landing"] .nav-menu-toggle:focus-visible {
+header[data-nav-profile] .nav-menu-toggle:hover,
+header[data-nav-profile] .nav-menu-toggle:focus-visible {
   transform: none;
   box-shadow: none;
   background: rgba(255, 255, 255, 0.96);
 }
 
-header[data-nav-profile="landing"] .nav-menu-toggle:active {
+header[data-nav-profile] .nav-menu-toggle:active {
   transform: none;
   background: rgba(247, 250, 244, 0.98);
 }
 
-header[data-nav-profile="landing"] .nav-menu-toggle-text {
+header[data-nav-profile] .nav-menu-toggle-text {
   font-size: 0.92rem;
   font-weight: 800;
   line-height: 1;
 }
 
-header[data-nav-profile="landing"] .nav-auth-btn {
+header[data-nav-profile] .nav-auth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  max-width: none;
   border-radius: 999px;
   padding: 0.5rem 0.95rem;
   font-weight: 700;
   font-size: 0.9rem;
   text-decoration: none;
   line-height: 1.1;
+  cursor: pointer;
+  font-family: inherit;
 }
 
-header[data-nav-profile="landing"] .nav-auth-btn-login {
+header[data-nav-profile] .nav-auth-btn-login {
   border: 1px solid rgba(33, 57, 46, 0.24);
   background: rgba(247, 250, 244, 0.92);
   color: var(--text-accent-deep);
 }
 
-header[data-nav-profile="landing"] .nav-auth-btn-register {
+header[data-nav-profile] .nav-auth-btn-register {
   border: 1px solid transparent;
   background: linear-gradient(125deg, var(--btn-secondary), var(--sage-muted));
   color: #fff;
+}
+
+header[data-nav-profile] .nav-auth-btn-logout {
+  border: 1px solid rgba(112, 35, 35, 0.18);
+  background: rgba(255, 249, 249, 0.92);
+  color: var(--logout-text);
 }
 
 .landing-home footer {

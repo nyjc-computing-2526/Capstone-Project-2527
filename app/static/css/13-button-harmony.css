@@ -116,8 +116,9 @@ button.btn-action-secondary:active,
   transition: opacity var(--motion-fast) var(--motion-ease-snap);
 }
 
-a.nav-auth-btn-login,
-a.nav-auth-btn-register,
+.nav-auth-btn-login,
+.nav-auth-btn-register,
+.nav-auth-btn-logout,
 a.hero-edit-btn,
 button.landing-btn {
   transition:
@@ -131,11 +132,12 @@ button.landing-btn:hover {
   background-color: var(--btn-secondary-hover);
 }
 
-a.nav-auth-btn-register:hover {
+.nav-auth-btn-register:hover {
   background-color: var(--btn-secondary-hover);
 }
 
-a.nav-auth-btn-login:hover {
+.nav-auth-btn-login:hover,
+.nav-auth-btn-logout:hover {
   background-color: var(--surface-panel);
   border-color: var(--border-focus);
 }
@@ -145,11 +147,12 @@ button.landing-btn:active {
   background-color: var(--btn-secondary-active);
 }
 
-a.nav-auth-btn-register:active {
+.nav-auth-btn-register:active {
   background-color: var(--btn-secondary-active);
 }
 
-a.nav-auth-btn-login:active {
+.nav-auth-btn-login:active,
+.nav-auth-btn-logout:active {
   background-color: var(--surface-panel);
 }
 
