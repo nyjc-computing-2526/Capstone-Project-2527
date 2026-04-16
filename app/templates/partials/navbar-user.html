@@ -4,7 +4,7 @@
     <ul>
       <li>
         <a
-          href="{{ url_for('landing.homepage') }}"
+          href="{{ url_for('landing.homepage') if current_user.is_authenticated else url_for('landing.index') }}"
           {% if request.endpoint == 'landing.homepage' %}class="nav-active"{% endif %}
           >Home</a>
       </li>
@@ -14,6 +14,7 @@
           {% if request.endpoint == 'activities.activities' %}class="nav-active"{% endif %}
           >All Activities</a>
       </li>
+      {% if current_user.is_authenticated %}
       <li>
         <a
           href="{{ url_for('activities.my_activities') }}"
@@ -32,9 +33,25 @@
           {% if request.endpoint in ('auth.view_profile', 'auth.update_user') %}class="nav-active"{% endif %}
           >View Profile</a>
       </li>
+      {% else %}
+      <li>
+        <a
+          href="{{ url_for('auth.login') }}"
+          {% if request.endpoint == 'auth.login' %}class="nav-active"{% endif %}
+          >Log In</a>
+      </li>
+      <li>
+        <a
+          href="{{ url_for('auth.register') }}"
+          {% if request.endpoint == 'auth.register' %}class="nav-active"{% endif %}
+          >Register</a>
+      </li>
+      {% endif %}
     </ul>
   </div>
+  {% if current_user.is_authenticated %}
   <form action="{{ url_for('auth.logout') }}" method="POST">
     <button type="submit" class="logout">Log Out</button>
   </form>
+  {% endif %}
 </header>

@@ -49,7 +49,9 @@
     radial-gradient(120% 80% at 7% 2%, rgba(148, 181, 159, 0.14) 0%, rgba(148, 181, 159, 0) 56%);
 }
 
-.app-hero-page > :not(.app-hero-viewport) {
+.app-hero-page > header,
+.app-hero-page > main,
+.app-hero-page > footer {
   position: relative;
   z-index: 1;
 }

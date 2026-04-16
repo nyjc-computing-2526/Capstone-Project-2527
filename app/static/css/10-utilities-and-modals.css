@@ -420,7 +420,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
@@ -437,6 +440,7 @@
   border-radius: 1.25rem;
   width: min(420px, 90vw);
   box-shadow: 0 8px 32px rgba(32, 38, 28, 0.2);
+  max-height: min(90dvh, 42rem);
   overflow: hidden;
   position: relative;
 }
@@ -498,7 +502,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
@@ -515,6 +522,7 @@
   border-radius: 1.25rem;
   width: min(420px, 90vw);
   box-shadow: 0 8px 32px rgba(32, 38, 28, 0.2);
+  max-height: min(90dvh, 42rem);
   overflow: hidden;
   position: relative;
 }
