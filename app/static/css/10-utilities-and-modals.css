@@ -222,7 +222,7 @@
   gap: 3rem;
   align-items: flex-start;
   flex-direction: row;
-  width: min(56rem, 100%);
+  width: 100%;
   max-width: 100%;
   box-sizing: border-box;
 }

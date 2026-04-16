@@ -2,6 +2,10 @@
 
 /* Activity detail: hero, status pills, participants. */
 
+.activity-card-page {
+  padding-bottom: clamp(3rem, 8vh, 5rem);
+}
+
 .hero {
   background:
     radial-gradient(115% 120% at 0% 0%, rgba(120, 158, 133, 0.28) 0%, rgba(120, 158, 133, 0) 58%),

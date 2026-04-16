@@ -1,0 +1,165 @@
+/* Shared glass surfaces + app-page hero image backdrop. */
+
+:root {
+  --glass-surface:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.06)),
+    linear-gradient(145deg, rgba(247, 250, 244, 0.56), rgba(227, 235, 227, 0.32));
+  --glass-surface-strong:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)),
+    linear-gradient(145deg, rgba(248, 251, 246, 0.64), rgba(229, 237, 229, 0.4));
+  --glass-border: rgba(250, 252, 248, 0.38);
+  --glass-border-strong: rgba(255, 255, 255, 0.56);
+  --shadow-glass: 0 20px 42px rgba(31, 51, 42, 0.16);
+  --shadow-glass-hover: 0 24px 48px rgba(31, 51, 42, 0.19);
+}
+
+.app-hero-page {
+  position: relative;
+  background: transparent;
+  min-height: 100vh;
+}
+
+.app-hero-page .app-hero-viewport {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.app-hero-page .app-hero-viewport::before,
+.app-hero-page .app-hero-viewport::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.app-hero-page .app-hero-viewport::before {
+  background-image: url("../images/alligator-hero-image.png");
+  background-size: cover;
+  background-position: 88% center;
+  background-repeat: no-repeat;
+  opacity: 0.6;
+  transform: scale(1.02);
+}
+
+.app-hero-page .app-hero-viewport::after {
+  background:
+    linear-gradient(110deg, rgba(238, 242, 236, 0.42) 0%, rgba(238, 242, 236, 0.2) 38%, rgba(226, 233, 225, 0.34) 100%),
+    radial-gradient(120% 80% at 7% 2%, rgba(148, 181, 159, 0.14) 0%, rgba(148, 181, 159, 0) 56%);
+}
+
+.app-hero-page > :not(.app-hero-viewport) {
+  position: relative;
+  z-index: 1;
+}
+
+main,
+.all-activities,
+.create-activity,
+.auth-page,
+.activity-card-page,
+.profile-page,
+.filler {
+  background: transparent;
+}
+
+.app-hero-page main,
+.app-hero-page .all-activities,
+.app-hero-page .create-activity,
+.app-hero-page .activity-card-page,
+.app-hero-page .profile-page {
+  position: relative;
+  padding-bottom: clamp(3rem, 8vh, 5rem);
+}
+
+.app-hero-page .content,
+.app-hero-page .page-card {
+  width: min(1120px, 100%);
+  max-width: min(1120px, 100%);
+  margin-inline: auto;
+}
+
+.app-hero-page .content {
+  margin-right: auto;
+}
+
+.all-activities .activities-grid,
+.profile-page .activities {
+  gap: 1rem;
+}
+
+.all-activities .page-card {
+  border-color: var(--border-warm);
+}
+
+.content,
+.sidebar,
+.login-card,
+.page-card,
+.activity-card,
+.activity-detail-card,
+.password-modal-card,
+.delete-modal-card,
+.landing-home .hero-home-copy {
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: blur(14px) saturate(145%);
+  -webkit-backdrop-filter: blur(14px) saturate(145%);
+}
+
+.landing-home .hero-home-copy {
+  background: var(--glass-surface-strong);
+  border-color: var(--glass-border-strong);
+}
+
+.activity-card {
+  background: var(--glass-surface);
+}
+
+.activity-card-link:hover .activity-card {
+  background: var(--glass-surface-strong);
+  border-color: var(--glass-border-strong);
+  box-shadow: var(--shadow-glass-hover);
+}
+
+.activities .activity-card-link:nth-child(4n + 1):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n + 1):hover .activity-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.12)),
+    linear-gradient(145deg, rgba(236, 245, 235, 0.66), rgba(223, 236, 226, 0.38));
+}
+
+.activities .activity-card-link:nth-child(4n + 2):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n + 2):hover .activity-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.12)),
+    linear-gradient(145deg, rgba(234, 243, 236, 0.66), rgba(219, 234, 225, 0.38));
+}
+
+.activities .activity-card-link:nth-child(4n + 3):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n + 3):hover .activity-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.12)),
+    linear-gradient(145deg, rgba(240, 244, 234, 0.66), rgba(227, 233, 220, 0.38));
+}
+
+.activities .activity-card-link:nth-child(4n):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n):hover .activity-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.12)),
+    linear-gradient(145deg, rgba(233, 242, 233, 0.66), rgba(218, 231, 222, 0.38));
+}
+
+@media (max-width: 760px) {
+  .app-hero-page .app-hero-viewport::before {
+    background-position: 82% center;
+  }
+}
+
+@media (max-aspect-ratio: 4/3) {
+  .app-hero-page .app-hero-viewport::before {
+    background-position: 80% center;
+  }
+}

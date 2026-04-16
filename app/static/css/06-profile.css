@@ -10,9 +10,8 @@
 }
 
 .profile-card {
-  width: min(38rem, 100%);
+  width: 100%;
   min-height: 28rem;
-  box-shadow: none;
 }
 
 .profile-card h1 {
