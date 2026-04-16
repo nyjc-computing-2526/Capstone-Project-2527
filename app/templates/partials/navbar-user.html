@@ -1,4 +1,7 @@
-<header data-nav-profile="user">
+<header
+  data-nav-profile="user"
+  data-nav-collapse-media="(max-width: 1080px), (max-aspect-ratio: 4/3)"
+>
   <a
     href="{{ url_for('landing.homepage') if current_user.is_authenticated else url_for('landing.index') }}"
     class="nav-brand{% if request.endpoint == 'landing.homepage' %} nav-brand-active{% endif %}"
