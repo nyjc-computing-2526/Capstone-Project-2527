@@ -1,1 +1,5 @@
-Flask==3.0.0
+Flask
+flask-login
+psycopg2-binary
+python-dotenv
+resend
