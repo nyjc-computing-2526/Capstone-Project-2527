@@ -42,16 +42,17 @@ main {
   flex: 1;
   background-color: var(--surface-panel);
   padding: 1em;
+  gap: 1em;
 }
 
 .content {
   flex: 1;
   background-color: var(--surface-card);
+  box-sizing: border-box;
   padding: 2rem;
   border-radius: 1.25rem;
   border: 1px solid var(--border-warm);
   box-shadow: var(--shadow-card);
-  margin-right: 1em;
 }
 
 .content h1 {
@@ -75,6 +76,9 @@ main {
 .activity-card {
   background-color: var(--surface-sage);
   border: 1px solid var(--border-warm);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   padding: 1rem;
   border-radius: 1rem;
   box-shadow: var(--shadow-soft);

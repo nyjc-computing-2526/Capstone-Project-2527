@@ -11,6 +11,14 @@
   --glass-border-strong: rgba(255, 255, 255, 0.56);
   --shadow-glass: 0 20px 42px rgba(31, 51, 42, 0.16);
   --shadow-glass-hover: 0 24px 48px rgba(31, 51, 42, 0.19);
+  --nav-glass-surface:
+    linear-gradient(180deg, rgba(249, 251, 247, 0.7), rgba(229, 236, 228, 0.46)),
+    linear-gradient(140deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.12));
+  --nav-glass-surface-strong:
+    linear-gradient(180deg, rgba(250, 252, 248, 0.84), rgba(231, 238, 231, 0.62)),
+    linear-gradient(140deg, rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0.18));
+  --nav-glass-border: rgba(250, 252, 248, 0.48);
+  --nav-glass-shadow: 0 18px 38px rgba(31, 51, 42, 0.16);
 }
 
 .app-hero-page {
@@ -54,6 +62,98 @@
 .app-hero-page > footer {
   position: relative;
   z-index: 1;
+}
+
+header[data-nav-profile="user"],
+header[data-nav-profile="landing"] {
+  background: var(--nav-glass-surface);
+  border-bottom-color: rgba(250, 252, 248, 0.2);
+  box-shadow: var(--nav-glass-shadow);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+}
+
+.app-hero-page > header[data-nav-profile="user"],
+.landing-page > header[data-nav-profile="landing"] {
+  width: min(1120px, calc(100% - 1.5rem));
+  margin: clamp(0.75rem, 2.5vw, 1.1rem) auto 0;
+  padding: clamp(0.85rem, 2vw, 1.1rem) clamp(1rem, 2.6vw, 1.35rem);
+  border: 1px solid var(--nav-glass-border);
+  border-radius: 1.35rem;
+  box-sizing: border-box;
+}
+
+header[data-nav-profile="user"] .nav-panel,
+header[data-nav-profile="landing"] .nav-panel {
+  gap: 0.85rem;
+}
+
+header[data-nav-profile="user"] .nav-primary ul,
+header[data-nav-profile="landing"] .nav-primary ul {
+  gap: clamp(0.45rem, 1vw, 0.95rem);
+}
+
+header[data-nav-profile="user"] li a,
+header[data-nav-profile="landing"] li a {
+  font-size: clamp(0.97rem, 0.35vw + 0.88rem, 1.04rem);
+  padding: 0.58rem 0.82rem;
+  border-radius: 999px;
+}
+
+header[data-nav-profile="user"] li a:hover,
+header[data-nav-profile="user"] li a:focus-visible,
+header[data-nav-profile="landing"] li a:hover,
+header[data-nav-profile="landing"] li a:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--olive-950);
+}
+
+header[data-nav-profile="user"] .nav-highlight-pill,
+header[data-nav-profile="landing"] .nav-highlight-pill {
+  background-color: rgba(31, 51, 42, 0.7);
+}
+
+header[data-nav-profile="user"] .nav-menu-toggle,
+header[data-nav-profile="landing"] .nav-menu-toggle,
+header[data-nav-profile="landing"] .nav-auth-btn-login,
+header[data-nav-profile="landing"] .nav-auth-btn-register,
+header[data-nav-profile="user"] .nav-auth-btn-login,
+header[data-nav-profile="user"] .nav-auth-btn-logout {
+  background: rgba(247, 250, 244, 0.74);
+  border-color: rgba(33, 57, 46, 0.18);
+}
+
+header[data-nav-profile="user"] .nav-auth-btn-register,
+header[data-nav-profile="landing"] .nav-auth-btn-register {
+  background:
+    linear-gradient(135deg, rgba(51, 82, 68, 0.96), rgba(120, 158, 133, 0.9));
+}
+
+@media (min-width: 1081px) and (min-aspect-ratio: 4/3) {
+  header[data-nav-profile="user"] .nav-panel,
+  header[data-nav-profile="landing"] .nav-panel {
+    padding: 0.38rem 0.42rem;
+    border: 1px solid rgba(250, 252, 248, 0.34);
+    border-radius: 1.1rem;
+    background:
+      linear-gradient(180deg, rgba(249, 251, 247, 0.34), rgba(229, 236, 228, 0.2)),
+      linear-gradient(140deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26);
+  }
+
+  header[data-nav-profile="user"] .nav-primary,
+  header[data-nav-profile="user"] .nav-auth-actions,
+  header[data-nav-profile="landing"] .nav-primary,
+  header[data-nav-profile="landing"] .nav-auth-actions {
+    padding: 0.2rem;
+    border-radius: 0.95rem;
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  header[data-nav-profile="user"] .nav-auth-actions,
+  header[data-nav-profile="landing"] .nav-auth-actions {
+    gap: 0.45rem;
+  }
 }
 
 main,

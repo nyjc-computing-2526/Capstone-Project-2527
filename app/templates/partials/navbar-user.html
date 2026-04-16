@@ -1,57 +1,74 @@
-<header data-nav-profile="user">
-  <div class="nav-primary">
-    <span class="nav-highlight-pill" aria-hidden="true"></span>
-    <ul>
-      <li>
-        <a
-          href="{{ url_for('landing.homepage') if current_user.is_authenticated else url_for('landing.index') }}"
-          {% if request.endpoint == 'landing.homepage' %}class="nav-active"{% endif %}
-          >Home</a>
-      </li>
-      <li>
-        <a
-          href="{{ url_for('activities.activities') }}"
-          {% if request.endpoint == 'activities.activities' %}class="nav-active"{% endif %}
-          >All Activities</a>
-      </li>
+<header
+  data-nav-profile="user"
+  data-nav-collapse-media="(max-width: 1080px), (max-aspect-ratio: 4/3)"
+>
+  <a
+    href="{{ url_for('landing.homepage') if current_user.is_authenticated else url_for('landing.index') }}"
+    class="nav-brand{% if request.endpoint == 'landing.homepage' %} nav-brand-active{% endif %}"
+  >
+    Activity Alligator
+  </a>
+  <button
+    type="button"
+    class="nav-menu-toggle"
+    aria-expanded="false"
+    aria-controls="user-nav-panel"
+    aria-label="Open navigation menu"
+    hidden
+  >
+    <span class="nav-menu-toggle-text">Menu</span>
+  </button>
+  <div class="nav-panel" id="user-nav-panel">
+    <nav class="nav-primary" aria-label="Primary">
+      <span class="nav-highlight-pill" aria-hidden="true"></span>
+      <ul>
+        <li>
+          <a
+            href="{{ url_for('landing.homepage') if current_user.is_authenticated else url_for('landing.index') }}"
+            {% if request.endpoint == 'landing.homepage' %}class="nav-active"{% endif %}
+            >Home</a>
+        </li>
+        <li>
+          <a
+            href="{{ url_for('activities.activities') }}"
+            {% if request.endpoint == 'activities.activities' %}class="nav-active"{% endif %}
+            >All Activities</a>
+        </li>
+        {% if current_user.is_authenticated %}
+        <li>
+          <a
+            href="{{ url_for('activities.my_activities') }}"
+            {% if request.endpoint == 'activities.my_activities' %}class="nav-active"{% endif %}
+            >My Activities</a>
+        </li>
+        <li>
+          <a
+            href="{{ url_for('activities.create_activities') }}"
+            {% if request.endpoint == 'activities.create_activities' %}class="nav-active"{% endif %}
+            >Create Activity</a>
+        </li>
+        <li>
+          <a
+            href="{{ url_for('auth.view_profile', id=current_user.id) }}"
+            {% if request.endpoint in ('auth.view_profile', 'auth.update_user') %}class="nav-active"{% endif %}
+            >View Profile</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    <div class="nav-auth-actions{% if current_user.is_authenticated %} nav-auth-actions--single{% endif %}">
       {% if current_user.is_authenticated %}
-      <li>
-        <a
-          href="{{ url_for('activities.my_activities') }}"
-          {% if request.endpoint == 'activities.my_activities' %}class="nav-active"{% endif %}
-          >My Activities</a>
-      </li>
-      <li>
-        <a
-          href="{{ url_for('activities.create_activities') }}"
-          {% if request.endpoint == 'activities.create_activities' %}class="nav-active"{% endif %}
-          >Create Activity</a>
-      </li>
-      <li>
-        <a
-          href="{{ url_for('auth.view_profile', id=current_user.id) }}"
-          {% if request.endpoint in ('auth.view_profile', 'auth.update_user') %}class="nav-active"{% endif %}
-          >View Profile</a>
-      </li>
+      <form action="{{ url_for('auth.logout') }}" method="POST" class="nav-auth-form">
+        <button type="submit" class="nav-auth-btn nav-auth-btn-logout">Log Out</button>
+      </form>
       {% else %}
-      <li>
-        <a
-          href="{{ url_for('auth.login') }}"
-          {% if request.endpoint == 'auth.login' %}class="nav-active"{% endif %}
-          >Log In</a>
-      </li>
-      <li>
-        <a
-          href="{{ url_for('auth.register') }}"
-          {% if request.endpoint == 'auth.register' %}class="nav-active"{% endif %}
-          >Register</a>
-      </li>
+      <a href="{{ url_for('auth.login') }}" class="nav-auth-btn nav-auth-btn-login">
+        Log In
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="nav-auth-btn nav-auth-btn-register">
+        Register
+      </a>
       {% endif %}
-    </ul>
+    </div>
   </div>
-  {% if current_user.is_authenticated %}
-  <form action="{{ url_for('auth.logout') }}" method="POST">
-    <button type="submit" class="logout">Log Out</button>
-  </form>
-  {% endif %}
 </header>

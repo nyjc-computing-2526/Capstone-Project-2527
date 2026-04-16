@@ -231,13 +231,16 @@
   flex: 1;
   min-width: 0;
   padding-right: 2em;
+  box-sizing: border-box;
 }
 
 .profile-activities-stack {
   display: flex;
   flex-direction: column;
+  width: 100%;
   margin-bottom: 1rem;
-  gap: 2rem;
+  gap: 1.25rem;
+  box-sizing: border-box;
 }
 
 .profile-activities-title {
@@ -247,8 +250,16 @@
   color: var(--text-heading);
 }
 
+.profile-activities-column .activities,
+.profile-activities-column .activity-card-link {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .activity-card--block {
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .delete-modal-icon {
