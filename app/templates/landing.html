@@ -13,14 +13,12 @@
     <title>Activity Alligator</title>
   </head>
   <body class="landing-page{% if request.endpoint == 'landing.index' %} landing-home{% endif %}">
-    {% if request.endpoint == 'landing.index' %}
-      <div class="landing-bg-viewport" aria-hidden="true">
-        <img
-          src="{{ url_for('static', filename='images/alligator-hero-image.png') }}"
-          alt=""
-        />
-      </div>
-    {% endif %}
+    <div class="landing-bg-viewport" aria-hidden="true">
+      <img
+        src="{{ url_for('static', filename='images/alligator-hero-image.png') }}"
+        alt=""
+      />
+    </div>
     {% include "partials/navbar-landing.html" %}
     {% block content %}
 

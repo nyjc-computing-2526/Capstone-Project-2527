@@ -6,7 +6,8 @@
     <title>My activities</title>
     {% include "partials/stylesheets.html" %}
   </head>
-  <body>
+  <body class="app-hero-page">
+    <div class="app-hero-viewport" aria-hidden="true"></div>
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
     messages %}
     <div class="toast-container">
