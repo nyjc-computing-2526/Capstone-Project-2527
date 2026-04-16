@@ -145,11 +145,11 @@ main {
 }
 
 @media (max-width: 980px) {
-  header[data-nav-profile] {
+  header[data-nav-profile="user"] {
     align-items: flex-start;
   }
 
-  header[data-nav-profile] .nav-primary {
+  header[data-nav-profile="user"] .nav-primary {
     flex: 1 1 100%;
   }
 
@@ -194,49 +194,140 @@ main {
     display: none;
   }
 
-  header[data-nav-profile] .nav-primary {
+  header[data-nav-profile="landing"]:not([data-nav-enhanced="true"]) {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  header[data-nav-profile="landing"]:not([data-nav-enhanced="true"]) .nav-panel {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  header[data-nav-profile="landing"]:not([data-nav-enhanced="true"]) .nav-primary {
     width: 100%;
   }
 
-  header ul {
+  header[data-nav-profile="landing"]:not([data-nav-enhanced="true"]) .nav-primary ul {
     width: 100%;
     flex-wrap: wrap;
   }
 
-  header li {
+  header[data-nav-profile="landing"]:not([data-nav-enhanced="true"]) .nav-primary li {
     flex: 1 1 11rem;
   }
 
-  header li a {
+  header[data-nav-profile="landing"]:not([data-nav-enhanced="true"]) .nav-primary li a {
     width: 100%;
     padding: 0.75rem 0.9rem;
     text-align: center;
     box-sizing: border-box;
   }
 
-  header li a.nav-active {
-    text-decoration: underline;
-    text-decoration-color: currentColor;
-  }
-
-  header[data-nav-profile="landing"] .nav-auth-actions,
-  header[data-nav-profile="user"] form {
+  header[data-nav-profile="landing"]:not([data-nav-enhanced="true"]) .nav-auth-actions {
     width: 100%;
     margin-left: 0;
-  }
-
-  header[data-nav-profile="landing"] .nav-auth-actions {
     justify-content: flex-start;
     gap: 0.75rem;
   }
 
-  header[data-nav-profile="landing"] .nav-auth-btn {
+  header[data-nav-profile="landing"]:not([data-nav-enhanced="true"]) .nav-auth-btn {
     flex: 1 1 10rem;
     display: inline-flex;
     justify-content: center;
   }
 
+  header[data-nav-profile="user"] .nav-primary {
+    width: 100%;
+  }
+
+  header[data-nav-profile="user"] ul {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  header[data-nav-profile="user"] li {
+    flex: 1 1 11rem;
+  }
+
+  header[data-nav-profile="user"] li a {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  header[data-nav-profile="user"] li a.nav-active {
+    text-decoration: underline;
+    text-decoration-color: currentColor;
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.85rem;
+    align-items: center;
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] .nav-menu-toggle {
+    display: inline-flex;
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] .nav-panel {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 0.9rem;
+    padding-top: 0.95rem;
+    border-top: 1px solid rgba(21, 38, 31, 0.12);
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] .nav-panel[hidden] {
+    display: none;
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] .nav-primary {
+    width: 100%;
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] .nav-primary ul {
+    width: 100%;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0.45rem;
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] .nav-primary li {
+    flex: none;
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] .nav-primary li a {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    text-align: left;
+    box-sizing: border-box;
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] .nav-primary li a.nav-active {
+    text-decoration: underline;
+    text-decoration-color: currentColor;
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] .nav-auth-actions {
+    width: 100%;
+    margin-left: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] .nav-auth-btn {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
   header[data-nav-profile="user"] form {
+    width: 100%;
+    margin-left: 0;
     display: flex;
     justify-content: flex-end;
   }
@@ -349,8 +440,12 @@ main {
 }
 
 @media (max-width: 560px) {
-  header li {
+  header[data-nav-profile="user"] li {
     flex-basis: 100%;
+  }
+
+  header[data-nav-profile="landing"][data-nav-enhanced="true"] .nav-auth-actions {
+    grid-template-columns: 1fr;
   }
 
   .all-activities,
