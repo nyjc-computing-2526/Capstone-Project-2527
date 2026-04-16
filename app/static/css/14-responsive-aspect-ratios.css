@@ -140,7 +140,7 @@ main {
 .password-modal-card {
   width: min(26rem, calc(100vw - 1.5rem));
   max-height: min(90dvh, 42rem);
-  overflow: auto;
+  overflow: hidden;
   padding: clamp(1.25rem, 4vw, 2.5rem);
 }
 
