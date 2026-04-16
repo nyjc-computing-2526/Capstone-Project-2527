@@ -112,16 +112,17 @@
   border-radius: 1.25rem;
   width: 28rem;
   max-width: 90%;
-  text-align: center;
+  text-align: left;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
   position: relative;
 }
 
 .login-card h1 {
   margin-top: 0;
-  margin-bottom: 1.75rem;
+  margin-bottom: 0.55rem;
   font-size: 2rem;
   font-weight: bold;
+  color: var(--text-heading);
 }
 
 .input-group input {
@@ -135,7 +136,6 @@
 
 .forgot-pass {
   display: inline-block;
-  margin-top: 1.5rem;
   color: var(--text-accent);
   font-weight: 600;
 }
@@ -159,13 +159,75 @@
   text-align: center;
 }
 
+.auth-page {
+  background:
+    radial-gradient(120% 90% at 8% 8%, rgba(148, 181, 159, 0.2) 0%, rgba(148, 181, 159, 0) 48%),
+    linear-gradient(180deg, #f5f8f2 0%, #edf3ea 100%);
+}
+
 .authcontainer {
-  background-color: white;
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   width: 100vw;
+}
+
+.authcontainer .input-fields-container {
+  align-items: stretch;
+}
+
+.authcontainer form {
+  width: 100%;
+}
+
+.auth-kicker {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-accent);
+}
+
+.auth-lead {
+  margin: 0 0 1.5rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.auth-field-label {
+  display: inline-block;
+  margin: 0 0 0.45rem;
+}
+
+.auth-recaptcha-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.auth-links-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-top: 1.4rem;
+}
+
+.auth-switch-copy {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.auth-inline-link {
+  color: var(--text-accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
 }
 
 .email-group {
