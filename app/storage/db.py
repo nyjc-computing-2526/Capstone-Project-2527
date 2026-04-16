@@ -164,13 +164,19 @@ def delete_participant_activity(activity_id):
     query = """DELETE FROM participants WHERE activity_id = %s"""
     left = db_execute(sql_query=query, params=[activity_id], fetch=None)
     
-    return (left == 1)
+    return (left >= 0)
 
 def delete_participant_user(user_id):
     query = """DELETE FROM participants WHERE user_id = %s"""
     left = db_execute(sql_query=query, params=[user_id], fetch=None)
     
-    return (left == 1)
+    return (left >= 0)
+
+def delete_verification_tokens_for_user(user_id):
+    query = """DELETE FROM verification_tokens WHERE user_id = %s"""
+    deleted = db_execute(sql_query=query, params=[user_id], fetch=None)
+
+    return (deleted >= 0)
 
 ## ========= User Functions ===========
 

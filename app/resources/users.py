@@ -228,13 +228,24 @@ class UserResource:
             ValueError: If deletion fails.
         """
         try:
-            success = db.delete_participant_user(self.user_id)
-            
+            user = db.get_user_by_id(self.user_id)
+            if user is None:
+                raise ValueError(f"User {self.user_id} not found")
+
+            for activity in db.get_owned(self.user_id):
+                activity_id = activity["id"]
+                db.delete_participant_activity(activity_id)
+                deleted_activity = db.delete_activity(activity_id)
+                if not deleted_activity:
+                    raise ValueError(f"Failed to delete owned activity {activity_id}")
+
+            db.delete_participant_user(self.user_id)
+            db.delete_verification_tokens_for_user(self.user_id)
+
+            success = db.delete_user(self.user_id)
             if not success:
                 raise ValueError(f"User {self.user_id} not found")
 
-            success = db.delete_user(self.user_id)
-            
             return success
         except ValueError:
             raise
