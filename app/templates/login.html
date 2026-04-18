@@ -1,29 +1,81 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% include "partials/stylesheets.html" %}
     <title>Login Page</title>
   </head>
-  <body>
+  <body class="auth-page">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">
+              <span>{{ message }}</span>
+              <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <script>
+      document.querySelectorAll('.toast').forEach(toast => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+    </script>
+
     <div class="authcontainer">
       <div class="login-card">
+        <a href="{{ url_for('landing.index') }}" class="login-back-home-link">
+          Back to Home
+        </a>
+        <p class="auth-kicker">Welcome back</p>
         <h1>Log In</h1>
+        <p class="auth-lead">
+          Sign in to check activity updates, manage your plans, and keep everything in one place.
+        </p>
         <form action="{{ url_for('auth.login') }}" method="POST">
           <div class="input-fields-container">
             <div class="input-group">
-              <input type="email" name="email" placeholder="Email" required />
+              <label class="field-label auth-field-label" for="login-email">Email</label>
+              <input
+                id="login-email"
+                type="email"
+                name="email"
+                placeholder="Email"
+                autocomplete="email"
+                required
+              />
             </div>
             <div class="input-group">
-              <input type="password" name="password" placeholder="Password" required />
+              <label class="field-label auth-field-label" for="login-password">Password</label>
+              <input
+                id="login-password"
+                type="password"
+                name="password"
+                placeholder="Password"
+                autocomplete="current-password"
+                required
+              />
+            </div>
+            <div class="auth-recaptcha-wrap">
+              <div class="g-recaptcha" data-sitekey="{{ config['RECAPTCHA_SITE_KEY'] }}"></div>
             </div>
             <button type="submit">Log In</button>
-            <button type="button" onclick="window.location.href='{{ url_for('auth.register') }}'">
-              Register
-            </button>
           </div>
         </form>
-        <a href="{{ url_for('auth.forgot_password') }}" class="forgot-pass">Forgot password?</a>
+        <div class="auth-links-stack">
+          <a href="{{ url_for('auth.forgot_password') }}" class="forgot-pass">Forgot password?</a>
+          <p class="auth-switch-copy">
+            Need an account?
+            <a href="{{ url_for('auth.register') }}" class="auth-inline-link">Register here</a>
+          </p>
+        </div>
       </div>
     </div>
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </body>
 </html>

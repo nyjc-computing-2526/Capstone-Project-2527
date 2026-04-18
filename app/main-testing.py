@@ -6,9 +6,10 @@ without blueprints. Run from repo root: python app/main-testing.py
 from __future__ import annotations
 
 import importlib.util
+from datetime import datetime, timezone
 from pathlib import Path
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 
 _APP_DIR = Path(__file__).resolve().parent
 
@@ -27,6 +28,59 @@ app = Flask(
     static_folder=str(_APP_DIR / "static"),
 )
 app.secret_key = "main-testing-secret"
+
+# Static UI server has no Flask-Login; templates still reference current_user.
+_DEMO_USER_ID = 1
+
+
+class _MockCurrentUser:
+    is_authenticated = True
+    id = _DEMO_USER_ID
+    name = "Demo User"
+    email = "demo@example.com"
+    user_class = "Demo Class"
+
+
+_mock_current_user = _MockCurrentUser()
+
+
+@app.context_processor
+def _inject_current_user():
+    return {"current_user": _mock_current_user}
+
+
+def _parse_dt_utc(value):
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        dt = value
+    else:
+        s = str(value).replace("Z", "+00:00")
+        dt = datetime.fromisoformat(s)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
+def _activity_status(activity: dict) -> str:
+    """Match activities.activity_details status logic (see app/routes/activities.py)."""
+    now = datetime.now(timezone.utc)
+    started_at = activity.get("started_at")
+    ended_at = activity.get("ended_at")
+    if not started_at or not ended_at:
+        return "upcoming"
+    start = _parse_dt_utc(started_at)
+    end = _parse_dt_utc(ended_at)
+    if now < start:
+        return "upcoming"
+    if start <= now <= end:
+        return "ongoing"
+    return "completed"
+
+
+_DEMO_PARTICIPANTS = [
+    {"id": 1, "name": "Demo Organizer"},
+]
 
 # Lets you open /auth/reset-password with no ?token= for UI inspection; form POST still works.
 _DUMMY_RESET_TOKEN = "main-testing-ui-token"
@@ -143,12 +197,12 @@ def auth_reset_password():
     return render_template("resetpassword.html", token=token)
 
 
-@app.route("/auth/update/<int:id>", methods=["GET", "POST"], endpoint="auth.update_user")
-def auth_update_user(id: int):
+@app.route("/auth/update", methods=["GET", "POST"], endpoint="auth.update_user")
+def auth_update_user():
     if request.method == "POST":
         flash("Profile updated successfully", "success")
         return redirect(url_for("activities.activities"))
-    return redirect(url_for("auth_update"))
+    return render_template("editprofile.html")
 
 
 @app.route("/auth/delete/<int:id>", methods=["POST"], endpoint="auth.delete_user")
@@ -157,17 +211,29 @@ def auth_delete_user(id: int):
     return redirect(url_for("landing.index"))
 
 
-# Profile/edit profile URLs used by templates (not on auth blueprint in production)
-@app.route("/auth/view", endpoint="auth_view")
-def auth_view():
-    return render_template("profile.html")
+@app.route("/auth/verify-password", methods=["POST"], endpoint="auth.verify_password")
+def auth_verify_password():
+    """Stub for edit-profile modal; always accepts in static UI server."""
+    return jsonify({"valid": True})
 
 
-@app.route("/auth/update", methods=["GET", "POST"], endpoint="auth_update")
-def auth_update():
-    if request.method == "POST":
-        return redirect(url_for("auth_view"))
-    return render_template("editprofile.html")
+@app.route("/auth/view/<int:id>", endpoint="auth.view_profile")
+def auth_view_profile(id: int):
+    user_data = {
+        "id": id,
+        "name": _mock_current_user.name,
+        "email": _mock_current_user.email,
+    }
+    return render_template(
+        "profile.html",
+        user_data=user_data,
+        activity_data=enrich_for_cards(list(_DEMO_ACTIVITIES)),
+    )
+
+
+@app.route("/auth/view")
+def auth_view_redirect():
+    return redirect(url_for("auth.view_profile", id=_DEMO_USER_ID))
 
 
 # --- activities (prefix /activities; mirrors app/routes/activities.py) ---
@@ -180,14 +246,22 @@ def auth_update():
     endpoint="activities.activities",
 )
 def activities_list():
-    return render_template("allactivities.html", data=enrich_for_cards(list(_DEMO_ACTIVITIES)))
+    cards = enrich_for_cards(list(_DEMO_ACTIVITIES))
+    return render_template(
+        "allactivities.html",
+        upcoming=cards,
+        ongoing=[],
+        completed=[],
+    )
 
 
 @app.route("/activities/myactivities", methods=["GET"], endpoint="activities.my_activities")
 def activities_my_activities():
+    cards = enrich_for_cards(list(_DEMO_ACTIVITIES))
     return render_template(
         "myactivities.html",
-        activities=enrich_for_cards(list(_DEMO_ACTIVITIES)),
+        joined=cards,
+        owned=cards,
     )
 
 
@@ -230,10 +304,12 @@ def activities_activity_details(id: int):
         flash("Activity not found.", "error")
         return redirect(url_for("activities.activities"))
     return render_template(
-        "activity_details.html",
+        "activitydetails.html",
         data=row,
         schedule=schedule_for_detail(row),
         organizer_email="organizer@example.com",
+        participants=_DEMO_PARTICIPANTS,
+        status=_activity_status(row),
     )
 
 
@@ -265,9 +341,10 @@ def activity_card_demo():
     return render_template("activitycard.html")
 
 
-@app.route("/legal", methods=["GET"])
-def legal_alias():
-    return redirect(url_for("landing.privacy_policy"))
+@app.route("/legal", methods=["GET"], endpoint="landing.legal")
+def landing_legal():
+    """Same URL and endpoint as app/routes/landing.py `legal` (footer link)."""
+    return render_template("legal.html")
 
 
 @app.route("/login", methods=["GET"])

@@ -1,54 +1,34 @@
-<!doctype html>
-<html>
-  <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://gstatic.com" crossorigin />
-    <link href="https://googleapis.com" rel="stylesheet" />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
-    <title>Legal &amp; compliance — Capstone Project</title>
-  </head>
-  <body>
-    <header>
-      <ul>
-        <li><a href="/">Website name</a></li>
-        <li><a href="/about">About Us</a></li>
-        <li><a href="/features">Features</a></li>
-        <li><a href="/contact">Contact</a></li>
-      </ul>
-    </header>
-    <h1 class="headline">Legal &amp; compliance</h1>
-    <div class="bottomhalf">
-      <div>
-        <p class="description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec
-          odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla
-          quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent
-          mauris.
-        </p>
-        <p class="description">
-          Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum
-          lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora
-          torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales
-          ligula in libero.
-        </p>
-        <p class="description">
-          Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean
-          quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis
-          tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi
-          lectus risus, iaculis vel, suscipit quis, luctus non, massa.
-        </p>
-        <p class="description">
-          Fusce ac turpis quis ligula lacinia aliquet. Mauris ipsum. Nulla metus
-          metus, ullamcorper vel, tincidunt sed, euismod in, nibh. Quisque
-          volutpat condimentum velit. Class aptent taciti sociosqu ad litora
-          torquent per conubia nostra, per inceptos himenaeos. Nam nec ante.
+{% extends "landing.html" %}
+{% block content %}
+  <main class="marketing-main legal-main">
+    <section class="marketing-hero legal-hero">
+      <div class="marketing-hero-copy">
+        <p class="marketing-kicker">Legal</p>
+        <h1>Keep legal and compliance notes easy to scan.</h1>
+        <p>
+          This page can hold your approved terms, privacy notes, and platform
+          policies in a layout that works better across phones and laptops.
         </p>
       </div>
-    </div>
-    <div class="filler"></div>
-    {% include "partials/footer.html" %}
-  </body>
-</html>
+    </section>
+
+    <section class="legal-grid">
+      <article class="marketing-card legal-card">
+        <h2>Terms of use</h2>
+        <p>Replace this block with the approved summary of how people can use the platform.</p>
+      </article>
+      <article class="marketing-card legal-card">
+        <h2>Privacy notice</h2>
+        <p>Use this area for the final explanation of what data is collected and why it is needed.</p>
+      </article>
+      <article class="marketing-card legal-card">
+        <h2>Data handling</h2>
+        <p>Add the reviewed policy for storage, retention, and any responsibilities tied to account data.</p>
+      </article>
+      <article class="marketing-card legal-card">
+        <h2>Policy updates</h2>
+        <p>Document how future changes will be communicated and where users can send compliance questions.</p>
+      </article>
+    </section>
+  </main>
+{% endblock %}

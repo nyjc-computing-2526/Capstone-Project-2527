@@ -1,0 +1,224 @@
+/* Marketing routes (about/features/contact/legal) tuned to the alligator hero palette. */
+
+.landing-page .marketing-main {
+  width: min(1120px, calc(100% - 2.5rem));
+  margin: clamp(1.5rem, 3vw, 2.8rem) auto 4rem;
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.4rem);
+}
+
+.landing-page .marketing-hero {
+  border-radius: 1.9rem;
+  padding: clamp(1.3rem, 2.4vw, 2.2rem);
+  color: var(--text-heading);
+  border: 1px solid var(--border-warm);
+  background:
+    radial-gradient(140% 120% at 0% 0%, rgba(148, 181, 159, 0.28) 0%, rgba(148, 181, 159, 0) 58%),
+    linear-gradient(145deg, var(--surface-muted), var(--surface-card));
+  box-shadow: var(--shadow-soft);
+  display: block;
+}
+
+.landing-page .marketing-hero-copy {
+  max-width: 42rem;
+}
+
+.landing-page .marketing-kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-weight: 800;
+  color: var(--text-accent);
+}
+
+.landing-page .marketing-hero h1 {
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.75rem, 3.4vw, 2.78rem);
+}
+
+.landing-page .marketing-hero p {
+  margin: 0.8rem 0 0;
+  max-width: 66ch;
+  line-height: 1.72;
+  color: var(--text-muted);
+}
+
+.landing-page .about-hero {
+  background:
+    radial-gradient(130% 120% at 0% 0%, rgba(148, 181, 159, 0.35) 0%, rgba(148, 181, 159, 0) 62%),
+    linear-gradient(150deg, var(--surface-muted), var(--surface-panel));
+}
+
+.landing-page .features-hero {
+  background:
+    radial-gradient(130% 120% at 0% 0%, rgba(120, 158, 133, 0.3) 0%, rgba(120, 158, 133, 0) 60%),
+    linear-gradient(150deg, #eef5ef, #dde8de);
+}
+
+.landing-page .contact-hero {
+  background:
+    radial-gradient(130% 120% at 0% 0%, rgba(202, 217, 200, 0.55) 0%, rgba(202, 217, 200, 0) 58%),
+    linear-gradient(150deg, var(--surface-muted), #e5eee5);
+}
+
+.landing-page .legal-hero {
+  background:
+    radial-gradient(130% 120% at 0% 0%, rgba(174, 191, 170, 0.42) 0%, rgba(174, 191, 170, 0) 60%),
+    linear-gradient(150deg, #f1f5ef, #e1e9df);
+}
+
+.landing-page .marketing-grid,
+.landing-page .feature-list,
+.landing-page .legal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+}
+
+.landing-page .marketing-card,
+.landing-page .feature-item {
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  border-radius: 1.45rem;
+  padding: 1.1rem 1rem;
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  align-content: start;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.landing-page .marketing-card h2,
+.landing-page .feature-item h2 {
+  margin: 0;
+  font-size: 1.08rem;
+  color: var(--text-accent-deep);
+}
+
+.landing-page .marketing-card p,
+.landing-page .feature-item p {
+  margin: 0.52rem 0 0;
+  line-height: 1.62;
+  color: var(--text-muted);
+}
+
+.landing-page .contact-panel {
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  border-radius: 1.9rem;
+  box-shadow: var(--shadow-soft);
+  padding: clamp(1.05rem, 2.4vw, 2rem);
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: start;
+}
+
+.landing-page .contact-panel-copy h2 {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+  color: var(--text-heading);
+}
+
+.landing-page .contact-panel-copy p {
+  margin: 0.8rem 0 0;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+.landing-page .marketing-bullet-list {
+  margin: 1rem 0 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.65rem;
+  color: var(--text-muted);
+}
+
+.landing-page .contact-panel-form {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.landing-page .marketing-card:hover,
+.landing-page .feature-item:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card);
+  border-color: var(--border-moss);
+}
+
+.landing-page [data-marketing-reveal] {
+  opacity: 0;
+  transform: translateY(18px) scale(0.985);
+  filter: blur(4px);
+  transition:
+    opacity 420ms ease,
+    transform 520ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 420ms ease;
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+.landing-page [data-marketing-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.landing-page .contact-panel .contact-form {
+  margin: 0;
+  width: 100%;
+  max-width: none;
+}
+
+.landing-page .contact-status {
+  margin: 0;
+  border-radius: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  font-weight: 600;
+}
+
+.landing-page .contact-status-success {
+  color: var(--text-accent-deep);
+  background: var(--toast-success-bg);
+  border: 1px solid var(--toast-success-border);
+}
+
+.landing-page .contact-status-error {
+  color: var(--toast-error-fg);
+  background: var(--toast-error-bg);
+  border: 1px solid var(--toast-error-border);
+}
+
+.landing-page .contact-panel .contact-fields-grid {
+  margin-bottom: 1rem;
+}
+
+.landing-page .contact-panel .contact-field {
+  background: #fff;
+}
+
+@media (max-width: 900px) {
+  .landing-page .contact-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .landing-page .marketing-main {
+    width: min(100%, calc(100% - 1.5rem));
+    margin-top: 1.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-page .marketing-card,
+  .landing-page .feature-item,
+  .landing-page [data-marketing-reveal] {
+    transition: none;
+    transform: none;
+    filter: none;
+    opacity: 1;
+  }
+}

@@ -13,12 +13,29 @@ users_resource = UsersResource()
 @bp.route('/')
 @bp.route('')
 def activities():
+    search_query = request.args.get("query")
+    if search_query: 
+        search_query = search_query.lower()
     try:
-        rows = activities_resource.get_all()
-    except ValueError:
-        flash("Could not load activities.", "error")
-        rows = []
-    return render_template('allactivities.html', data=enrich_for_cards(rows))
+        upcoming = activities_resource.get_upcoming()
+        completed = activities_resource.get_completed()
+        ongoing = activities_resource.get_ongoing()
+        
+        if search_query:
+            upcoming = list(filter(lambda row: row['title'].lower().startswith(search_query), upcoming))
+            completed = list(filter(lambda row: row['title'].lower().startswith(search_query), completed))
+            ongoing = list(filter(lambda row: row['title'].lower().startswith(search_query), ongoing))
+            
+    except ValueError as e:
+        flash(f"Could not load activities.", "error")
+        print(str(e))
+        upcoming, completed, ongoing = [], [], []
+    return render_template('allactivities.html', 
+        upcoming=enrich_for_cards(upcoming), 
+        completed=enrich_for_cards(completed),
+        ongoing=enrich_for_cards(ongoing),
+        search_query=search_query
+    )
 
 
 @bp.route('/myactivities')
@@ -30,38 +47,51 @@ def my_activities():
     except ValueError:
         flash("Could not load your activities.", "error")
         owned, joined = [], []
-    combined = merge_by_id(owned, joined)
-    return render_template('myactivities.html', activities=enrich_for_cards(combined))
+    return render_template('myactivities.html',
+        owned=enrich_for_cards(owned),
+        joined=enrich_for_cards(joined)
+    )
 
 @bp.route('/create', methods = ['POST', 'GET'])
 @login_required
 def create_activities():
-    """create new activities"""
+    """create new activity"""
     if request.method == 'POST':
-        title = request.form['title']
-        description  = request.form['description']
-        start_date  = request.form['start_date']
-        end_date  = request.form['end_date']
-        venue = request.form['venue']
-        created_by = current_user.id
-    
-        activity_data = {'title': title,
-                        'description': description,
-                        'start_date': start_date,
-                        'end_date': end_date,
-                        'venue': venue,
-                        'created_by': created_by}
+        try:
+            if len(activities_resource.get_owned(current_user.id)) >= 5:
+                flash ("You have reached the maximum number of activities you can create (5).", "error")
+                return render_template('createactivity.html')
+            title = request.form['title']
+            description  = request.form['description']
+            start_date  = request.form['start_date']
+            end_date  = request.form['end_date']
+            venue = request.form['venue']
+            created_by = current_user.id
         
-        activity_id = activities_resource.create_activity(activity_data)
+            activity_data = {
+                'title': title,
+                'description': description,
+                'started_at': start_date,
+                'ended_at': end_date,
+                'venue': venue,
+                'created_by': created_by
+            } 
+            
+            activity_id = activities_resource.create_activity(activity_data)
 
-        return redirect(url_for('activities.activity_details', id=activity_id))
+            return redirect(url_for('activities.activity_details', id=activity_id))
+        except Exception as e:
+            flash(str(e))
+            return render_template("createactivity.html")
 
     return render_template('createactivity.html')
 
 @bp.route('/<int:id>')
+@bp.route('/<int:id>')
 def activity_details(id):
     try:
         activity_data = activities_resource.activity(id).get()
+        participants = activities_resource.activity(id).get_participants()
     except ValueError:
         flash("Activity not found.", "error")
         return redirect(url_for('activities.activities'))
@@ -75,11 +105,29 @@ def activity_details(id):
         except ValueError:
             organizer_email = None
 
+    # determine status
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    started_at = activity_data.get('started_at')
+    ended_at = activity_data.get('ended_at')
+
+    if started_at and ended_at:
+        if now < started_at:
+            status = 'upcoming'
+        elif started_at <= now <= ended_at:
+            status = 'ongoing'
+        else:
+            status = 'completed'
+    else:
+        status = 'upcoming'
+
     return render_template(
-        'activity_details.html',
+        'activitydetails.html',
         data=activity_data,
         schedule=schedule_for_detail(activity_data),
         organizer_email=organizer_email or '',
+        participants=participants or [],
+        status=status
     )
 
 
@@ -89,12 +137,16 @@ def join_activity(id):
     """allows user to join acitivity with that id and redirects them to /activities"""
     user_id = current_user.id
     activity_resource = activities_resource.activity(id)
-    success = activity_resource.join(user_id)
-
-    if success:
-        return redirect(url_for('activities.activities'))
-    else:
-        return redirect(url_for('activities.activity_details', id=id))
+    
+    try:
+        success = activity_resource.join(user_id)
+        if success:
+            return redirect(url_for('activities.activities'))
+    except ValueError as e:
+        print(e)
+        flash(str(e), 'error') 
+        
+    return redirect(url_for('activities.activity_details', id=id))
     
 @bp.route('/leave/<int:id>', methods=['POST'])
 @login_required
@@ -135,24 +187,34 @@ def update_activity(id):
             activity_resource.update(updated_data)
             return redirect(url_for('activities.activity_details', id=id))
         except ValueError as e:
-            flash(str(e), "error")
-            return render_template('update_activity.html', data=activity_data)
+            flash("Failed to update activity. Please try again later.", "error")
+            return render_template('updateactivity.html', data=activity_data)
     else:
-        return render_template('update_activity.html', data=activity_data)
+        return render_template('updateactivity.html', data=activity_data)
 
 @bp.route('/delete/<int:id>', methods=['POST'])
+@login_required
 def delete_activity(id):
     try:
         activity_resource = activities_resource.activity(id)
+        activity_data = activity_resource.get()
+
+        if activity_data['created_by'] != current_user.id:
+            flash("You can only delete your own activities.", "error")
+            return redirect(url_for('activities.activity_details', id=id))
+
         success = activity_resource.delete()
         
         if not success:
             raise ValueError(f'Deletion of activity {id} not successful')
+        flash("Activity deleted successfully", "success")
     
     except Exception as e:
         print(e)
+        flash("Failed to delete activity.", "error")
+        return redirect(url_for('activities.update_activity', id=id))
     
-    return redirect(url_for('activities.activities'))
+    return redirect(url_for('activities.my_activities'))
     
     
     

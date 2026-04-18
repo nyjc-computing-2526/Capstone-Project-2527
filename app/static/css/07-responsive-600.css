@@ -1,0 +1,28 @@
+/* Breakpoints ≤600px: create-activity rows, all-activities columns. */
+
+@media (max-width: 600px) {
+  .create-activity-top-row,
+  .create-activity-date-row,
+  .verify-code-row {
+    flex-direction: column;
+  }
+
+  .verify-modal-card {
+    width: 100%;
+    max-width: calc(100vw - 2rem);
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .top-section,
+  .cards-section {
+    flex-direction: column;
+  }
+
+  .header-section,
+  .search-section {
+    max-width: 100%;
+  }
+}

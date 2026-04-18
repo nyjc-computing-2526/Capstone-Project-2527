@@ -3,6 +3,7 @@ from dateutil import parser
 from datetime import timezone
 
 ALLOWED_ACTIVITY_COLUMNS = {'title', 'started_at', 'ended_at', 'description', 'created_by', 'venue'}
+ALLOWED_STATUS = {'pending', 'present', 'late', 'excused', 'absent'}
 
 class ActivitiesResource:
     """Resource class for managing activities collection operations."""
@@ -48,6 +49,20 @@ class ActivitiesResource:
             return db.get_upcoming_activities()
         except Exception as e:
             raise ValueError(f"Failed to retrieve upcoming activities: {str(e)}")
+        
+    def get_ongoing(self) -> list[dict]:
+        """Retrieve all ongoing activities.
+
+        Returns:
+            list[dict]: A list of ongoing activities.
+
+        Raises:
+            ValueError: If retrieval fails.
+        """
+        try:
+            return db.get_ongoing_activities()
+        except Exception as e:
+            raise ValueError(f"Failed to retrieve ongoing activities: {str(e)}")
     
     def get_owned(self, user_id: int) -> list[dict]:
         """Retrieve activities owned by a specific user.
@@ -115,8 +130,8 @@ class ActivitiesResource:
 
         required_fields = ['started_at', 'ended_at', 'title', 'description', 'created_by', 'venue']
         for field in required_fields:
-            if field not in activity_data or not isinstance(activity_data[field], str):
-                raise ValueError(f"Missing or invalid {field}: must be a string")
+            if field not in activity_data or not (isinstance(activity_data[field], str) or isinstance(activity_data[field], int)):
+                raise ValueError(f"Missing or invalid {field}: must be a string or integer")
             
         invalid = activity_data.keys() - ALLOWED_ACTIVITY_COLUMNS
         if invalid:
@@ -209,12 +224,13 @@ class ActivityResource:
             raise ValueError(f"Invalid column(s): {invalid}")
 
         activity_data = {k: v for k, v in activity_data.items() if v is not None}
+        activity_data["id"] = self.activity_id
 
         if not activity_data:
             raise ValueError("No valid fields to update")
             
         try:
-            success = db.update_activity(self.activity_id, activity_data)
+            success = db.update_activity(activity_data)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or update failed")
             return success
@@ -233,11 +249,11 @@ class ActivityResource:
             ValueError: If deletion fails.
         """
         try:
-            success = db.delete_activity(self.activity_id)
+            success = db.delete_participant_activity(self.activity_id)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or delete failed")
             
-            success = db.delete_participant_activity(self.activity_id)
+            success = db.delete_activity(self.activity_id)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found in Participant")
             return success
@@ -263,6 +279,10 @@ class ActivityResource:
                 user_id = int(user_id)
             if user_id < 0:
                 raise ValueError("Invalid user ID: must be a positive integer")
+            
+            if db.get_participant(self.activity_id, user_id):
+                raise ValueError(f"You have already joined this activity!")
+        
             success = db.join_activity(self.activity_id, user_id)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or join failed")
@@ -311,3 +331,46 @@ class ActivityResource:
             return db.get_participants(self.activity_id)
         except Exception as e:
             raise ValueError(f"Failed to retrieve participants for activity {self.activity_id}: {str(e)}")
+        
+
+    def update_attendance_for_participant(self, user_id: int, status: str, reason: str | None, marked_by: int) -> bool:
+        try:
+            if not isinstance(user_id, int):
+                user_id = int(user_id)
+            if user_id < 0:
+                raise ValueError("Invalid user ID: must be a positive integer")
+
+            if not isinstance(marked_by, int):
+                marked_by = int(marked_by)
+            if marked_by < 0:
+                raise ValueError("Invalid marked_by: must be a positive integer")
+
+            if not isinstance(status, str):
+                raise ValueError("Invalid status: must be a string")
+
+            status = status.strip().lower()
+            if status not in ALLOWED_STATUS:
+                raise ValueError(f"Invalid status: {status}")
+            
+            if reason is not None and not isinstance(reason, str):
+                raise ValueError("Invalid reason: must be a string")
+            normalized_reason = (reason or "").strip()
+            if status == "excused":
+                if not normalized_reason:
+                    raise ValueError("Reason is required when status is 'excused'")
+            else:
+                normalized_reason = None
+
+            success = db.update_participant_attendance(self.activity_id, user_id,status, normalized_reason, marked_by)
+            if not success:
+                raise ValueError(f"Participant {user_id} not found in activity {self.activity_id} or update failed")
+
+            return True
+
+        except ValueError:
+            raise
+        except Exception as e:
+            raise ValueError(f"Failed to update attendance for user {user_id} in activity {self.activity_id}: {str(e)}")
+
+        
+        

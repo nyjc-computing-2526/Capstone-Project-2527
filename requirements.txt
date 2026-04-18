@@ -1,0 +1,6 @@
+Flask
+flask-login
+psycopg2-binary
+python-dotenv
+resend
+python-dateutil

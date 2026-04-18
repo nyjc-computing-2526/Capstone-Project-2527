@@ -1,44 +1,42 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://gstatic.com" crossorigin />
-    <link href="https://googleapis.com" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
     />
-    <title>Welcome to Capstone Project</title>
+    {% include "partials/stylesheets.html" %}
+    <title>Activity Alligator</title>
   </head>
-  <body>
-    <header>
-      <ul>
-        <li><a href="/">Website name</a></li>
-        <li><a href="/about">About Us</a></li>
-        <li><a href="/features">Features</a></li>
-        <li><a href="/contact">Contact</a></li>
-      </ul>
-    </header>
-    {% block content %}
-    <h1 class="headline">The one-stop platform to see your events.</h1>
-    <div class="bottomhalf">
-      <p class="description">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae
-        metus tempus, semper ante ac, tristique tortor. Vestibulum ante ipsum
-        primis in faucibus orci luctus et ultrices posuere cubilia curae;
-        Aliquam risus elit, hendrerit sit amet ultricies in, gravida id lectus.
-        Praesent suscipit tincidunt lectus, a rhoncus diam lacinia ac.
-      </p>
-      <div class="buttonstack">
-        <form action="/auth/login"><button class="landing-btn">Log In</button></form>
-        <form action="/auth/register">
-          <button class="landing-btn">Register</button>
-        </form>
-      </div>
+  <body class="landing-page{% if request.endpoint == 'landing.index' %} landing-home{% endif %}">
+    <div class="landing-bg-viewport" aria-hidden="true">
+      <img
+        src="{{ url_for('static', filename='images/alligator-hero-image.png') }}"
+        alt=""
+      />
     </div>
-    <div class="filler"></div>
-    {% include "partials/footer.html" %}
+    {% include "partials/navbar-landing.html" %}
+    {% block content %}
+
+    <main class="landing-main">
+      <section class="hero-home" aria-labelledby="landing-title">
+        <div class="hero-home-copy" data-reveal>
+          <p class="hero-home-kicker">Activity Alligator</p>
+          <h1 id="landing-title" class="hero-home-title">
+            Plan activities without the chaos.
+          </h1>
+          <p class="hero-home-subtitle">Simple timeline. Clear updates.</p>
+        </div>
+      </section>
+    </main>
     {% endblock %}
+
+    {% include "partials/footer.html" %}
+    <script src="{{ url_for('static', filename='js/marketing-reveal.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/landing-hero.js') }}"></script>
   </body>
-  
 </html>

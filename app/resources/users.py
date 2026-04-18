@@ -5,7 +5,7 @@ import secrets
 
 import app.storage.db as db
 
-ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'user_class'}
+ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'user_class', 'verified'}
 
 
 class UsersResource:
@@ -20,17 +20,6 @@ class UsersResource:
             return db.get_user_by_email(clean_email)
         except Exception:
             return None
-
-    def get_all(self) -> list[dict]:
-        """Return all users (without passwords for security)."""
-        try:
-            users = db.get_users()
-            return [
-                {k: v for k, v in user.items()}
-                for user in users
-            ]
-        except Exception as e:
-            raise ValueError("Internal error retrieving user list") from e
 
     def user(self, user_id: int) -> "UserResource":
         """Get a UserResource instance for a specific user.
@@ -188,6 +177,8 @@ class UserResource:
         for k in ALLOWED_USER_COLUMNS:
             if k in user_data and user_data[k] is not None:
                 val = user_data[k]
+                if isinstance(val, bool):
+                    updates[k] = val
                 if isinstance(val, str) and val.strip():
                     updates[k] = val.strip()
 
@@ -226,20 +217,31 @@ class UserResource:
             ValueError: If deletion fails.
         """
         try:
+            user = db.get_user_by_id(self.user_id)
+            if user is None:
+                raise ValueError(f"User {self.user_id} not found")
+
+            for activity in db.get_owned(self.user_id):
+                activity_id = activity["id"]
+                db.delete_participant_activity(activity_id)
+                deleted_activity = db.delete_activity(activity_id)
+                if not deleted_activity:
+                    raise ValueError(f"Failed to delete owned activity {activity_id}")
+
+            db.delete_participant_user(self.user_id)
+            db.delete_verification_tokens_for_user(self.user_id)
+
             success = db.delete_user(self.user_id)
             if not success:
                 raise ValueError(f"User {self.user_id} not found")
-            
-            success = db.delete_participant_user(self.user_id)
-            if not success:
-                raise ValueError(f"User {self.user_id} not found in Participant")
+
             return success
         except ValueError:
             raise
         except Exception as e:
             raise ValueError("Delete failed") from None
         
-    def create_verification_token(self, token: str, expires_at, type: str):
+    def create_verification_token(self, data: dict):
         """Create a verification token for password reset.
 
         Args:
@@ -252,7 +254,8 @@ class UserResource:
             ValueError: If token creation fails.
         """
         try:
-            db.create_verification_token(self.user_id, token, expires_at, type)
+            data['user_id'] = self.user_id
+            db.create_verification_token(data)
         except Exception as e:
             raise ValueError("Failed to create verification token") from None
 

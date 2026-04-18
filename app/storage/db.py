@@ -63,11 +63,19 @@ def get_activity_by_id(id):
     return db_execute(sql_query=query, params=params, fetch="one")
 
 def get_completed_activities():
-    query = """SELECT * FROM activities WHERE ended_at < NOW()"""
+    query = """SELECT * FROM activities WHERE ended_at < NOW() AT TIME ZONE 'Asia/Singapore';"""
     return db_execute(sql_query=query, params=None, fetch="all")
 
 def get_upcoming_activities():
-    query = """SELECT * FROM activities WHERE started_at > NOW()"""
+    query = """SELECT * FROM activities WHERE started_at > NOW() AT TIME ZONE 'Asia/Singapore';"""
+    return db_execute(sql_query=query, params=None, fetch="all")
+
+def get_ongoing_activities():
+    query = """
+        SELECT * FROM activities 
+        WHERE started_at <= (NOW() AT TIME ZONE 'Asia/Singapore')
+        AND ended_at >= (NOW() AT TIME ZONE 'Asia/Singapore');
+    """
     return db_execute(sql_query=query, params=None, fetch="all")
 
 def create_activity(data: dict):
@@ -79,10 +87,15 @@ def create_activity(data: dict):
     placeholders = ", ".join(["%s"] * len(data))
     values = tuple(data.values())
 
-    query =  f"INSERT INTO activities ({columns}) VALUES ({placeholders})"
-    result = db_execute(sql_query=query, params=values, fetch=None)
+    query =  f"INSERT INTO activities ({columns}) VALUES ({placeholders}) RETURNING id"
+    result = db_execute(sql_query=query, params=values, fetch="one")    
 
-    return (result == 1)
+    activity_id = result["id"]
+    creator_id = data["created_by"]
+
+    join_activity(activity_id, creator_id)
+
+    return activity_id
 
 def delete_activity(activity_id):
     query = """DELETE FROM activities WHERE id = %s"""
@@ -122,19 +135,26 @@ def get_joined (user_id: int):
     return db_execute(sql_query=query, params=[user_id], fetch="all")
 
 ## ========= Participants Functions ===========
-
-def get_participant(activity_id):
-    query = """SELECT * FROM participants WHERE id = %s"""
-    params = [activity_id]
+def get_participant(activity_id, user_id):
+    query = """SELECT * FROM participants where activity_id = %s AND user_id = %s"""
+    params = [activity_id, user_id]
     return db_execute(sql_query=query, params=params, fetch="one")
+    
 
-def join_activity(user_id, activity_id):
+def get_participants(activity_id):
+    query = """SELECT users.id, users.name, users.email 
+               FROM participants 
+               JOIN users ON users.id = participants.user_id
+               WHERE participants.activity_id = %s"""
+    return db_execute(sql_query=query, params=[activity_id], fetch="all")
+
+def join_activity(activity_id, user_id):
     query = """INSERT INTO participants (user_id, activity_id) VALUES (%s, %s)"""
     joined = db_execute(sql_query=query, params=[user_id, activity_id], fetch=None)
     
     return (joined == 1)
 
-def leave_activity(user_id, activity_id):
+def leave_activity(activity_id, user_id):
     query = """DELETE FROM participants WHERE user_id = %s AND activity_id = %s"""
     left = db_execute(sql_query=query, params=[user_id, activity_id], fetch=None)
     
@@ -144,7 +164,7 @@ def delete_participant_activity(activity_id):
     query = """DELETE FROM participants WHERE activity_id = %s"""
     left = db_execute(sql_query=query, params=[activity_id], fetch=None)
     
-    return (left == 1)
+    return (left >= 0)
 
 def delete_participant_user(user_id):
     query = """DELETE FROM participants WHERE user_id = %s"""
@@ -174,7 +194,7 @@ def get_user_by_id (user_id: int):
     params = [user_id]
     return db_execute(sql_query=query, params=params, fetch="one")
 
-def create_user (data: dict):
+def create_user(data: dict):
     for col in data.keys():
         if col not in ALLOWED_COLUMNS_USERS:
             raise ValueError(f'Invalid column: {col}')
@@ -183,10 +203,10 @@ def create_user (data: dict):
     placeholders = ", ".join(["%s"] * len(data))
     values = tuple(data.values())
 
-    query =  f"INSERT INTO users ({columns}) VALUES ({placeholders})"
-    result = db_execute(sql_query=query, params=values, fetch=None)
+    query = f"INSERT INTO users ({columns}) VALUES ({placeholders}) RETURNING id"
+    result = db_execute(sql_query=query, params=values, fetch="one")
 
-    return (result == 1)
+    return result["id"]
 
 def update_user (data: dict):
     if "id" not in data.keys():
@@ -244,5 +264,13 @@ def verify_token(token: str, type: str) -> dict | None:
 def invalidate_token(token: str):
     query = """DELETE FROM verification_tokens WHERE token = %s"""
     result = db_execute(sql_query=query, params=[token], fetch=None)
+    
+    if result == 0:
+        return False
+    
+    # Clear all tokens that are invalid
+    query = """DELETE FROM verification_tokens WHERE expiry < NOW()"""
+    result = db_execute(sql_query=query, params=None, fetch=None)
 
     return (result == 1)
+

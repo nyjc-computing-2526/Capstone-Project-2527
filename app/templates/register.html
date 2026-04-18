@@ -1,35 +1,112 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% include "partials/stylesheets.html" %}
     <title>Register Page</title>
   </head>
-  <body>
+  <body class="auth-page">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">
+              <span>{{ message }}</span>
+              <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    <script>
+      document.querySelectorAll('.toast').forEach(toast => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+    </script>
+
     <div class="authcontainer">
       <div class="login-card">
+        <a href="{{ url_for('landing.index') }}" class="login-back-home-link">
+          Back to Home
+        </a>
+        <p class="auth-kicker">Get started</p>
         <h1>Register</h1>
+        <p class="auth-lead">
+          Create your account with the details you want attached to your activities and profile.
+        </p>
         <form action="{{ url_for('auth.register') }}" method="post">
           <div class="input-fields-container">
             <div class="input-group">
-              <input type="email" name="email" placeholder="Email" required />
+              <label class="field-label auth-field-label" for="register-email">Email</label>
+              <input
+                id="register-email"
+                type="email"
+                name="email"
+                placeholder="Email"
+                autocomplete="email"
+                required
+              />
             </div>
             <div class="input-group">
-              <input type="text" name="name" placeholder="Name" required />
+              <label class="field-label auth-field-label" for="register-name">Name</label>
+              <input
+                id="register-name"
+                type="text"
+                name="name"
+                placeholder="Name"
+                autocomplete="name"
+                required
+              />
             </div>
             <div class="input-group">
-              <input type="text" name="class" placeholder="Class" required />
+              <label class="field-label auth-field-label" for="register-class">Class</label>
+              <input
+                id="register-class"
+                type="text"
+                name="class"
+                placeholder="Class"
+                autocomplete="organization-title"
+                required
+              />
             </div>
             <div class="input-group">
-              <input type="password" name="password" placeholder="Password" required />
+              <label class="field-label auth-field-label" for="register-password">Password</label>
+              <input
+                id="register-password"
+                type="password"
+                name="password"
+                placeholder="Password"
+                autocomplete="new-password"
+                required
+              />
             </div>
             <div class="input-group">
-              <input type="password" name="confirm_password" placeholder="Confirm Password" required />
+              <label class="field-label auth-field-label" for="register-confirm-password">Confirm password</label>
+              <input
+                id="register-confirm-password"
+                type="password"
+                name="confirm_password"
+                placeholder="Confirm Password"
+                autocomplete="new-password"
+                required
+              />
+            </div>
+            <div class="auth-recaptcha-wrap">
+              <div class="g-recaptcha" data-sitekey="{{ config['RECAPTCHA_SITE_KEY'] }}"></div>
             </div>
             <button type="submit">Register</button>
           </div>
         </form>
-        <a href="{{ url_for('auth.login') }}" class="forgot-pass">Back to login</a>
+        <div class="auth-links-stack">
+          <p class="auth-switch-copy">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}" class="auth-inline-link">Log in here</a>
+          </p>
+        </div>
       </div>
     </div>
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </body>
 </html>

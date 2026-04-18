@@ -2,20 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create activity</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    {% include "partials/stylesheets.html" %}
   </head>
-  <body>
-    <header>
-      <ul>
-        <li><a href="{{ url_for('landing.homepage') }}">Home</a></li>
-        <li><a href="{{ url_for('activities.activities') }}">All Activities</a></li>
-        <li><a href="{{ url_for('activities.my_activities') }}">My Activities</a></li>
-        <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
-        <li><a href="/auth/view">View Profile</a></li>
-      </ul>
-      <a href="/auth/logout" class="logout">Log Out</a>
-    </header>
+  <body class="app-hero-page">
+    <div class="app-hero-viewport" aria-hidden="true"></div>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="toast-container">
+      {% for category, message in messages %}
+      <div class="toast toast-{{ category }}">
+        <span>{{ message }}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          ✕
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% include "partials/navbar-user.html" %}
 
     <main class="create-activity">
       <div class="page-card">
@@ -24,45 +29,30 @@
         <form class="create-activity-form" action="#" method="post">
           <div class="create-activity-top-row">
             <div class="input-group create-activity-name">
-              <input type="text" name="event_name" placeholder="Event name" />
+              <input type="text" name="title" placeholder="Event name" />
             </div>
-
-            <button
-              type="button"
-              id="open-verify-modal"
-              class="verify-btn create-activity-verify-btn"
-            >
-              Verify
-            </button>
           </div>
 
           <div class="input-group">
             <textarea
-              name="event_description"
+              name="description"
               placeholder="Event description"
             ></textarea>
           </div>
 
           <div class="create-activity-date-row">
             <div class="input-group">
-              <input type="text" name="start_date" placeholder="Select start date (DD/MM/YYYY)" />
+              <label class="field-label">Start</label>
+              <input type="datetime-local" name="start_date" required />
             </div>
             <div class="input-group">
-              <input type="text" name="end_date" placeholder="Select end date (DD/MM/YYYY)" />
-            </div>
-          </div>
-
-          <div class="create-activity-date-row">
-            <div class="input-group">
-              <input type="text" name="start_time" placeholder="Select start time (HH:MM)" />
-            </div>
-            <div class="input-group">
-              <input type="text" name="end_time" placeholder="Select end time (HH:MM)" />
+              <label class="field-label">End</label>
+              <input type="datetime-local" name="end_date" required />
             </div>
           </div>
 
           <div class="input-group">
-            <input type="text" name="location" placeholder="Location" />
+            <input type="text" name="venue" placeholder="Location" />
           </div>
 
           <button type="submit" class="create-activity-submit">
@@ -86,13 +76,25 @@
 
             <div class="verify-code-row">
               <div class="input-group">
-                <input type="text" name="verification_code" placeholder="Enter code" />
+                <input
+                  type="text"
+                  name="verification_code"
+                  placeholder="Enter code"
+                />
               </div>
-              <button type="button" class="verify-btn verify-send-btn">Send</button>
+              <button type="button" class="verify-btn verify-send-btn">
+                Send
+              </button>
             </div>
 
-            <button type="submit" class="verify-btn verify-submit-btn">Submit</button>
-            <button type="button" id="close-verify-modal" class="verify-close-btn">
+            <button type="submit" class="verify-btn verify-submit-btn">
+              Submit
+            </button>
+            <button
+              type="button"
+              id="close-verify-modal"
+              class="verify-close-btn"
+            >
               Close
             </button>
           </form>
@@ -101,31 +103,31 @@
     </main>
 
     <script>
-      const verifyModal = document.getElementById('verify-modal');
-      const openVerifyModalBtn = document.getElementById('open-verify-modal');
-      const closeVerifyModalBtn = document.getElementById('close-verify-modal');
+      const verifyModal = document.getElementById("verify-modal");
+      const openVerifyModalBtn = document.getElementById("open-verify-modal");
+      const closeVerifyModalBtn = document.getElementById("close-verify-modal");
 
       const closeVerifyModal = () => {
         verifyModal.hidden = true;
       };
 
-      openVerifyModalBtn.addEventListener('click', () => {
+      openVerifyModalBtn.addEventListener("click", () => {
         verifyModal.hidden = false;
       });
 
-      closeVerifyModalBtn.addEventListener('click', (event) => {
+      closeVerifyModalBtn.addEventListener("click", (event) => {
         event.preventDefault();
         closeVerifyModal();
       });
 
-      verifyModal.addEventListener('click', (event) => {
+      verifyModal.addEventListener("click", (event) => {
         if (event.target === verifyModal) {
           closeVerifyModal();
         }
       });
 
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && !verifyModal.hidden) {
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !verifyModal.hidden) {
           closeVerifyModal();
         }
       });

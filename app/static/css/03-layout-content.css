@@ -1,0 +1,164 @@
+/* Layout: main/content areas, activity cards, sidebar. */
+
+header form {
+  margin-left: auto;
+}
+
+.logout {
+  margin-left: auto;
+  color: var(--logout-text);
+  font-weight: bold;
+  font-size: 1rem;
+  background: none;
+  border: none;
+  padding: 0;
+  width: auto;
+  max-width: none;
+  cursor: pointer;
+  box-shadow: none;
+  transition:
+    color 120ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    text-decoration-color 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 2px;
+}
+
+.logout:hover {
+  box-shadow: none;
+  color: var(--logout-hover);
+  text-decoration-color: currentColor;
+}
+
+.logout:active {
+  background: none;
+  color: #a31212;
+  text-decoration-color: currentColor;
+}
+
+main {
+  display: flex;
+  flex: 1;
+  background-color: var(--surface-panel);
+  padding: 1em;
+  gap: 1em;
+}
+
+.content {
+  flex: 1;
+  background-color: var(--surface-card);
+  box-sizing: border-box;
+  padding: 2rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--border-warm);
+  box-shadow: var(--shadow-card);
+}
+
+.content h1 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.activities {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activity-card {
+  background-color: var(--surface-sage);
+  border: 1px solid var(--border-warm);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-soft);
+  transition:
+    background-color 150ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 150ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    color 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.activity-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.activity-card p {
+  margin: 0.25rem 0;
+}
+
+.activity-card-link {
+  display: block;
+  color: inherit;
+}
+
+.activity-card-link:hover .activity-card {
+  box-shadow: none;
+}
+
+/* Activity lists: no lift/shadow hover, distinct color accents by card position. */
+.activities .activity-card-link:nth-child(4n + 1):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n + 1):hover .activity-card {
+  background-color: #e6efe5;
+  border-color: #6f927b;
+}
+
+.activities .activity-card-link:nth-child(4n + 2):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n + 2):hover .activity-card {
+  background-color: #e8efe9;
+  border-color: #5f8670;
+}
+
+.activities .activity-card-link:nth-child(4n + 3):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n + 3):hover .activity-card {
+  background-color: #edf1e8;
+  border-color: #7c946b;
+}
+
+.activities .activity-card-link:nth-child(4n):hover .activity-card,
+.activities-grid .activity-card-link:nth-child(4n):hover .activity-card {
+  background-color: #e4ece5;
+  border-color: #5f7f70;
+}
+
+.sidebar {
+  min-width: 250px;
+  background-color: var(--surface-card);
+  padding: 2rem 2rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--border-warm);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sidebar .button {
+  min-width: 20em;
+  background-color: var(--btn-fill);
+  border: 0;
+  border-radius: 1rem;
+  padding: 1rem;
+  font-size: medium;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.sidebar .button:hover {
+  box-shadow: none;
+}
+
+.sidebar .button:active {
+  background-color: var(--btn-fill-press);
+}
