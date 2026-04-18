@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Update Activity</title>
     {% include "partials/stylesheets.html" %}
   </head>
@@ -19,18 +20,7 @@
       {% endif %}
     {% endwith %}
 
-    <header>
-      <ul>
-        <li><a href="{{ url_for('landing.homepage') }}">Home</a></li>
-        <li><a href="{{ url_for('activities.activities') }}">All Activities</a></li>
-        <li><a href="{{ url_for('activities.my_activities') }}">My Activities</a></li>
-        <li><a href="{{ url_for('activities.create_activities') }}">Create Activity</a></li>
-        <li><a href="{{ url_for('auth.view_profile', id=current_user.id) }}">View Profile</a></li>
-      </ul>
-      <form action="{{ url_for('auth.logout') }}" method="POST">
-        <button type="submit" class="logout">Log Out</button>
-      </form>
-    </header>
+    {% include "partials/navbar-user.html" %}
 
     <main class="create-activity">
       <div class="page-card">

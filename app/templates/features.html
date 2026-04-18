@@ -1,20 +1,34 @@
-<!doctype html>
-<html>
-  {% extends "landing.html" %}
-  {% block content %}
-  <body>
-    <h1 class="headline">Features</h1>
-    <div class="bottomhalf">
-      <p class="description">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae
-        metus tempus, semper ante ac, tristique tortor. Vestibulum ante ipsum
-        primis in faucibus orci luctus et ultrices posuere cubilia curae;
-        Aliquam risus elit, hendrerit sit amet ultricies in, gravida id lectus.
-        Praesent suscipit tincidunt lectus, a rhoncus diam lacinia ac.
-      </p>
-    </div>
-    <div class="filler"></div>
-    {% include "partials/footer.html" %}
-  </body>
-  {% endblock %}
-</html>
+{% extends "landing.html" %}
+{% block content %}
+  <main class="marketing-main features-main">
+    <section class="marketing-hero features-hero" data-marketing-reveal>
+      <div class="marketing-hero-copy" data-marketing-reveal data-reveal-delay="0.05s">
+        <p class="marketing-kicker">Features</p>
+        <h1>Everything you need to run events smoothly.</h1>
+        <p>
+          From creation to follow-up, these tools keep activity management clear
+          and consistent.
+        </p>
+      </div>
+    </section>
+
+    <section class="feature-list">
+      <article class="feature-item" data-marketing-reveal data-reveal-delay="0.08s">
+        <h2>Activity creation</h2>
+        <p>Create events quickly with a guided and structured form.</p>
+      </article>
+      <article class="feature-item" data-marketing-reveal data-reveal-delay="0.14s">
+        <h2>Upcoming timeline</h2>
+        <p>See what is next at a glance and avoid missed plans.</p>
+      </article>
+      <article class="feature-item" data-marketing-reveal data-reveal-delay="0.2s">
+        <h2>Personal dashboard</h2>
+        <p>Track your own activities and keep details updated.</p>
+      </article>
+      <article class="feature-item" data-marketing-reveal data-reveal-delay="0.26s">
+        <h2>Responsive design</h2>
+        <p>Use it on laptop, tablet, and phone without layout issues.</p>
+      </article>
+    </section>
+  </main>
+{% endblock %}

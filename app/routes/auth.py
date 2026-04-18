@@ -153,7 +153,7 @@ def verify_password():
 def logout():
     logout_user()
     flash("Logged out successfully", "success")
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('landing.index'))
 
 @bp.route('/view/<int:id>')  
 @login_required
@@ -175,11 +175,42 @@ def update_user():
     user_resource = users_resource.user(current_user.id)
 
     if request.method == 'POST':
+        form_type = request.form.get('form_type', 'profile')
+
+        if form_type == 'password':
+            current_password = request.form.get('current_password')
+            password = request.form.get('password')
+            confirm_password = request.form.get('confirm_password')
+
+            if not current_password:
+                flash("Please verify your current password first.", "error")
+                return render_template('editprofile.html')
+
+            try:
+                users_resource.authenticate(current_user.email, current_password)
+            except ValueError as e:
+                flash(str(e), "error")
+                return render_template('editprofile.html')
+
+            if not password:
+                flash("Please enter a new password.", "error")
+                return render_template('editprofile.html')
+
+            if password != confirm_password:
+                flash("Passwords do not match", "error")
+                return render_template('editprofile.html')
+
+            try:
+                user_resource.update({'password': password})
+                flash("Password updated successfully", "success")
+                return redirect(url_for('auth.update_user'))
+            except ValueError as e:
+                flash(str(e), "error")
+                return render_template('editprofile.html')
+
         email = request.form.get('email')
-        password = request.form.get('password')
         name = request.form.get('name')
         user_class = request.form.get('class')
-        confirm_password = request.form.get('confirm_password')
 
         user_data = {}
 
@@ -191,12 +222,6 @@ def update_user():
 
         if user_class and user_class.strip():
             user_data['user_class'] = user_class.strip()
-
-        if password:
-            if password != confirm_password:
-                flash("Passwords do not match", "error")
-                return render_template('updateuser.html')
-            user_data['password'] = password
 
         if not user_data:
             flash("No valid fields provided for update", "error")
@@ -216,15 +241,20 @@ def update_user():
 @login_required
 def delete_user(id):
     """deletes a user"""
+    if id != current_user.id:
+        flash("You can only delete your own account.", "error")
+        return redirect(url_for('auth.view_profile', id=current_user.id))
+
     user_resource = users_resource.user(id)
 
     try: 
         user_resource.delete()
+        logout_user()
         flash("Profile deleted successfully", "success")
         return redirect(url_for('landing.index'))
     except ValueError as e:
         flash(str(e), "error")
-        return redirect(url_for('landing.homepage'))
+        return redirect(url_for('auth.view_profile', id=current_user.id))
     
 @bp.route('/forgot-password', methods=['GET', 'POST'])  
 def forgot_password():

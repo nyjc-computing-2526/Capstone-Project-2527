@@ -5,14 +5,13 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  background-color: #ece5db;
+  background-color: var(--surface-panel);
   padding: 1.25rem;
 }
 
 .profile-card {
-  width: min(38rem, 100%);
+  width: 100%;
   min-height: 28rem;
-  box-shadow: none;
 }
 
 .profile-card h1 {
@@ -24,8 +23,8 @@
   width: 9.2rem;
   height: 9.2rem;
   border-radius: 50%;
-  background-color: #ded8ce;
-  color: #a67328;
+  background-color: var(--surface-muted);
+  color: var(--olive-700);
   display: grid;
   place-items: center;
   margin: 2rem 0 2rem;
@@ -42,7 +41,7 @@
 }
 
 .profile-email {
-  color: #171717;
+  color: var(--text-heading);
   text-decoration: underline;
   font-size: 1.2rem;
 }
@@ -66,7 +65,7 @@
 }
 
 .profile-delete-btn {
-  background-color: #ff1111;
+  background-color: var(--danger);
   color: #fff;
   border-radius: 1rem;
   display: flex;
@@ -77,7 +76,7 @@
 }
 
 .profile-delete-btn:active {
-  background-color: #d60f0f;
+  background-color: var(--danger-hover);
 }
 
 .profile-delete-btn svg,
@@ -104,7 +103,7 @@ a.profile-edit-btn svg {
 
 .edit-profile-apply-btn,
 a.profile-edit-btn {
-  background-color: #6d6478;
+  background-color: var(--btn-secondary);
   color: #ffffff;
   border: none;
   transition:
@@ -124,13 +123,13 @@ a.profile-edit-btn {
 
 .edit-profile-apply-btn:hover,
 a.profile-edit-btn:hover {
-  background-color: #5c5566;
+  background-color: var(--btn-secondary-hover);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .edit-profile-apply-btn:active,
 a.profile-edit-btn:active {
-  background-color: #4d4558;
+  background-color: var(--btn-secondary-active);
 }
 
 /* Edit profile form */
@@ -154,22 +153,22 @@ a.profile-edit-btn:active {
   box-sizing: border-box;
   padding: 1rem;
   border-radius: 1rem;
-  border: none;
-  background-color: #ece5db;
+  border: 1px solid var(--border-warm);
+  background-color: var(--surface-muted);
   font-family: inherit;
   font-size: 1rem;
-  color: #000;
+  color: var(--text-primary);
   max-width: none;
 }
 
 .profile-page .edit-profile-field input::placeholder {
-  color: #8d8374;
+  color: var(--text-muted);
 }
 
 .profile-page .edit-profile-field input:focus {
-  outline: 2px solid #7c6c55;
+  outline: 2px solid var(--border-focus);
   outline-offset: 2px;
-  background-color: #fbf7f1;
+  background-color: var(--surface-muted);
 }
 
 .edit-profile-apply-btn {

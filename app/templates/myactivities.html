@@ -2,10 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My activities</title>
     {% include "partials/stylesheets.html" %}
   </head>
-  <body>
+  <body class="app-hero-page">
+    <div class="app-hero-viewport" aria-hidden="true"></div>
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
     messages %}
     <div class="toast-container">
@@ -28,9 +30,7 @@
           <!-- Joined -->
           <div class="my-activities-column">
             <div class="my-activities-head">
-              <h2 class="my-activities-heading">
-                Joined
-              </h2>
+              <h2 class="my-activities-heading">Joined</h2>
               <div class="input-row input-row--flush input-row--compact">
                 <span>Sort by:</span>
                 <div class="input-group input-group--sort">
@@ -43,10 +43,9 @@
             </div>
             <div class="activities" id="joined-list">
               {% for activity in joined or [] %}
-              <a
-                href="{{ url_for('activities.activity_details', id=activity.id) }}"
-                class="activity-card-link"
-              >
+              <a href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                 class="activity-card-link"
+                 data-date="{{ activity.started_at }}">
                 <div class="activity-card">
                   <h3>{{ activity.title | default('Untitled') }}</h3>
                   <p>{{ activity.display_time }}</p>
@@ -54,9 +53,7 @@
                 </div>
               </a>
               {% else %}
-              <p class="muted-text">
-                No joined activities.
-              </p>
+              <p class="muted-text">No joined activities.</p>
               {% endfor %}
             </div>
           </div>
@@ -67,9 +64,7 @@
           <!-- Created -->
           <div class="my-activities-column">
             <div class="my-activities-head">
-              <h2 class="my-activities-heading">
-                Created
-              </h2>
+              <h2 class="my-activities-heading">Created</h2>
               <div class="input-row input-row--flush input-row--compact">
                 <span>Sort by:</span>
                 <div class="input-group input-group--sort">
@@ -82,10 +77,9 @@
             </div>
             <div class="activities" id="created-list">
               {% for activity in owned or [] %}
-              <a
-                href="{{ url_for('activities.activity_details', id=activity.id) }}"
-                class="activity-card-link"
-              >
+              <a href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                 class="activity-card-link"
+                 data-date="{{ activity.started_at }}">
                 <div class="activity-card">
                   <h3>{{ activity.title | default('Untitled') }}</h3>
                   <p>{{ activity.display_time }}</p>
@@ -93,9 +87,7 @@
                 </div>
               </a>
               {% else %}
-              <p class="muted-text">
-                No created activities.
-              </p>
+              <p class="muted-text">No created activities.</p>
               {% endfor %}
             </div>
           </div>
@@ -112,24 +104,23 @@
         const list = document.getElementById(listId);
         const cards = Array.from(list.querySelectorAll(".activity-card-link"));
         cards.sort((a, b) => {
-          const dateA = new Date(a.querySelector("p:last-child").textContent);
-          const dateB = new Date(b.querySelector("p:last-child").textContent);
+          const dateA = new Date(a.dataset.date);
+          const dateB = new Date(b.dataset.date);
           return order === "earliest" ? dateA - dateB : dateB - dateA;
         });
         cards.forEach((card) => list.appendChild(card));
       }
 
-      document
-        .getElementById("sort-joined")
-        .addEventListener("change", function () {
-          sortCards("joined-list", this.value);
-        });
+      sortCards("joined-list", document.getElementById("sort-joined").value);
+      sortCards("created-list", document.getElementById("sort-created").value);
 
-      document
-        .getElementById("sort-created")
-        .addEventListener("change", function () {
-          sortCards("created-list", this.value);
-        });
+      document.getElementById("sort-joined").addEventListener("change", function() {
+        sortCards("joined-list", this.value);
+      });
+
+      document.getElementById("sort-created").addEventListener("change", function() {
+        sortCards("created-list", this.value);
+      });
     </script>
   </body>
 </html>

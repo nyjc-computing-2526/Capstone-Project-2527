@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit profile</title>
     {% include "partials/stylesheets.html" %}
   </head>
@@ -54,16 +55,6 @@
                 placeholder="Name"
                 value="{{ current_user.name | default('') }}"
                 autocomplete="name"
-              />
-            </div>
-            <div class="input-group">
-              <label class="field-label">Email</label>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value="{{ current_user.email | default('') }}"
-                autocomplete="email"
               />
             </div>
             <div class="input-group">

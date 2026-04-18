@@ -193,18 +193,28 @@ def update_activity(id):
         return render_template('updateactivity.html', data=activity_data)
 
 @bp.route('/delete/<int:id>', methods=['POST'])
+@login_required
 def delete_activity(id):
     try:
         activity_resource = activities_resource.activity(id)
+        activity_data = activity_resource.get()
+
+        if activity_data['created_by'] != current_user.id:
+            flash("You can only delete your own activities.", "error")
+            return redirect(url_for('activities.activity_details', id=id))
+
         success = activity_resource.delete()
         
         if not success:
             raise ValueError(f'Deletion of activity {id} not successful')
+        flash("Activity deleted successfully", "success")
     
     except Exception as e:
         print(e)
+        flash("Failed to delete activity.", "error")
+        return redirect(url_for('activities.update_activity', id=id))
     
-    return redirect(url_for('activities.activities'))
+    return redirect(url_for('activities.my_activities'))
     
     
     

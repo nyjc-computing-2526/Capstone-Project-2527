@@ -2,10 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profile</title>
     {% include "partials/stylesheets.html" %}
   </head>
-  <body>
+  <body class="app-hero-page">
+    <div class="app-hero-viewport" aria-hidden="true"></div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">
+              <span>{{ message }}</span>
+              <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
     {% include "partials/navbar-user.html" %}
 
     <main class="profile-page">
@@ -56,7 +70,7 @@
                 </div>
               </a>
               {% else %}
-              <p class="muted-text">No joined activities.</p>
+              <p class="muted-text">No created activities.</p>
               {% endfor %}
             </div>
           </div>

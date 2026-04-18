@@ -1,13 +1,42 @@
 {% extends "landing.html" %}
 {% block content %}
-    <h1 class="headline">Contact Us</h1>
-    <div class="filler contact-filler">
-      <form
-        class="contact-form"
-        action="{{ url_for('landing.contact') }}"
-        method="POST"
-      >
-        <div class="input-fields-container">
+  <main class="marketing-main contact-main">
+    <section class="marketing-hero contact-hero" data-marketing-reveal>
+      <div class="marketing-hero-copy" data-marketing-reveal data-reveal-delay="0.05s">
+        <p class="marketing-kicker">Contact</p>
+        <h1>Send us a message.</h1>
+        <p>
+          Questions, feedback, or feature requests are welcome. We usually reply
+          as soon as possible.
+        </p>
+      </div>
+    </section>
+
+    <section class="contact-panel">
+      <div class="contact-panel-copy" data-marketing-reveal data-reveal-delay="0.08s">
+        <h2>What helps us reply faster</h2>
+        <p>
+          Share enough context for us to understand where you were in the site
+          and what you need help with.
+        </p>
+        <ul class="marketing-bullet-list">
+          <li>Tell us which page or feature you were using.</li>
+          <li>Describe what happened and what you expected instead.</li>
+          <li>Include any idea or improvement you want us to consider.</li>
+        </ul>
+      </div>
+      <div class="contact-panel-form" data-marketing-reveal data-reveal-delay="0.16s">
+        {% if success %}
+          <p class="contact-status contact-status-success">Message sent successfully.</p>
+        {% endif %}
+        {% if error %}
+          <p class="contact-status contact-status-error">Unable to send message: {{ error }}</p>
+        {% endif %}
+        <form
+          class="contact-form"
+          action="{{ url_for('landing.contact') }}"
+          method="POST"
+        >
           <div class="contact-fields-grid">
             <input
               class="contact-field"
@@ -30,9 +59,11 @@
               required
             ></textarea>
           </div>
-          <button type="submit">Send</button>
-        </div>
-      </form>
-    </div>
-    {% include "partials/footer.html" %}
+          <button type="submit" class="landing-btn landing-btn-primary">
+            Send
+          </button>
+        </form>
+      </div>
+    </section>
+  </main>
 {% endblock %}

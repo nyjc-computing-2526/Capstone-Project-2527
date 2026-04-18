@@ -1,8 +1,51 @@
-<header>
-    <ul>
-      <li><a href="/">Website name</a></li>
-      <li><a href="/about">About Us</a></li>
-      <li><a href="/features">Features</a></li>
-      <li><a href="/contact">Contact</a></li>
-    </ul>
-  </header>
+<header data-nav-profile="landing">
+  <a
+    href="{{ url_for('landing.index') }}"
+    class="nav-brand{% if request.endpoint == 'landing.index' %} nav-brand-active{% endif %}"
+  >
+    Activity Alligator
+  </a>
+  <button
+    type="button"
+    class="nav-menu-toggle"
+    aria-expanded="false"
+    aria-controls="landing-nav-panel"
+    aria-label="Open navigation menu"
+    hidden
+  >
+    <span class="nav-menu-toggle-text">Menu</span>
+  </button>
+  <div class="nav-panel" id="landing-nav-panel">
+    <nav class="nav-primary" aria-label="Primary">
+      <span class="nav-highlight-pill" aria-hidden="true"></span>
+      <ul>
+        <li>
+          <a
+            href="{{ url_for('landing.about') }}"
+            {% if request.endpoint == 'landing.about' %}class="nav-active"{% endif %}
+            >About Us</a>
+        </li>
+        <li>
+          <a
+            href="{{ url_for('landing.features') }}"
+            {% if request.endpoint == 'landing.features' %}class="nav-active"{% endif %}
+            >Features</a>
+        </li>
+        <li>
+          <a
+            href="{{ url_for('landing.contact') }}"
+            {% if request.endpoint == 'landing.contact' %}class="nav-active"{% endif %}
+            >Contact</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="nav-auth-actions">
+      <a href="{{ url_for('auth.login') }}" class="nav-auth-btn nav-auth-btn-login">
+        Log In
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="nav-auth-btn nav-auth-btn-register">
+        Register
+      </a>
+    </div>
+  </div>
+</header>
