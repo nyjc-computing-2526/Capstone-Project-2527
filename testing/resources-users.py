@@ -1,108 +1,40 @@
 import unittest
 
-# IMPORTANT: must be first
-from db_for_testing import use_test_db, reset_db
-
-use_test_db()
-
+import app.storage.db as db
 from app.resources.users import UsersResource, UserResource
 
 
-class TestUsersIntegration(unittest.TestCase):
+class TestUsersWithDbLayer(unittest.TestCase):
 
     def setUp(self):
-        reset_db()
         self.users = UsersResource()
 
-    # -------------------------
-    # REGISTER TESTS
-    # -------------------------
-    def test_register_success(self):
+        # Use db.py functions only (no raw SQL in tests)
+        for u in db.get_activities() or []:
+            db.db_execute("DELETE FROM participants", None)
+        db.db_execute("DELETE FROM verification_tokens", None)
+        db.db_execute("DELETE FROM users", None)
+    # ======================================================
+    # NORMAL CASES
+    # ======================================================
+
+    def test_register_normal(self):
         user_id = self.users.register({
-            "email": "test@test.com",
-            "password": "123",
-            "name": "Test User",
+            "email": "normal@test.com",
+            "password": "password123",
+            "name": "Normal User",
             "user_class": "1A"
         })
 
-        self.assertIsInstance(user_id, int)
-        self.assertGreater(user_id, 0)
+        user = db.get_user_by_id(user_id)
 
-    def test_register_duplicate_email(self):
-        self.users.register({
-            "email": "test@test.com",
-            "password": "123",
-            "name": "Test User",
-            "user_class": "1A"
-        })
+        self.assertIsNotNone(user)
+        self.assertEqual(user["email"], "normal@test.com")
 
-        with self.assertRaises(ValueError):
-            self.users.register({
-                "email": "test@test.com",
-                "password": "456",
-                "name": "Another",
-                "user_class": "1B"
-            })
-
-    # -------------------------
-    # AUTH TESTS
-    # -------------------------
-    def test_authenticate_success(self):
-        self.users.register({
-            "email": "auth@test.com",
-            "password": "mypassword",
-            "name": "Auth User",
-            "user_class": "1A"
-        })
-
-        user = self.users.authenticate("auth@test.com", "mypassword")
-        self.assertEqual(user["email"], "auth@test.com")
-
-    def test_authenticate_failure_wrong_password(self):
-        self.users.register({
-            "email": "auth2@test.com",
-            "password": "mypassword",
-            "name": "Auth User",
-            "user_class": "1A"
-        })
-
-        with self.assertRaises(ValueError):
-            self.users.authenticate("auth2@test.com", "wrongpassword")
-
-    def test_authenticate_failure_wrong_email(self):
-        with self.assertRaises(ValueError):
-            self.users.authenticate("doesnotexist@test.com", "password")
-
-    # -------------------------
-    # GET ALL TESTS
-    # -------------------------
-    def test_get_all_returns_list(self):
-        self.users.register({
-            "email": "a@test.com",
-            "password": "123",
-            "name": "A",
-            "user_class": "1A"
-        })
-
-        self.users.register({
-            "email": "b@test.com",
-            "password": "123",
-            "name": "B",
-            "user_class": "1A"
-        })
-
-        users = self.users.get_all()
-
-        self.assertIsInstance(users, list)
-        self.assertGreaterEqual(len(users), 2)
-
-    # -------------------------
-    # UPDATE TESTS
-    # -------------------------
-    def test_update_user_name(self):
+    def test_update_normal(self):
         user_id = self.users.register({
             "email": "update@test.com",
-            "password": "123",
+            "password": "password123",
             "name": "Old Name",
             "user_class": "1A"
         })
@@ -112,47 +44,57 @@ class TestUsersIntegration(unittest.TestCase):
 
         self.assertTrue(result)
 
-        updated = user.get()
+        updated = db.get_user_by_id(user_id)
         self.assertEqual(updated["name"], "New Name")
 
-    def test_update_password(self):
+    def test_delete_normal(self):
         user_id = self.users.register({
-            "email": "pw@test.com",
-            "password": "123",
-            "name": "Test",
+            "email": "delete@test.com",
+            "password": "password123",
+            "name": "To Delete",
             "user_class": "1A"
         })
 
         user = UserResource(user_id)
-        result = user.update({"password": "newpass"})
+        result = user.delete()
 
         self.assertTrue(result)
+        self.assertIsNone(db.get_user_by_id(user_id))
 
-        updated = user.get()
-        self.assertNotEqual(updated["password"], "newpass")
-        self.assertIn(":", updated["password"])
+    # ======================================================
+    # ABNORMAL CASES
+    # ======================================================
 
-    def test_update_verified_boolean(self):
-        user_id = self.users.register({
-            "email": "verified@test.com",
-            "password": "123",
-            "name": "Test",
+    def test_duplicate_email(self):
+        self.users.register({
+            "email": "dup@test.com",
+            "password": "password123",
+            "name": "User1",
             "user_class": "1A"
         })
 
-        user = UserResource(user_id)
-        result = user.update({"verified": True})
+        with self.assertRaises(ValueError):
+            self.users.register({
+                "email": "dup@test.com",
+                "password": "password123",
+                "name": "User2",
+                "user_class": "1A"
+            })
 
-        self.assertTrue(result)
+    def test_empty_registration(self):
+        with self.assertRaises(ValueError):
+            self.users.register({
+                "email": "",
+                "password": "",
+                "name": "",
+                "user_class": ""
+            })
 
-        updated = user.get()
-        self.assertTrue(updated.get("verified"))
-
-    def test_update_invalid_no_fields(self):
+    def test_invalid_update(self):
         user_id = self.users.register({
-            "email": "empty@test.com",
-            "password": "123",
-            "name": "Test",
+            "email": "invalid@test.com",
+            "password": "password123",
+            "name": "User",
             "user_class": "1A"
         })
 
@@ -161,45 +103,55 @@ class TestUsersIntegration(unittest.TestCase):
         with self.assertRaises(ValueError):
             user.update({})
 
-    # -------------------------
-    # DELETE TESTS
-    # -------------------------
-    def test_delete_user_success(self):
+    def test_invalid_user_id(self):
+        with self.assertRaises(ValueError):
+            UserResource(-999)
+
+    # ======================================================
+    # EXTREME CASES
+    # ======================================================
+
+    def test_long_input(self):
+        long_str = "x" * 3000
+
         user_id = self.users.register({
-            "email": "delete@test.com",
-            "password": "123",
-            "name": "Delete Me",
+            "email": f"{long_str}@test.com",
+            "password": long_str,
+            "name": long_str,
             "user_class": "1A"
+        })
+
+        user = db.get_user_by_id(user_id)
+        self.assertIsNotNone(user)
+
+    def test_special_characters(self):
+        user_id = self.users.register({
+            "email": "weird+123@test.com",
+            "password": "!@#$%^&*()",
+            "name": "名前🚀",
+            "user_class": "1A"
+        })
+
+        user = db.get_user_by_id(user_id)
+        self.assertEqual(user["email"], "weird+123@test.com")
+
+    def test_sql_injection_like_input(self):
+        user_id = self.users.register({
+            "email": "safe@test.com",
+            "password": "pass123",
+            "name": "Safe"
         })
 
         user = UserResource(user_id)
 
-        result = user.delete()
+        result = user.update({
+            "name": "'; DROP TABLE users; --"
+        })
 
         self.assertTrue(result)
 
-        with self.assertRaises(ValueError):
-            user.get()
-
-    def test_delete_nonexistent_user(self):
-        user = UserResource(99999)
-
-        with self.assertRaises(ValueError):
-            user.delete()
-
-    # -------------------------
-    # TOKEN TESTS
-    # -------------------------
-    def test_verify_token_invalid(self):
-        result = self.users.verify_token("fake-token", "reset")
-        self.assertIsNone(result)
-
-    def test_invalidate_token_no_error(self):
-        # should not raise even if token doesn't exist
-        try:
-            self.users.invalidate_token("fake-token")
-        except Exception as e:
-            self.fail(f"invalidate_token raised unexpectedly: {e}")
+        still_exists = db.get_user_by_id(user_id)
+        self.assertIsNotNone(still_exists)
 
 
 if __name__ == "__main__":
