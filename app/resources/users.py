@@ -21,17 +21,6 @@ class UsersResource:
         except Exception:
             return None
 
-    def get_all(self) -> list[dict]:
-        """Return all users (without passwords for security)."""
-        try:
-            users = db.get_users()
-            return [
-                {k: v for k, v in user.items()}
-                for user in users
-            ]
-        except Exception as e:
-            raise ValueError("Internal error retrieving user list") from e
-
     def user(self, user_id: int) -> "UserResource":
         """Get a UserResource instance for a specific user.
 

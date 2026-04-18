@@ -3,6 +3,7 @@ from dateutil import parser
 from datetime import timezone
 
 ALLOWED_ACTIVITY_COLUMNS = {'title', 'started_at', 'ended_at', 'description', 'created_by', 'venue'}
+ALLOWED_STATUS = {'pending', 'present', 'late', 'excused', 'absent'}
 
 class ActivitiesResource:
     """Resource class for managing activities collection operations."""
@@ -330,3 +331,53 @@ class ActivityResource:
             return db.get_participants(self.activity_id)
         except Exception as e:
             raise ValueError(f"Failed to retrieve participants for activity {self.activity_id}: {str(e)}")
+        
+
+    def get_attendance_roster(self) -> list[dict]:
+        try:
+            return db.get_participants_with_attendance(self.activity_id)
+        except Exception as e:
+            raise ValueError(f"Failed to retrieve attendance roster for activity {self.activity_id}: {str(e)}")
+        
+
+    def update_attendance(self, user_id: int, status: str, reason: str | None, marked_by: int) -> bool:
+        try:
+            if not isinstance(user_id, int):
+                user_id = int(user_id)
+            if user_id < 0:
+                raise ValueError("Invalid user ID: must be a positive integer")
+
+            if not isinstance(marked_by, int):
+                marked_by = int(marked_by)
+            if marked_by < 0:
+                raise ValueError("Invalid marked_by: must be a positive integer")
+
+            if not isinstance(status, str):
+                raise ValueError("Invalid status: must be a string")
+
+            status = status.strip().lower()
+            if status not in ALLOWED_STATUS:
+                raise ValueError(f"Invalid status: {status}")
+            
+            if reason is not None and not isinstance(reason, str):
+                raise ValueError("Invalid reason: must be a string")
+            normalized_reason = (reason or "").strip()
+            if status == "excused":
+                if not normalized_reason:
+                    raise ValueError("Reason is required when status is 'excused'")
+            else:
+                normalized_reason = None
+
+            success = db.update_participant_attendance(self.activity_id, user_id,status, normalized_reason, marked_by)
+            if not success:
+                raise ValueError(f"Participant {user_id} not found in activity {self.activity_id} or update failed")
+
+            return True
+
+        except ValueError:
+            raise
+        except Exception as e:
+            raise ValueError(f"Failed to update attendance for user {user_id} in activity {self.activity_id}: {str(e)}")
+
+        
+        
