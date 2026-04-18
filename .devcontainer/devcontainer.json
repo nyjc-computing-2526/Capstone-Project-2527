@@ -1,10 +1,16 @@
 {
-    "postCreateCommand": "/home/codespace/.python/current/bin/pip install psycopg2-binary python-dotenv flask flask_login resend",
+    "name": "Python + Postgres",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+
+    "postCreateCommand": "pip install psycopg2-binary python-dotenv flask flask_login resend",
+    
     "postStartCommand": "git pull origin $(git branch --show-current) && git merge origin/dev",
+
     "customizations": {
         "vscode": {
             "settings": {
-                "python.defaultInterpreterPath": "/home/codespace/.python/current/bin/python"
+                "python.defaultInterpreterPath": "/usr/local/bin/python"
             },
             "extensions": [
                 "ms-python.python"
