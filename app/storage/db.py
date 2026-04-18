@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ALLOWED_COLUMNS_ACTIVITIES = ["title", "description", "date", "started_at", "created_by", "ended_at", "venue"]
-ALLOWED_COLUMNS_PARTICIPANTS = ["user_id", "activity_id", "attendance_status", "attendance_reason", "attendance_marked_at", "attendance_marked_by"]
+ALLOWED_COLUMNS_PARTICIPANTS = ["user_id", "activity_id", "attendance_status", "attendance_reason", "attendance_marked_at", "attendance_marked_by", "attendance_marked_by_user_id"]
 ALLOWED_COLUMNS_USERS = ["name", "email", "password", "user_class"]
 ALLOWED_COLUMNS_VERIFICATION_TOKENS = ["user_id", "token", "expiry", "type"]
 
@@ -174,9 +174,9 @@ def delete_participant_user(user_id):
 
 def update_participant_attendance(activity_id, user_id, status, reason, marked_by):
     query = """UPDATE participants
-        SET attendance_status = %s, attendance_reason = %s, attendance_marked_at = NOW(), attendance_marked_by = %s
+        SET attendance_status = %s, attendance_reason = %s, attendance_marked_at = NOW(), attendance_marked_by = %s, attendance_marked_by_user_id = %s
         WHERE activity_id = %s AND user_id = %s;"""
-    params = [status, reason, marked_by, activity_id, user_id]
+    params = [status, reason, marked_by, user_id, activity_id, user_id]
 
     rowcount = db_execute(query, params, fetch=None)
 
