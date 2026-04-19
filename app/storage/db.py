@@ -176,7 +176,7 @@ def update_participant_attendance(activity_id, user_id, status, reason, marked_b
     query = """UPDATE participants
         SET attendance_status = %s, attendance_reason = %s, attendance_marked_at = NOW(), attendance_marked_by = %s
         WHERE activity_id = %s AND user_id = %s;"""
-    params = [status, reason, marked_by, marked_by, activity_id, user_id]
+    params = [status, reason, marked_by, activity_id, user_id]
 
     rowcount = db_execute(query, params, fetch=None)
 
