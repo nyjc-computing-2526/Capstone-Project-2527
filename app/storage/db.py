@@ -272,7 +272,7 @@ def invalidate_token(token: str):
     query = """DELETE FROM verification_tokens WHERE expiry < NOW()"""
     result = db_execute(sql_query=query, params=None, fetch=None)
 
-    return (result == 1)
+    return (result >= 1)
 
 def delete_verification_tokens_for_user(user_id):
     query = """DELETE FROM verification_tokens WHERE user_id = %s"""
