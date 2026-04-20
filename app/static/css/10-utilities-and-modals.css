@@ -359,6 +359,13 @@
   font-size: 2rem;
 }
 
+.update-activity-lead {
+  margin: 0.45rem 0 0;
+  color: var(--text-accent);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
 .update-activity-back {
   color: var(--text-accent);
   font-weight: 600;

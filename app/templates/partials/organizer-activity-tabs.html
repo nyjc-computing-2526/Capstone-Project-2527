@@ -1,0 +1,30 @@
+{% if current_user.is_authenticated and current_user.id == data.created_by %}
+<aside class="organizer-tab-nav" data-organizer-tabs>
+  <p class="organizer-tab-label">Organizer Tools</p>
+  <nav class="organizer-tab-links" aria-label="Activity organizer tabs">
+    <span class="organizer-tab-highlight" aria-hidden="true"></span>
+    <a
+      href="{{ url_for('activities.activity_details', id=data.id) }}"
+      class="organizer-tab-link {% if active_tab == 'details' %}is-active{% endif %}"
+      data-tab-key="details"
+    >
+      Details
+    </a>
+    <a
+      href="{{ url_for('activities.update_activity', id=data.id) }}"
+      class="organizer-tab-link {% if active_tab == 'update' %}is-active{% endif %}"
+      data-tab-key="update"
+    >
+      Update details
+    </a>
+    <a
+      href="{{ attendance_url | default('#') }}"
+      class="organizer-tab-link {% if active_tab == 'attendance' %}is-active{% endif %} {% if attendance_url is not defined %}is-disabled{% endif %}"
+      data-tab-key="attendance"
+      {% if attendance_url is not defined %}aria-disabled="true"{% endif %}
+    >
+      Attendance
+    </a>
+  </nav>
+</aside>
+{% endif %}

@@ -78,9 +78,48 @@ def _activity_status(activity: dict) -> str:
     return "completed"
 
 
-_DEMO_PARTICIPANTS = [
-    {"id": 1, "name": "Demo Organizer"},
-]
+_DEMO_PARTICIPANTS_BY_ACTIVITY: dict[int, list[dict]] = {
+    1: [
+        {
+            "id": 1,
+            "name": "Demo Organizer",
+            "attendance_status": "present",
+            "attendance_reason": "",
+        },
+        {
+            "id": 2,
+            "name": "Ariana Lim",
+            "attendance_status": "late",
+            "attendance_reason": "",
+        },
+        {
+            "id": 3,
+            "name": "Kai Tan",
+            "attendance_status": "excused",
+            "attendance_reason": "Medical appointment",
+        },
+        {
+            "id": 4,
+            "name": "Noah Ong",
+            "attendance_status": "pending",
+            "attendance_reason": "",
+        },
+    ],
+    2: [
+        {
+            "id": 1,
+            "name": "Demo Organizer",
+            "attendance_status": "present",
+            "attendance_reason": "",
+        },
+        {
+            "id": 5,
+            "name": "Serene Goh",
+            "attendance_status": "absent",
+            "attendance_reason": "",
+        },
+    ],
+}
 
 # Lets you open /auth/reset-password with no ?token= for UI inspection; form POST still works.
 _DUMMY_RESET_TOKEN = "main-testing-ui-token"
@@ -113,6 +152,11 @@ def _activity_by_id(activity_id: int) -> dict | None:
         if row.get("id") == activity_id:
             return dict(row)
     return None
+
+
+def _participants_for_activity(activity_id: int) -> list[dict]:
+    participants = _DEMO_PARTICIPANTS_BY_ACTIVITY.get(activity_id, [])
+    return participants
 
 
 # --- landing (no prefix; mirrors app/routes/landing.py) ---
@@ -288,8 +332,46 @@ def activities_update(id: int):
     if not row:
         flash("Activity not found.", "error")
         return redirect(url_for("activities.activities"))
-    flash("Update form is not bundled in main-testing; redirected to details.", "info")
-    return redirect(url_for("activities.activity_details", id=id))
+    if request.method == "POST":
+        flash("Update saved (main-testing stub).", "success")
+        return redirect(url_for("activities.update_activity", id=id))
+    return render_template("updateactivity.html", data=row)
+
+
+@app.route(
+    "/activities/attendance/<int:id>",
+    methods=["GET", "POST"],
+    endpoint="activities.activities_attendance",
+)
+def activities_attendance(id: int):
+    row = _activity_by_id(id)
+    if not row:
+        flash("Activity not found.", "error")
+        return redirect(url_for("activities.activities"))
+
+    if row.get("created_by") != _DEMO_USER_ID:
+        flash("Only the organizer can manage attendance.", "error")
+        return redirect(url_for("activities.activity_details", id=id))
+
+    participants = _participants_for_activity(id)
+
+    if request.method == "POST":
+        for participant in participants:
+            participant_id = participant["id"]
+            status = request.form.get(f"status_{participant_id}", "pending")
+            reason = request.form.get(f"reason_{participant_id}", "").strip()
+
+            participant["attendance_status"] = status
+            participant["attendance_reason"] = reason if status == "excused" else ""
+
+        flash("Attendance saved (main-testing stub).", "success")
+        return redirect(url_for("activities.activities_attendance", id=id))
+
+    return render_template(
+        "activityattendance.html",
+        data=row,
+        participants=participants,
+    )
 
 
 @app.route("/activities/delete/<int:id>", methods=["POST"], endpoint="activities.delete_activity")
@@ -308,7 +390,7 @@ def activities_activity_details(id: int):
         data=row,
         schedule=schedule_for_detail(row),
         organizer_email="organizer@example.com",
-        participants=_DEMO_PARTICIPANTS,
+        participants=_participants_for_activity(id),
         status=_activity_status(row),
     )
 
