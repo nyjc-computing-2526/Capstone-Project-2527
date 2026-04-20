@@ -1,5 +1,5 @@
 {
-    "postCreateCommand": "/home/codespace/.python/current/bin/pip install psycopg2-binary python-dotenv flask flask_login resend",
+    "postCreateCommand": "/home/codespace/.python/current/bin/pip install psycopg2-binary python-dotenv flask flask_login resend profanity-check",
     "postStartCommand": "git pull origin $(git branch --show-current) && git merge origin/dev",
     "customizations": {
         "vscode": {
