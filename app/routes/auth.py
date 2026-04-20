@@ -152,10 +152,9 @@ def verify_email():
     if verify["expiry"] < datetime.now(timezone.utc):
         return "Token expired", 400
     
-    id = verify["user_id"]
-    user_resource = users_resource.user(id)
-
     try:
+        id = verify["user_id"]
+        user_resource = users_resource.user(id)
         user_resource.update({"verified": True})
         users_resource.invalidate_token(token)
 
@@ -166,16 +165,16 @@ def verify_email():
         flash(str(e), "error")
         return redirect(url_for('auth.register'))
 
-
-@bp.route('/verify-password', methods=['POST'])
-@login_required
-def verify_password():
-    password = request.json.get('password')
-    try:
-        users_resource.authenticate(current_user.email, password)
-        return {'valid': True}
-    except ValueError:
-        return {'valid': False}
+#??
+# @bp.route('/verify-password', methods=['POST'])
+# @login_required
+# def verify_password():
+#     password = request.json.get('password')
+#     try:
+#         users_resource.authenticate(current_user.email, password)
+#         return {'valid': True}
+#     except ValueError:
+#         return {'valid': False}
 
 
 @bp.route('/logout', methods=['POST'])
@@ -348,6 +347,10 @@ def reset_password():
     if request.method == "POST":
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
+
+        if not password:
+            flash("Please enter a new password.", "error")
+            return render_template("resetpassword.html", token=token)
         
         try:
             verify_password(password)
