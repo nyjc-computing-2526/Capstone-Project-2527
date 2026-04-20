@@ -13,6 +13,7 @@ users_resource = UsersResource()
 @bp.route('/')
 @bp.route('')
 def activities():
+    """shows all activities"""
     search_query = request.args.get("query")
     if search_query: 
         search_query = search_query.lower()
@@ -41,6 +42,7 @@ def activities():
 @bp.route('/myactivities')
 @login_required
 def my_activities():
+    """shows user's activities"""
     try:
         owned = activities_resource.get_owned(current_user.id)
         joined = activities_resource.get_joined(current_user.id)
@@ -55,7 +57,7 @@ def my_activities():
 @bp.route('/create', methods = ['POST', 'GET'])
 @login_required
 def create_activities():
-    """create new activity"""
+    """creates new activity"""
     if request.method == 'POST':
         try:
             if len(activities_resource.get_owned(current_user.id)) >= 5:
@@ -87,8 +89,8 @@ def create_activities():
     return render_template('createactivity.html')
 
 @bp.route('/<int:id>')
-@bp.route('/<int:id>')
 def activity_details(id):
+    """shows details of activity with that id"""
     try:
         activity_data = activities_resource.activity(id).get()
         participants = activities_resource.activity(id).get_participants()
@@ -134,33 +136,44 @@ def activity_details(id):
 @bp.route('/join/<int:id>', methods=['POST'])
 @login_required
 def join_activity(id):
-    """allows user to join acitivity with that id and redirects them to /activities"""
+    """allows user to join acitivity with that id and redirects them to activty details of that id"""
     user_id = current_user.id
-    activity_resource = activities_resource.activity(id)
+
+    try:
+        activity_resource = activities_resource.activity(id)
+    except ValueError:
+        flash("Activity not found.", "error")
+        return redirect(url_for('activities.activities'))
     
     try:
-        success = activity_resource.join(user_id)
-        if success:
-            return redirect(url_for('activities.activities'))
+        activity_resource.join(user_id)
+        flash("Successfully joined activity.", "success") #added flash message
     except ValueError as e:
-        print(e)
-        flash(str(e), 'error') 
+        flash(str(e), 'error')
         
-    return redirect(url_for('activities.activity_details', id=id))
+    return redirect(url_for('activities.activity_details', id=id)) #changed to just redirect to activity_details no matter success or not
     
 @bp.route('/leave/<int:id>', methods=['POST'])
 @login_required
 def leave_activity(id):
     """allows user to leave acitivity with that id and redirects them to /activities"""
     user_id = current_user.id
-    activity_resource = activities_resource.activity(id)
-    success = activity_resource.leave(user_id)
 
-    if success:
+    try:
+        activity_resource = activities_resource.activity(id)
+    except ValueError:
+        flash("Activity not found.", "error")
         return redirect(url_for('activities.activities'))
-    else:
-        return redirect(url_for('activities.activity_details', id=id))
     
+    try:
+        activity_resource.leave(user_id)
+        flash("Successfully left activity.", "success") #added flash message
+        return redirect(url_for('activities.my_activities')) #changed redirect to user's activities coz flows nicer   
+    except ValueError as e:
+        flash(str(e), 'error')
+        return redirect(url_for('activities.activity_details', id=id))
+
+
 @bp.route('/update/<int:id>', methods=['GET', 'POST'])
 @login_required
 def update_activity(id):
@@ -192,29 +205,100 @@ def update_activity(id):
     else:
         return render_template('updateactivity.html', data=activity_data)
 
-@bp.route('/delete/<int:id>', methods=['POST'])
+
+@bp.route('/delete/<int:id>', methods=['POST']) #cleaned up the code
 @login_required
 def delete_activity(id):
     try:
         activity_resource = activities_resource.activity(id)
         activity_data = activity_resource.get()
-
+    except ValueError:
+        flash("Activity not found.", "error")
+        return redirect(url_for('activities.activities'))
+    
+    try:
         if activity_data['created_by'] != current_user.id:
             flash("You can only delete your own activities.", "error")
             return redirect(url_for('activities.activity_details', id=id))
 
-        success = activity_resource.delete()
-        
-        if not success:
-            raise ValueError(f'Deletion of activity {id} not successful')
+        activity_resource.delete()
         flash("Activity deleted successfully", "success")
+        return redirect(url_for('activities.my_activities'))
     
-    except Exception as e:
+    except ValueError as e:
+        flash(str(e), "error") #flashed error raised from resources
+        return redirect(url_for('activities.activity_details', id=id)) #changed to redirect to activity details
+    
+    
+@bp.route('/attendance/<int:id>')
+@login_required
+def activities_attendance(id):
+    """view attendance for the activity with that id"""
+    try:
+        activity_resource = activities_resource.activity(id)
+        activity_data = activity_resource.get()
+    except ValueError:
+        flash("Activity not found.", "error")
+        return redirect(url_for('activities.activities'))
+    
+    try:
+        if activity_data['created_by'] != current_user.id:
+            flash("Only the organsier can view the attendance.", "error")
+            return redirect(url_for('activities.activity_details', id=id))
+    
+        participants = activity_resource.get_participants()
+        return render_template('activities_attendance.html', participants=participants)
+    
+    except ValueError as e:
         print(e)
-        flash("Failed to delete activity.", "error")
-        return redirect(url_for('activities.update_activity', id=id))
+        flash("Failed to retrieve participants", "error")
+        return redirect(url_for('activities.activity_details', id=id))
+        
     
-    return redirect(url_for('activities.my_activities'))
+@bp.route('/attendance/<int:id>', methods=['POST'])
+@login_required
+def update_attendance(id):
+    """allows organiser to update attendance for activity with that id and redirects them to attendance page"""
+    try:
+        activity_resource = activities_resource.activity(id)
+        activity_data = activity_resource.get()
+    except ValueError:
+        flash("Activity not found.", "error")
+        return redirect(url_for('activities.activities'))
     
+    try:
+        if activity_data['created_by'] != current_user.id:
+            flash("Only the organsier can update the attendance.", "error")
+            return redirect(url_for('activities.activity_details', id=id))
+        
+        participants = activity_resource.get_participants()    
     
+    except ValueError:  
+        flash("Failed to load participants.", "error")  
+        return redirect(url_for('activities.activity_details', id=id))  
+ 
+    try:
+        failed_updates = []
+        for participant in participants:
+            participant_id = participant['id']
+            participant_name = participant['name'] #easier to see which updates failed if using their name
+
+            status = request.form[f'status_{participant_id}']
+            reason = request.form[f'reason_{participant_id}']
+            marked_by = current_user.id
+
+            try:
+                activity_resource.update_attendance_for_participant(participant_id, status, reason, marked_by)
+            except ValueError:
+                failed_updates.append(participant_name)
+
+        if failed_updates:
+            flash(f"Attendance update failed for: " + ", ".join(failed_updates),"error")
+        else:
+            flash("Attendance updated successfully.", "success")
     
+    except ValueError as e:
+        print(e)
+        flash("Failed to update attendance", "error")
+    
+    return redirect(url_for('activities.activities_attendance', id=id))
