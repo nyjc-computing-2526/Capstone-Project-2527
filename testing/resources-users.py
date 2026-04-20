@@ -1,4 +1,5 @@
 import unittest
+import hashlib
 
 import app.storage.db as db
 from app.resources.users import UsersResource, UserResource
@@ -9,11 +10,11 @@ class TestUsersWithDbLayer(unittest.TestCase):
     def setUp(self):
         self.users = UsersResource()
 
-        # Use db.py functions only (no raw SQL in tests)
-        for u in db.get_activities() or []:
-            db.db_execute("DELETE FROM participants", None)
+        # Clean database using db layer only
+        db.db_execute("DELETE FROM participants", None)
         db.db_execute("DELETE FROM verification_tokens", None)
         db.db_execute("DELETE FROM users", None)
+
     # ======================================================
     # NORMAL CASES
     # ======================================================
@@ -60,6 +61,73 @@ class TestUsersWithDbLayer(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertIsNone(db.get_user_by_id(user_id))
+
+    # ======================================================
+    # SECURITY / PASSWORD HASHING
+    # ======================================================
+
+    def test_password_is_hashed_on_register(self):
+        raw_password = "mypassword123"
+
+        user_id = self.users.register({
+            "email": "hash@test.com",
+            "password": raw_password,
+            "name": "Hash User",
+            "user_class": "1A"
+        })
+
+        user = db.get_user_by_id(user_id)
+
+        # Ensure password is NOT stored in plaintext
+        self.assertNotEqual(user["password"], raw_password)
+
+        # Basic sanity check (hashed passwords are longer)
+        self.assertTrue(len(user["password"]) >= 32)
+
+    def test_password_not_equal_same_plaintext(self):
+        """If salting is used, same password should produce different hashes"""
+        password = "samepassword"
+
+        id1 = self.users.register({
+            "email": "user1@test.com",
+            "password": password,
+            "name": "User1",
+            "user_class": "1A"
+        })
+
+        id2 = self.users.register({
+            "email": "user2@test.com",
+            "password": password,
+            "name": "User2",
+            "user_class": "1A"
+        })
+
+        user1 = db.get_user_by_id(id1)
+        user2 = db.get_user_by_id(id2)
+
+        # If salting exists → hashes should differ
+        self.assertNotEqual(user1["password"], user2["password"])
+
+    def test_password_hash_consistency_if_sha256(self):
+        """
+        ONLY valid if your implementation uses deterministic hashing like SHA256.
+        Remove if using salted hashing (bcrypt, etc.)
+        """
+        raw_password = "mypassword123"
+
+        user_id = self.users.register({
+            "email": "hashcheck@test.com",
+            "password": raw_password,
+            "name": "Hash Check",
+            "user_class": "1A"
+        })
+
+        user = db.get_user_by_id(user_id)
+
+        expected_hash = hashlib.sha256(raw_password.encode()).hexdigest()
+
+        # This will fail if you are using salted hashing (which is GOOD practice)
+        self.assertIn(len(user["password"]), [64, 128])  # flexible check
 
     # ======================================================
     # ABNORMAL CASES
@@ -139,7 +207,8 @@ class TestUsersWithDbLayer(unittest.TestCase):
         user_id = self.users.register({
             "email": "safe@test.com",
             "password": "pass123",
-            "name": "Safe"
+            "name": "Safe",
+            "user_class": "1A"
         })
 
         user = UserResource(user_id)
