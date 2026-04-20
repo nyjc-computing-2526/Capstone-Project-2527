@@ -6,4 +6,4 @@ requests==2.31.0
 resend==0.7.0
 python-dateutil==2.8.2
 gunicorn==21.2.0
-profanity-check
+profanity-check==0.0.25
