@@ -301,4 +301,4 @@ def update_attendance(id):
         print(e)
         flash("Failed to update attendance", "error")
     
-    return redirect(url_for('activities.activities_attendance', id=id))
+    return redirect(url_for('activities.activityattendance', id=id))

@@ -2,11 +2,9 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
-
 import secrets
 import resend
 import os
-
 from app.resources.users import UsersResource
 from app.resources.activities import ActivitiesResource
 from app.models.user import User
@@ -20,11 +18,38 @@ activities_resource = ActivitiesResource()
 load_dotenv()
 resend.api_key = os.getenv("RESEND_API_KEY")
 
+def verify_password(password):
+    """verifies that password is between 8 to 24 characters inclusive,
+    include at least 1 special character, uppercase letter, lowercase letter and number"""
+    errors = []
+    if not (8 <= len(password) <= 24):
+        errors.append("Password must be between 8 and 24 characters long")
+    
+    special = any(char in "!@#$%&_." for char in password)
+    upper = any(char.isupper() for char in password)
+    lower = any(char.islower() for char in password)
+    number = any(char.isdigit() for char in password)
+    
+    if not special:
+        errors.append("Password must include at least one special character (!@#$%&_. )")
+    if not upper:
+        errors.append("Password must include at least one uppercase letter")
+    if not lower:
+        errors.append("Password must include at least one lowercase letter")
+    if not number:
+        errors.append("Password must include at least one number")
+    
+    if errors:
+        raise ValueError("\n".join(errors))
+    return True
+
+
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     """allows user to log in"""
     if request.method == 'POST':
         recaptcha_token = request.form.get('g-recaptcha-response')
+        
         if not recaptcha_token or not verify_recaptcha(recaptcha_token):
             flash("Please complete the captcha.", "error")
             return render_template('login.html')
@@ -40,9 +65,9 @@ def login():
                 return render_template('login.html')
             
             user = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], None)
-            #is passing password like that safe...?
             login_user(user) 
             return redirect(url_for('landing.homepage'))
+        
         except ValueError as e:
             flash(str(e), "error")
             return render_template('login.html')
@@ -54,23 +79,27 @@ def login():
 def register():
     """registers user"""
     if request.method == 'POST':
+        form_data = {"email": request.form['email'], "name": request.form['name'], "user_class": request.form['class']}
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
         recaptcha_token = request.form.get('g-recaptcha-response')
         if not recaptcha_token or not verify_recaptcha(recaptcha_token):
             flash("Please complete the captcha.", "error")
             print("Error completeting captcha")
-            return render_template('register.html')
+            return render_template('register.html', **form_data)
 
-        email = request.form['email']
-        password = request.form['password']
-        name = request.form['name']
-        user_class = request.form['class']
-        confirm_password = request.form['confirm_password']
+        try:
+            verify_password(password)
+        except ValueError as e:
+            flash(str(e), "error")
+            return render_template('register.html', **form_data) #saves the data except for password so that they dont have to reenter everything and tell front end
 
         if password != confirm_password:
             flash("Passwords do not match", "error")
-            return render_template('register.html')
+            return render_template('register.html', **form_data)
                 
-        user_data = {'email': email, 'password': password, 'name': name, 'user_class': user_class}
+        user_data = {'email': form_data['email'], 'password': password, 'name': form_data['name'], 'user_class': form_data['user_class']}
         
         try:
             token = secrets.token_urlsafe(32)
@@ -88,7 +117,7 @@ def register():
             verify_url = f"{request.host_url}auth/verify-email?token={token}"
             resend.Emails.send({
                 "from": "onboarding@resend.dev",
-                "to": email,
+                "to": form_data["email"],
                 "template": {
                     "id": "email-verification",
                     "variables": {
@@ -97,12 +126,12 @@ def register():
                 }
             })
             flash("Please check your email to verify your account for creation :).", "info")
-            return render_template('register.html')
+            return redirect(url_for('auth.register'))
 
         except Exception as e:
             flash(str(e), "error")
             print(str(e))
-            return render_template('register.html')
+            return render_template('register.html', **form_data)
     
     return render_template('register.html')
 
@@ -137,6 +166,7 @@ def verify_email():
         flash(str(e), "error")
         return redirect(url_for('auth.register'))
 
+
 @bp.route('/verify-password', methods=['POST'])
 @login_required
 def verify_password():
@@ -155,16 +185,14 @@ def logout():
     flash("Logged out successfully", "success")
     return redirect(url_for('landing.index'))
 
+
 @bp.route('/view/<int:id>')  
 @login_required
 def view_profile(id):
     """allows user to view their profile details"""
     user_resource = users_resource.user(id)
-    
-    
     user_data = user_resource.get()
     activity_data = activities_resource.get_owned(id)
-
     return render_template('profile.html', user_data=user_data, activity_data=enrich_for_cards(activity_data))
 
 
@@ -195,7 +223,13 @@ def update_user():
             if not password:
                 flash("Please enter a new password.", "error")
                 return render_template('editprofile.html')
-
+            
+            try:
+                verify_password(password)
+            except ValueError as e:
+                flash(str(e), "error")
+                return render_template('editprofile.html')
+            
             if password != confirm_password:
                 flash("Passwords do not match", "error")
                 return render_template('editprofile.html')
@@ -230,12 +264,13 @@ def update_user():
         try: 
             user_resource.update(user_data)
             flash("Profile updated successfully", "success")
-            return redirect(url_for('landing.homepage'))
+            return redirect(url_for('auth.view_profile')) #changed to view profile instead of homepage when success
         except ValueError as e:
             flash(str(e), "error")
             return render_template('editprofile.html')
 
     return render_template('editprofile.html')
+
 
 @bp.route('/delete/<int:id>', methods=['POST'])  
 @login_required
@@ -256,6 +291,7 @@ def delete_user(id):
         flash(str(e), "error")
         return redirect(url_for('auth.view_profile', id=current_user.id))
     
+
 @bp.route('/forgot-password', methods=['GET', 'POST'])  
 def forgot_password():
     if request.method == "GET":
@@ -293,6 +329,7 @@ def forgot_password():
     flash("If that email exists, a reset link has been sent.", "info")
     return redirect(url_for('auth.login'))
 
+
 @bp.route("/reset-password", methods=["GET", "POST"])
 def reset_password():
     token = request.args.get("token") if request.method == "GET" else request.form.get("token")
@@ -309,12 +346,21 @@ def reset_password():
         return "Token expired", 400
 
     if request.method == "POST":
-        if request.form.get("password") != request.form.get("confirm_password"):
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        
+        try:
+            verify_password(password)
+        except ValueError as e:
+            flash(str(e), "error")
+            return render_template("resetpassword.html", token=token)
+    
+        if password != confirm_password:
             flash("The passwords you keyed in are not the same. Please check again.", "error")
             return render_template("resetpassword.html", token=token)
-        new_password = request.form.get("password")
+        
         try:
-            users_resource.user(reset["user_id"]).update({"password": new_password})
+            users_resource.user(reset["user_id"]).update({"password": password})
             users_resource.invalidate_token(token)
             flash("Password reset successfully", "success")
             return redirect(url_for('auth.login'))
