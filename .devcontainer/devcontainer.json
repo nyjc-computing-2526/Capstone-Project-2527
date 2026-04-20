@@ -1,10 +1,7 @@
 {
     "name": "Python 3.12",
-    "build": {
-        "dockerfile": "Dockerfile"
-    },
+    "image": "mcr.microsoft.com/devcontainers/python:3.12",
     "postCreateCommand": "python -m pip install --upgrade pip && python -m pip install -r requirements.txt",
-    "postStartCommand": "git pull origin $(git branch --show-current) && git merge origin/dev",
     "customizations": {
         "vscode": {
             "settings": {
