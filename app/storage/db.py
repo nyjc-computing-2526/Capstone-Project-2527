@@ -142,7 +142,7 @@ def get_participant(activity_id, user_id):
     
 
 def get_participants(activity_id):
-    query = """SELECT users.id, users.name, users.email 
+    query = """SELECT users.id, users.name, users.email, participants.attendance_status, participants.attendance_reason, participants.attendance_marked_at, participants.attendance_marked_by
                FROM participants 
                JOIN users ON users.id = participants.user_id
                WHERE participants.activity_id = %s"""
