@@ -263,7 +263,7 @@ def update_user():
         try: 
             user_resource.update(user_data)
             flash("Profile updated successfully", "success")
-            return redirect(url_for('auth.view_profile')) #changed to view profile instead of homepage when success
+            return redirect(url_for('auth.view_profile', id=current_user.id))
         except ValueError as e:
             flash(str(e), "error")
             return render_template('editprofile.html')
