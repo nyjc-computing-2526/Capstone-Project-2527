@@ -1,7 +1,9 @@
-Flask
-flask-login
-psycopg2-binary
-python-dotenv
-resend
-python-dateutil
+Flask==3.0.0
+Flask-Login==0.6.3
+python-dotenv==1.0.0
+psycopg2-binary==2.9.9
+requests==2.31.0
+resend==0.7.0
+python-dateutil==2.8.2
+gunicorn==21.2.0
 profanity-check

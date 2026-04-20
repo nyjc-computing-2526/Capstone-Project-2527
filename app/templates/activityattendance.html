@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance - {{ data.title | default('Activity') }}</title>
+    {% include "partials/stylesheets.html" %}
+  </head>
+  <body class="app-hero-page">
+    <div class="app-hero-viewport" aria-hidden="true"></div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">
+              <span>{{ message }}</span>
+              <button class="toast-close" onclick="this.parentElement.remove()">x</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% include "partials/navbar-user.html" %}
+
+    <main class="activity-card-page">
+      <div class="activity-detail-container">
+        <div class="activity-shell">
+          {% set active_tab = 'attendance' %}
+          {% set attendance_url = request.path %}
+          {% include "partials/organizer-activity-tabs.html" %}
+
+          <div class="activity-shell-main">
+            <section class="page-card attendance-card">
+              <div class="update-activity-header">
+                <div>
+                  <p class="update-activity-kicker">Attendance</p>
+                  <h1 class="update-activity-title">{{ data.title | default('Activity') }}</h1>
+                  <p class="update-activity-lead">Mark each participant as pending, present, late, excused, or absent.</p>
+                </div>
+                <a href="{{ url_for('activities.activity_details', id=data.id) }}" class="update-activity-back">
+                  Back to activity
+                </a>
+              </div>
+
+              {% set ns = namespace(pending=0, present=0, late=0, excused=0, absent=0) %}
+              {% for p in participants or [] %}
+                {% set status = p.attendance_status | default('pending') %}
+                {% if status == 'present' %}
+                  {% set ns.present = ns.present + 1 %}
+                {% elif status == 'late' %}
+                  {% set ns.late = ns.late + 1 %}
+                {% elif status == 'excused' %}
+                  {% set ns.excused = ns.excused + 1 %}
+                {% elif status == 'absent' %}
+                  {% set ns.absent = ns.absent + 1 %}
+                {% else %}
+                  {% set ns.pending = ns.pending + 1 %}
+                {% endif %}
+              {% endfor %}
+
+              <div class="attendance-stats">
+                <span class="attendance-pill">Pending: {{ ns.pending }}</span>
+                <span class="attendance-pill">Present: {{ ns.present }}</span>
+                <span class="attendance-pill">Late: {{ ns.late }}</span>
+                <span class="attendance-pill">Excused: {{ ns.excused }}</span>
+                <span class="attendance-pill">Absent: {{ ns.absent }}</span>
+              </div>
+
+              <form action="{{ request.path }}" method="POST">
+                <div class="attendance-table-wrap">
+                  <table class="attendance-table">
+                    <thead>
+                      <tr>
+                        <th>Participant</th>
+                        <th>Status</th>
+                        <th>Reason (Excused only)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for p in participants or [] %}
+                        {% set status = p.attendance_status | default('pending') %}
+                        <tr class="attendance-row">
+                          <td data-label="Participant">
+                            <div class="attendance-person">
+                              <span class="p-avatar">{{ p.name[0].upper() if p.name else '?' }}</span>
+                              <span>{{ p.name | default('Unknown') }}</span>
+                            </div>
+                          </td>
+                          <td data-label="Status">
+                            <select
+                              class="attendance-status"
+                              name="status_{{ p.id }}"
+                              data-attendance-status
+                              data-reason-target="reason_{{ p.id }}"
+                            >
+                              <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+                              <option value="present" {% if status == 'present' %}selected{% endif %}>Present</option>
+                              <option value="late" {% if status == 'late' %}selected{% endif %}>Late</option>
+                              <option value="excused" {% if status == 'excused' %}selected{% endif %}>Excused</option>
+                              <option value="absent" {% if status == 'absent' %}selected{% endif %}>Absent</option>
+                            </select>
+                          </td>
+                          <td data-label="Reason (Excused only)">
+                            <input
+                              id="reason_{{ p.id }}"
+                              class="attendance-reason"
+                              type="text"
+                              name="reason_{{ p.id }}"
+                              value="{{ p.attendance_reason | default('') }}"
+                              placeholder="Reason for excused status"
+                            />
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="attendance-actions">
+                  <button type="submit" class="create-activity-submit create-activity-submit--grow">
+                    Save attendance
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      document.querySelectorAll('.toast').forEach((toast) => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+
+      const syncReasonInput = (selectEl) => {
+        const reasonId = selectEl.dataset.reasonTarget;
+        const reasonInput = document.getElementById(reasonId);
+        if (!reasonInput) return;
+
+        const isExcused = selectEl.value === 'excused';
+        reasonInput.required = isExcused;
+        reasonInput.disabled = !isExcused;
+        reasonInput.classList.toggle('is-muted', !isExcused);
+
+        if (!isExcused) {
+          reasonInput.value = '';
+        }
+      };
+
+      document.querySelectorAll('[data-attendance-status]').forEach((selectEl) => {
+        syncReasonInput(selectEl);
+        selectEl.addEventListener('change', () => syncReasonInput(selectEl));
+      });
+    </script>
+  </body>
+</html>

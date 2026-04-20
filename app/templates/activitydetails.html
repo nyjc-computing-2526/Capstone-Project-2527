@@ -14,7 +14,7 @@
           {% for category, message in messages %}
             <div class="toast toast-{{ category }}">
               <span>{{ message }}</span>
-              <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+              <button class="toast-close" onclick="this.parentElement.remove()">x</button>
             </div>
           {% endfor %}
         </div>
@@ -25,110 +25,106 @@
 
     <main class="activity-card-page">
       <div class="activity-detail-container">
+        <div class="activity-shell">
+          {% set active_tab = 'details' %}
+          {% set attendance_url = '/activities/attendance/' ~ data.id %}
+          {% include "partials/organizer-activity-tabs.html" %}
 
-        <!-- Hero -->
-        <div class="hero">
-          <div class="hero-blob-1"></div>
-          <div class="hero-blob-2"></div>
+          <div class="activity-shell-main">
+            <div class="hero">
+              <div class="hero-blob-1"></div>
+              <div class="hero-blob-2"></div>
 
-          <div class="hero-top">
-            <div>
-              {% if status == 'ongoing' %}
-                <div class="status-pill status-pill--ongoing">
-                  <span class="status-dot"></span> Ongoing
+              <div class="hero-top">
+                <div>
+                  {% if status == 'ongoing' %}
+                    <div class="status-pill status-pill--ongoing">
+                      <span class="status-dot"></span> Ongoing
+                    </div>
+                  {% elif status == 'completed' %}
+                    <div class="status-pill status-pill--completed">
+                      <span class="status-dot"></span> Completed
+                    </div>
+                  {% else %}
+                    <div class="status-pill status-pill--upcoming">
+                      <span class="status-dot"></span> Upcoming
+                    </div>
+                  {% endif %}
+                  <h2>{{ data.title | default('Activity') }}</h2>
                 </div>
-              {% elif status == 'completed' %}
-                <div class="status-pill status-pill--completed">
-                  <span class="status-dot"></span> Completed
+              </div>
+
+              <div class="hero-meta">
+                <div class="hero-meta-item">
+                  <span class="hero-meta-label">Starts</span>
+                  <span class="hero-meta-value">{{ schedule.start_date }} - {{ schedule.start_time }}</span>
                 </div>
-              {% else %}
-                <div class="status-pill status-pill--upcoming">
-                  <span class="status-dot"></span> Upcoming
+                <div class="hero-meta-item">
+                  <span class="hero-meta-label">Ends</span>
+                  <span class="hero-meta-value">{{ schedule.end_date }} - {{ schedule.end_time }}</span>
                 </div>
-              {% endif %}
-              <h2>{{ data.title | default('Activity') }}</h2>
+                <div class="hero-meta-item">
+                  <span class="hero-meta-label">Venue</span>
+                  <span class="hero-meta-value">{{ data.venue | default('-') }}</span>
+                </div>
+              </div>
             </div>
-            {% if current_user.is_authenticated and current_user.id == data.created_by %}
-            <a href="{{ url_for('activities.update_activity', id=data.id) }}" class="hero-edit-btn">
-              ✏️ Edit
-            </a>
-            {% endif %}
-          </div>
 
-          <div class="hero-meta">
-            <div class="hero-meta-item">
-              <span class="hero-meta-label">Starts</span>
-              <span class="hero-meta-value">{{ schedule.start_date }} · {{ schedule.start_time }}</span>
-            </div>
-            <div class="hero-meta-item">
-              <span class="hero-meta-label">Ends</span>
-              <span class="hero-meta-value">{{ schedule.end_date }} · {{ schedule.end_time }}</span>
-            </div>
-            <div class="hero-meta-item">
-              <span class="hero-meta-label">Venue</span>
-              <span class="hero-meta-value">{{ data.venue | default('—') }}</span>
-            </div>
-          </div>
-        </div>
+            <div class="body-grid">
+            <div class="main-card">
+              <p class="section-label">About</p>
+              <div class="description-box"><github-md>{{ data.description | default('No description provided.') }}</github-md></div>
 
-        <!-- Body -->
-        <div class="body-grid">
-
-          <!-- Left: Description + action -->
-          <div class="main-card">
-            <p class="section-label">About</p>
-            <div class="description-box"><github-md>{{ data.description | default('No description provided.') }}</github-md></div>
-
-            {% if current_user.is_authenticated %}
-              {% if current_user.id in participants | map(attribute='id') | list %}
-                {% if current_user.id != data.created_by %}
-                  <form action="{{ url_for('activities.leave_activity', id=data.id) }}" method="POST">
-                    <button type="submit" class="leave-btn">− Leave</button>
+              {% if current_user.is_authenticated %}
+                {% if current_user.id in participants | map(attribute='id') | list %}
+                  {% if current_user.id != data.created_by %}
+                    <form action="{{ url_for('activities.leave_activity', id=data.id) }}" method="POST">
+                      <button type="submit" class="leave-btn">- Leave</button>
+                    </form>
+                  {% endif %}
+                {% else %}
+                  <form action="{{ url_for('activities.join_activity', id=data.id) }}" method="POST">
+                    <button type="submit" class="signup-btn">+ Sign Up</button>
                   </form>
                 {% endif %}
-              {% else %}
-                <form action="{{ url_for('activities.join_activity', id=data.id) }}" method="POST">
-                  <button type="submit" class="signup-btn">+ Sign Up</button>
-                </form>
               {% endif %}
-            {% endif %}
-          </div>
+            </div>
 
-          <!-- Right: Participants -->
-          <div class="participants-card">
-            <p class="section-label">
-              Participants
-              <span class="section-label-count">({{ participants | length }})</span>
-            </p>
-            {% if participants %}
-              <div class="p-list">
-                {% for p in (participants | selectattr('id', 'equalto', data.created_by) | list) + (participants | rejectattr('id', 'equalto', data.created_by) | list) %}
-                <a href="{{ url_for('auth.view_profile', id=p.id) }}" class="p-item {% if p.id == data.created_by %}is-organizer{% endif %}">
-                  <div class="p-left">
-                    <div class="p-avatar">{{ p.name[0].upper() if p.name else '?' }}</div>
-                    <span class="p-name">{{ p.name | default('Unknown') }}</span>
-                  </div>
-                  {% if p.id == data.created_by %}
-                  <span class="organizer-badge">✦ Organizer</span>
-                  {% endif %}
-                </a>
-                {% endfor %}
-              </div>
-            {% else %}
-              <p class="muted-text muted-text--tight-top">No participants yet.</p>
-            {% endif %}
+            <div class="participants-card">
+              <p class="section-label">
+                Participants
+                <span class="section-label-count">({{ participants | length }})</span>
+              </p>
+              {% if participants %}
+                <div class="p-list">
+                  {% for p in (participants | selectattr('id', 'equalto', data.created_by) | list) + (participants | rejectattr('id', 'equalto', data.created_by) | list) %}
+                  <a href="{{ url_for('auth.view_profile', id=p.id) }}" class="p-item {% if p.id == data.created_by %}is-organizer{% endif %}">
+                    <div class="p-left">
+                      <div class="p-avatar">{{ p.name[0].upper() if p.name else '?' }}</div>
+                      <span class="p-name">{{ p.name | default('Unknown') }}</span>
+                    </div>
+                    {% if p.id == data.created_by %}
+                    <span class="organizer-badge">Organizer</span>
+                    {% endif %}
+                  </a>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <p class="muted-text muted-text--tight-top">No participants yet.</p>
+              {% endif %}
+            </div>
+            </div>
           </div>
-
         </div>
       </div>
     </main>
 
     <script>
-      document.querySelectorAll('.toast').forEach(toast => {
+      document.querySelectorAll('.toast').forEach((toast) => {
         setTimeout(() => toast.remove(), 4000);
       });
     </script>
-    <script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script> 
-  
+    <script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script>
   </body>
 </html>
+
