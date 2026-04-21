@@ -313,6 +313,10 @@
   align-items: start;
 }
 
+.activity-shell--single-column {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .activity-shell-main {
   min-width: 0;
 }

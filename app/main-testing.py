@@ -119,6 +119,46 @@ _DEMO_PARTICIPANTS_BY_ACTIVITY: dict[int, list[dict]] = {
             "attendance_reason": "",
         },
     ],
+    3: [
+        {
+            "id": 7,
+            "name": "Mia Santos",
+            "attendance_status": "present",
+            "attendance_reason": "",
+        },
+        {
+            "id": 1,
+            "name": "Demo User",
+            "attendance_status": "present",
+            "attendance_reason": "",
+        },
+        {
+            "id": 8,
+            "name": "Jordan Lee",
+            "attendance_status": "late",
+            "attendance_reason": "",
+        },
+    ],
+    4: [
+        {
+            "id": 9,
+            "name": "Priya Nair",
+            "attendance_status": "present",
+            "attendance_reason": "",
+        },
+        {
+            "id": 10,
+            "name": "Ethan Cruz",
+            "attendance_status": "pending",
+            "attendance_reason": "",
+        },
+        {
+            "id": 1,
+            "name": "Demo User",
+            "attendance_status": "excused",
+            "attendance_reason": "Class conflict",
+        },
+    ],
 }
 
 # Lets you open /auth/reset-password with no ?token= for UI inspection; form POST still works.
@@ -144,6 +184,24 @@ _DEMO_ACTIVITIES: list[dict] = [
         "description": "",
         "created_by": 1,
     },
+    {
+        "id": 3,
+        "title": "Campus Cleanup Drive",
+        "started_at": "2026-07-08T08:30:00",
+        "ended_at": "2026-07-08T10:30:00",
+        "venue": "North Field",
+        "description": "Participant-view test case. Demo user joined this activity but is not the organizer.",
+        "created_by": 7,
+    },
+    {
+        "id": 4,
+        "title": "Robotics Lab Briefing",
+        "started_at": "2026-07-09T16:00:00",
+        "ended_at": "2026-07-09T17:15:00",
+        "venue": "Innovation Hub",
+        "description": "Another participant-only activity so the detail page can be checked without organizer tabs.",
+        "created_by": 9,
+    },
 ]
 
 
@@ -157,6 +215,25 @@ def _activity_by_id(activity_id: int) -> dict | None:
 def _participants_for_activity(activity_id: int) -> list[dict]:
     participants = _DEMO_PARTICIPANTS_BY_ACTIVITY.get(activity_id, [])
     return participants
+
+
+def _joined_activities() -> list[dict]:
+    return [
+        dict(activity)
+        for activity in _DEMO_ACTIVITIES
+        if any(
+            participant.get("id") == _DEMO_USER_ID
+            for participant in _participants_for_activity(activity["id"])
+        )
+    ]
+
+
+def _owned_activities() -> list[dict]:
+    return [
+        dict(activity)
+        for activity in _DEMO_ACTIVITIES
+        if activity.get("created_by") == _DEMO_USER_ID
+    ]
 
 
 # --- landing (no prefix; mirrors app/routes/landing.py) ---
@@ -301,11 +378,12 @@ def activities_list():
 
 @app.route("/activities/myactivities", methods=["GET"], endpoint="activities.my_activities")
 def activities_my_activities():
-    cards = enrich_for_cards(list(_DEMO_ACTIVITIES))
+    joined_cards = enrich_for_cards(_joined_activities())
+    owned_cards = enrich_for_cards(_owned_activities())
     return render_template(
         "myactivities.html",
-        joined=cards,
-        owned=cards,
+        joined=joined_cards,
+        owned=owned_cards,
     )
 
 
