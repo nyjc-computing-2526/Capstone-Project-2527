@@ -247,7 +247,11 @@ def activities_attendance(id):
             return redirect(url_for('activities.activity_details', id=id))
     
         participants = activity_resource.get_participants()
-        return render_template('activitiesattendance.html', data=participants)
+        return render_template(
+            'activityattendance.html',
+            data=activity_data,
+            participants=participants
+        )
     
     except ValueError as e:
         print(e)
@@ -283,8 +287,8 @@ def update_attendance(id):
             participant_id = participant['id']
             participant_name = participant['name'] #easier to see which updates failed if using their name
 
-            status = request.form[f'status_{participant_id}']
-            reason = request.form[f'reason_{participant_id}']
+            status = request.form.get(f'status_{participant_id}', 'pending')
+            reason = request.form.get(f'reason_{participant_id}', '')
             marked_by = current_user.id
 
             try:
@@ -301,4 +305,4 @@ def update_attendance(id):
         print(e)
         flash("Failed to update attendance", "error")
     
-    return redirect(url_for('activities.activity_attendance', id=id))
+    return redirect(url_for('activities.activities_attendance', id=id))
