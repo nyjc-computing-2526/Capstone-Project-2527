@@ -25,7 +25,7 @@
 
     <main class="activity-card-page">
       <div class="activity-detail-container">
-        <div class="activity-shell">
+        <div class="activity-shell {% if not (current_user.is_authenticated and current_user.id == data.created_by) %}activity-shell--single-column{% endif %}">
           {% set active_tab = 'details' %}
           {% set attendance_url = '/activities/attendance/' ~ data.id %}
           {% include "partials/organizer-activity-tabs.html" %}
@@ -127,4 +127,3 @@
     <script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script>
   </body>
 </html>
-
