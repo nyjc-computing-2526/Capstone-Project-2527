@@ -54,22 +54,75 @@ def login():
             flash("Please complete the captcha.", "error")
             return render_template('login.html')
 
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form['email'].strip()
+        password = request.form['password'].strip()
+        if not email or not password:
+            flash("Please enter your email and password.", "error")
+            return render_template('login.html')
         
+        max_attempts = 5
+        cooldown = [30, 60, 180, 300] #30s, 1min, 3min, 5min
+        # ADD TO user DB: failed_attempts INTEGER DEFAULT 0, lock_until TIMESTAMPTZ DEFAULT NULL, lockout_count INTEGER DEFAULT 0
+        #failed_attempts to track number of times user fail to log in (before cooldown)
+        #lock_until time that cooldown will end
+        #lockout_count tracks how many times user has been locked out to determine how long cooldown is
+        
+        user = users_resource.get_user_by_email(email) #return the 3 new fields too
+
+        if user:
+            now = datetime.now(timezone.utc)
+            lock_until = user.get('lock_until')
+
+            if lock_until and lock_until.tzinfo is None:
+                lock_until = lock_until.replace(tzinfo=timezone.utc) #adds timezone info incase db strips it
+
+            #checks if lock_until is not None and that it isnt before current time -> show error messaage that acc is still cooling down
+            if lock_until and now < lock_until:
+                remaining = int((lock_until - now).total_seconds())
+                minutes = remaining // 60
+                seconds = remaining % 60
+                if minutes > 0:
+                    flash(f"Too many failed attempts. Please try again in {minutes}m {seconds}s.", "error")
+                else:
+                    flash(f"Too many failed attempts. Please try again in {seconds}s.", "error")
+                return render_template('login.html')
+            
         try:
             user_data = users_resource.authenticate(email, password)
 
             if not user_data.get("verified"):
                 flash("Please verify your email before logging in.", "error")
                 return render_template('login.html')
-            
-            user = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], None)
-            login_user(user) 
+
+            #correct login yay! resets failed_attempts and lockout_count to 0, lock_until set to None
+            user_resource = users_resource.user(user_data['id'])
+            user_resource.update({"failed_attempts": 0, "lock_until": None, "lockout_count": 0})
+            user_obj = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], None)
+            login_user(user_obj) 
             return redirect(url_for('landing.homepage'))
         
         except ValueError as e:
-            flash(str(e), "error")
+            if user:
+                now = datetime.now(timezone.utc)
+                failed_attempts = user.get('failed_attempts', 0) + 1
+                lock_until = None
+                lockout_count = user.get('lockout_count', 0)
+
+                if failed_attempts >= max_attempts:
+                    cooldown = cooldown[min(lockout_count, len(cooldown) - 1)] #make sure even after user locked out more than 4 times, max cooldown still 300s
+                    lock_until = now + timedelta(seconds=cooldown)
+                    failed_attempts = 0
+                    lockout_count += 1
+                    flash(f"Too many failed attempts. Please try again in {cooldown} seconds.", "error") #cooldown triggered
+                else:
+                    remaining = max_attempts - failed_attempts
+                    flash(f"Invalid credentials. {remaining} attempt(s) remaining.", "error")  #cooldown in progress
+
+                users_resource.user(user['id']).update({"failed_attempts": failed_attempts, "lock_until": lock_until, "lockout_count": lockout_count})
+
+            else:
+                flash("Invalid credentials.", "error") #acc does not exist
+            
             return render_template('login.html')
 
     return render_template('login.html')
@@ -82,6 +135,10 @@ def register():
         form_data = {"email": request.form['email'], "name": request.form['name'], "user_class": request.form['class']}
         password = request.form['password']
         confirm_password = request.form['confirm_password']
+
+        if not all([form_data['email'].strip(), form_data['name'].strip(), form_data['user_class'].strip(), password.strip(), confirm_password.strip()]):
+            flash("All fields are required.", "error")
+            return render_template('register.html', **form_data)
 
         recaptcha_token = request.form.get('g-recaptcha-response')
         if not recaptcha_token or not verify_recaptcha(recaptcha_token):
@@ -189,6 +246,10 @@ def logout():
 @login_required
 def view_profile(id):
     """allows user to view their profile details"""
+    if id != current_user.id:
+        flash("You can only view your own profile.", "error")
+        return redirect(url_for('auth.view_profile', id=current_user.id))
+    
     user_resource = users_resource.user(id)
     user_data = user_resource.get()
     activity_data = activities_resource.get_owned(id)
@@ -205,8 +266,8 @@ def update_user():
         form_type = request.form.get('form_type', 'profile')
 
         if form_type == 'password':
-            current_password = request.form.get('current_password')
-            password = request.form.get('password')
+            current_password = request.form.get('current_password').strip()
+            password = request.form.get('password').strip()
             confirm_password = request.form.get('confirm_password')
 
             if not current_password:
@@ -296,7 +357,11 @@ def forgot_password():
     if request.method == "GET":
         return render_template("forgotpassword.html")
 
-    email = request.form.get("email")
+    email = request.form.get("email").strip()
+    if not email:
+        flash("Please enter your email.", "error")
+        return render_template("forgotpassword.html")
+    
     user = users_resource.get_user_by_email(email)
 
     if user:
@@ -324,7 +389,7 @@ def forgot_password():
             flash(str(e), "error")
             print(str(e))
             return redirect(url_for('auth.forgot_password'))
-
+    
     flash("If that email exists, a reset link has been sent.", "info")
     return redirect(url_for('auth.login'))
 
@@ -345,7 +410,7 @@ def reset_password():
         return "Token expired", 400
 
     if request.method == "POST":
-        password = request.form.get("password")
+        password = request.form.get("password").strip()
         confirm_password = request.form.get("confirm_password")
 
         if not password:
