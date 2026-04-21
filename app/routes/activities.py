@@ -247,7 +247,7 @@ def activities_attendance(id):
             return redirect(url_for('activities.activity_details', id=id))
     
         participants = activity_resource.get_participants()
-        return render_template('activities_attendance.html', participants=participants)
+        return render_template('activitiesattendance.html', data=participants)
     
     except ValueError as e:
         print(e)
@@ -301,4 +301,4 @@ def update_attendance(id):
         print(e)
         flash("Failed to update attendance", "error")
     
-    return redirect(url_for('activities.activityattendance', id=id))
+    return redirect(url_for('activities.activity_attendance', id=id))
