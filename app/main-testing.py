@@ -78,9 +78,88 @@ def _activity_status(activity: dict) -> str:
     return "completed"
 
 
-_DEMO_PARTICIPANTS = [
-    {"id": 1, "name": "Demo Organizer"},
-]
+_DEMO_PARTICIPANTS_BY_ACTIVITY: dict[int, list[dict]] = {
+    1: [
+        {
+            "id": 1,
+            "name": "Demo Organizer",
+            "attendance_status": "present",
+            "attendance_reason": "",
+        },
+        {
+            "id": 2,
+            "name": "Ariana Lim",
+            "attendance_status": "late",
+            "attendance_reason": "",
+        },
+        {
+            "id": 3,
+            "name": "Kai Tan",
+            "attendance_status": "excused",
+            "attendance_reason": "Medical appointment",
+        },
+        {
+            "id": 4,
+            "name": "Noah Ong",
+            "attendance_status": "pending",
+            "attendance_reason": "",
+        },
+    ],
+    2: [
+        {
+            "id": 1,
+            "name": "Demo Organizer",
+            "attendance_status": "present",
+            "attendance_reason": "",
+        },
+        {
+            "id": 5,
+            "name": "Serene Goh",
+            "attendance_status": "absent",
+            "attendance_reason": "",
+        },
+    ],
+    3: [
+        {
+            "id": 7,
+            "name": "Mia Santos",
+            "attendance_status": "present",
+            "attendance_reason": "",
+        },
+        {
+            "id": 1,
+            "name": "Demo User",
+            "attendance_status": "present",
+            "attendance_reason": "",
+        },
+        {
+            "id": 8,
+            "name": "Jordan Lee",
+            "attendance_status": "late",
+            "attendance_reason": "",
+        },
+    ],
+    4: [
+        {
+            "id": 9,
+            "name": "Priya Nair",
+            "attendance_status": "present",
+            "attendance_reason": "",
+        },
+        {
+            "id": 10,
+            "name": "Ethan Cruz",
+            "attendance_status": "pending",
+            "attendance_reason": "",
+        },
+        {
+            "id": 1,
+            "name": "Demo User",
+            "attendance_status": "excused",
+            "attendance_reason": "Class conflict",
+        },
+    ],
+}
 
 # Lets you open /auth/reset-password with no ?token= for UI inspection; form POST still works.
 _DUMMY_RESET_TOKEN = "main-testing-ui-token"
@@ -105,6 +184,24 @@ _DEMO_ACTIVITIES: list[dict] = [
         "description": "",
         "created_by": 1,
     },
+    {
+        "id": 3,
+        "title": "Campus Cleanup Drive",
+        "started_at": "2026-07-08T08:30:00",
+        "ended_at": "2026-07-08T10:30:00",
+        "venue": "North Field",
+        "description": "Participant-view test case. Demo user joined this activity but is not the organizer.",
+        "created_by": 7,
+    },
+    {
+        "id": 4,
+        "title": "Robotics Lab Briefing",
+        "started_at": "2026-07-09T16:00:00",
+        "ended_at": "2026-07-09T17:15:00",
+        "venue": "Innovation Hub",
+        "description": "Another participant-only activity so the detail page can be checked without organizer tabs.",
+        "created_by": 9,
+    },
 ]
 
 
@@ -113,6 +210,30 @@ def _activity_by_id(activity_id: int) -> dict | None:
         if row.get("id") == activity_id:
             return dict(row)
     return None
+
+
+def _participants_for_activity(activity_id: int) -> list[dict]:
+    participants = _DEMO_PARTICIPANTS_BY_ACTIVITY.get(activity_id, [])
+    return participants
+
+
+def _joined_activities() -> list[dict]:
+    return [
+        dict(activity)
+        for activity in _DEMO_ACTIVITIES
+        if any(
+            participant.get("id") == _DEMO_USER_ID
+            for participant in _participants_for_activity(activity["id"])
+        )
+    ]
+
+
+def _owned_activities() -> list[dict]:
+    return [
+        dict(activity)
+        for activity in _DEMO_ACTIVITIES
+        if activity.get("created_by") == _DEMO_USER_ID
+    ]
 
 
 # --- landing (no prefix; mirrors app/routes/landing.py) ---
@@ -257,11 +378,12 @@ def activities_list():
 
 @app.route("/activities/myactivities", methods=["GET"], endpoint="activities.my_activities")
 def activities_my_activities():
-    cards = enrich_for_cards(list(_DEMO_ACTIVITIES))
+    joined_cards = enrich_for_cards(_joined_activities())
+    owned_cards = enrich_for_cards(_owned_activities())
     return render_template(
         "myactivities.html",
-        joined=cards,
-        owned=cards,
+        joined=joined_cards,
+        owned=owned_cards,
     )
 
 
@@ -288,8 +410,46 @@ def activities_update(id: int):
     if not row:
         flash("Activity not found.", "error")
         return redirect(url_for("activities.activities"))
-    flash("Update form is not bundled in main-testing; redirected to details.", "info")
-    return redirect(url_for("activities.activity_details", id=id))
+    if request.method == "POST":
+        flash("Update saved (main-testing stub).", "success")
+        return redirect(url_for("activities.update_activity", id=id))
+    return render_template("updateactivity.html", data=row)
+
+
+@app.route(
+    "/activities/attendance/<int:id>",
+    methods=["GET", "POST"],
+    endpoint="activities.activities_attendance",
+)
+def activities_attendance(id: int):
+    row = _activity_by_id(id)
+    if not row:
+        flash("Activity not found.", "error")
+        return redirect(url_for("activities.activities"))
+
+    if row.get("created_by") != _DEMO_USER_ID:
+        flash("Only the organizer can manage attendance.", "error")
+        return redirect(url_for("activities.activity_details", id=id))
+
+    participants = _participants_for_activity(id)
+
+    if request.method == "POST":
+        for participant in participants:
+            participant_id = participant["id"]
+            status = request.form.get(f"status_{participant_id}", "pending")
+            reason = request.form.get(f"reason_{participant_id}", "").strip()
+
+            participant["attendance_status"] = status
+            participant["attendance_reason"] = reason if status == "excused" else ""
+
+        flash("Attendance saved (main-testing stub).", "success")
+        return redirect(url_for("activities.activities_attendance", id=id))
+
+    return render_template(
+        "activityattendance.html",
+        data=row,
+        participants=participants,
+    )
 
 
 @app.route("/activities/delete/<int:id>", methods=["POST"], endpoint="activities.delete_activity")
@@ -308,7 +468,7 @@ def activities_activity_details(id: int):
         data=row,
         schedule=schedule_for_detail(row),
         organizer_email="organizer@example.com",
-        participants=_DEMO_PARTICIPANTS,
+        participants=_participants_for_activity(id),
         status=_activity_status(row),
     )
 

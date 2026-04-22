@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ALLOWED_COLUMNS_ACTIVITIES = ["title", "description", "date", "started_at", "created_by", "ended_at", "venue"]
-ALLOWED_COLUMNS_PARTICIPANTS = ["user_id", "activity_id"]
+ALLOWED_COLUMNS_PARTICIPANTS = ["user_id", "activity_id", "attendance_status", "attendance_reason", "attendance_marked_at", "attendance_marked_by"]
 ALLOWED_COLUMNS_USERS = ["name", "email", "password", "user_class", "verified"]
 ALLOWED_COLUMNS_VERIFICATION_TOKENS = ["user_id", "token", "expiry", "type"]
 
@@ -142,7 +142,7 @@ def get_participant(activity_id, user_id):
     
 
 def get_participants(activity_id):
-    query = """SELECT users.id, users.name, users.email 
+    query = """SELECT users.id, users.name, users.email, participants.attendance_status, participants.attendance_reason, participants.attendance_marked_at, participants.attendance_marked_by
                FROM participants 
                JOIN users ON users.id = participants.user_id
                WHERE participants.activity_id = %s"""
@@ -170,13 +170,17 @@ def delete_participant_user(user_id):
     query = """DELETE FROM participants WHERE user_id = %s"""
     left = db_execute(sql_query=query, params=[user_id], fetch=None)
     
-    return (left >= 0)
+    return (left == 1)
 
-def delete_verification_tokens_for_user(user_id):
-    query = """DELETE FROM verification_tokens WHERE user_id = %s"""
-    deleted = db_execute(sql_query=query, params=[user_id], fetch=None)
+def update_participant_attendance(activity_id, user_id, status, reason, marked_by):
+    query = """UPDATE participants
+        SET attendance_status = %s, attendance_reason = %s, attendance_marked_at = NOW(), attendance_marked_by = %s
+        WHERE activity_id = %s AND user_id = %s;"""
+    params = [status, reason, marked_by, activity_id, user_id]
 
-    return (deleted >= 0)
+    rowcount = db_execute(query, params, fetch=None)
+
+    return (rowcount == 1)
 
 ## ========= User Functions ===========
 
@@ -268,5 +272,10 @@ def invalidate_token(token: str):
     query = """DELETE FROM verification_tokens WHERE expiry < NOW()"""
     result = db_execute(sql_query=query, params=None, fetch=None)
 
-    return (result == 1)
+    return (result >= 1)
 
+def delete_verification_tokens_for_user(user_id):
+    query = """DELETE FROM verification_tokens WHERE user_id = %s"""
+    deleted = db_execute(sql_query=query, params=[user_id], fetch=None)
+
+    return (deleted >= 0)

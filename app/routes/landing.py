@@ -1,14 +1,15 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, session
 from flask_login import login_required, current_user
 from app.resources.activities import ActivitiesResource
 from app.utils.formatting_util import enrich_for_cards
 
 from email.message import EmailMessage
-
 import smtplib
 import os
+import time
 
 bp = Blueprint('landing', __name__)
+submitted_emails = {} 
 
 @bp.route('/')
 def index():
@@ -25,9 +26,26 @@ def legal():
 @bp.route('/contact', methods=["GET", "POST"])
 def contact():
     if request.method == "POST":
+
         name = request.form.get('name')
         email = request.form.get('email')
         message = request.form.get('message')
+
+        now = time.time()
+
+        last_submit = session.get("last_contact_submit")
+        if last_submit and now - last_submit < 86400:
+            return render_template(
+                "contact.html",
+                error="You have already sent a message today. Please try again tomorrow."
+            )
+        
+        if email in submitted_emails:
+            if now - submitted_emails[email] < 86400:
+                return render_template(
+                    "contact.html",
+                    error="This email has already sent a message today."
+                )
 
         msg = EmailMessage()
         msg["Subject"] = f"New Contact Form Message from {name}"
@@ -53,6 +71,9 @@ def contact():
                     os.environ.get("MAIL_PASSWORD")
                 )
                 smtp.send_message(msg)
+
+            session["last_contact_submit"] = now 
+            submitted_emails[email] = now
 
             return render_template("contact.html", success=True)
 
