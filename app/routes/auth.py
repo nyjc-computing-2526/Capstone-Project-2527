@@ -18,7 +18,7 @@ activities_resource = ActivitiesResource()
 load_dotenv()
 resend.api_key = os.getenv("RESEND_API_KEY")
 
-def verify_password(password):
+def validate_password(password):
     """verifies that password is between 8 to 24 characters inclusive,
     include at least 1 special character, uppercase letter, lowercase letter and number"""
     errors = []
@@ -90,7 +90,7 @@ def register():
             return render_template('register.html', **form_data)
 
         try:
-            verify_password(password)
+            validate_password(password)
         except ValueError as e:
             flash(str(e), "error")
             return render_template('register.html', **form_data) #saves the data except for password so that they dont have to reenter everything and tell front end
@@ -165,16 +165,16 @@ def verify_email():
         flash(str(e), "error")
         return redirect(url_for('auth.register'))
 
-#??
-# @bp.route('/verify-password', methods=['POST'])
-# @login_required
-# def verify_password():
-#     password = request.json.get('password')
-#     try:
-#         users_resource.authenticate(current_user.email, password)
-#         return {'valid': True}
-#     except ValueError:
-#         return {'valid': False}
+
+@bp.route('/verify-password', methods=['POST'])
+@login_required
+def verify_password():
+    password = request.json.get('password')
+    try:
+        users_resource.authenticate(current_user.email, password)
+        return {'valid': True}
+    except ValueError:
+        return {'valid': False}
 
 
 @bp.route('/logout', methods=['POST'])
@@ -224,7 +224,7 @@ def update_user():
                 return render_template('editprofile.html')
             
             try:
-                verify_password(password)
+                validate_password(password)
             except ValueError as e:
                 flash(str(e), "error")
                 return render_template('editprofile.html')
@@ -353,7 +353,7 @@ def reset_password():
             return render_template("resetpassword.html", token=token)
         
         try:
-            verify_password(password)
+            validate_password(password)
         except ValueError as e:
             flash(str(e), "error")
             return render_template("resetpassword.html", token=token)
