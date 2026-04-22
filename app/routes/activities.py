@@ -214,34 +214,21 @@ def update_activity(id):
         venue = request.form['venue'].strip()
         updated_data = {}
 
-        if title:
-            if len(title) > 30:
-                flash("Title cannot exceed 30 characters.", "error")
-                return render_template('updateactivity.html', data=activity_data) #update form with prexisting values there
-            updated_data['title'] = title
-
-        if description:
-            if len(description) > 1000:
-                flash("Description cannot exceed 1000 characters.", "error")
-                return render_template('updateactivity.html', data=activity_data)
-            updated_data['description'] = description
-
-        if venue:
-            if len(venue) > 100:
-                flash("Venue cannot exceed 100 characters.", "error")
-                return render_template('updateactivity.html', data=activity_data)
-            updated_data['venue'] = venue
-
-        if start_date:
-            updated_data['started_at'] = start_date
-
-        if end_date:
-            updated_data['ended_at'] = end_date
-
-        if start_date and end_date and start_date >= end_date:
-            flash("End date must be after start date.", "error")
+        error = validate_activity(title, description, venue, start_date, end_date)
+        if error:
+            flash(error, "error")
             return render_template('updateactivity.html', data=activity_data)
         
+        if title:
+            updated_data['title'] = title
+        if description:
+            updated_data['description'] = description
+        if venue:
+            updated_data['venue'] = venue
+        if start_date:
+            updated_data['started_at'] = start_date
+        if end_date:
+            updated_data['ended_at'] = end_date
         if not updated_data:
             flash("No valid fields provided for update.", "error")
             return render_template('updateactivity.html', data=activity_data)
