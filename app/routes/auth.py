@@ -54,18 +54,22 @@ def login():
             flash("Please complete the captcha.", "error")
             return render_template('login.html')
 
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form['email'].strip()
+        password = request.form['password'].strip()
+        if not email or not password:
+            flash("Please enter your email and password.", "error")
+            return render_template('login.html')
         
         try:
-            user_data = users_resource.authenticate(email, password)
+            user_data = users_resource.authenticate_with_lockout(email, password)
 
             if not user_data.get("verified"):
                 flash("Please verify your email before logging in.", "error")
                 return render_template('login.html')
-            
-            user = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], None)
-            login_user(user) 
+
+            users_resource.reset_login_lockout(user_data['id'])
+            user_obj = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], None)
+            login_user(user_obj) 
             return redirect(url_for('landing.homepage'))
         
         except ValueError as e:
@@ -82,6 +86,10 @@ def register():
         form_data = {"email": request.form['email'], "name": request.form['name'], "user_class": request.form['class']}
         password = request.form['password']
         confirm_password = request.form['confirm_password']
+
+        if not all([form_data['email'].strip(), form_data['name'].strip(), form_data['user_class'].strip(), password.strip(), confirm_password.strip()]):
+            flash("All fields are required.", "error")
+            return render_template('register.html', **form_data)
 
         recaptcha_token = request.form.get('g-recaptcha-response')
         if not recaptcha_token or not verify_recaptcha(recaptcha_token):
@@ -205,8 +213,8 @@ def update_user():
         form_type = request.form.get('form_type', 'profile')
 
         if form_type == 'password':
-            current_password = request.form.get('current_password')
-            password = request.form.get('password')
+            current_password = request.form.get('current_password').strip()
+            password = request.form.get('password').strip()
             confirm_password = request.form.get('confirm_password')
 
             if not current_password:
@@ -296,7 +304,11 @@ def forgot_password():
     if request.method == "GET":
         return render_template("forgotpassword.html")
 
-    email = request.form.get("email")
+    email = request.form.get("email").strip()
+    if not email:
+        flash("Please enter your email.", "error")
+        return render_template("forgotpassword.html")
+    
     user = users_resource.get_user_by_email(email)
 
     if user:
@@ -324,7 +336,7 @@ def forgot_password():
             flash(str(e), "error")
             print(str(e))
             return redirect(url_for('auth.forgot_password'))
-
+    
     flash("If that email exists, a reset link has been sent.", "info")
     return redirect(url_for('auth.login'))
 
@@ -345,7 +357,7 @@ def reset_password():
         return "Token expired", 400
 
     if request.method == "POST":
-        password = request.form.get("password")
+        password = request.form.get("password").strip()
         confirm_password = request.form.get("confirm_password")
 
         if not password:

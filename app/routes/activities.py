@@ -9,6 +9,18 @@ bp = Blueprint('activities', __name__, url_prefix='/activities')
 activities_resource = ActivitiesResource()
 users_resource = UsersResource()
 
+def validate_activity(title, description, venue, start_date, end_date):
+    if not all([title, description, venue, start_date, end_date]):
+        return "Please ensure all fields are filled in."
+    if len(title) > 30:
+        return "Title cannot exceed 30 characters."
+    if len(description) > 1000:
+        return "Description cannot exceed 1000 characters."
+    if len(venue) > 100:
+        return "Venue cannot exceed 100 characters."
+    if start_date >= end_date:
+        return "End date must be after start date."
+    return None
 
 @bp.route('/')
 @bp.route('')
@@ -61,13 +73,14 @@ def create_activities():
     if request.method == 'POST':
         try:
             if len(activities_resource.get_owned(current_user.id)) >= 5:
-                flash ("You have reached the maximum number of activities you can create (5).", "error")
+                flash("You have reached the maximum number of activities you can create (5).", "error")
                 return render_template('createactivity.html')
-            title = request.form['title']
-            description  = request.form['description']
+            
+            title = request.form['title'].strip()
+            description  = request.form['description'].strip()
             start_date  = request.form['start_date']
             end_date  = request.form['end_date']
-            venue = request.form['venue']
+            venue = request.form['venue'].strip()
             created_by = current_user.id
         
             activity_data = {
@@ -79,9 +92,14 @@ def create_activities():
                 'created_by': created_by
             } 
             
+            error = validate_activity(title, description, venue, start_date, end_date)
+            if error:
+                flash(error, "error")
+                return render_template('createactivity.html', **activity_data)
+                        
             activity_id = activities_resource.create_activity(activity_data)
-
             return redirect(url_for('activities.activity_details', id=activity_id))
+        
         except Exception as e:
             flash(str(e))
             return render_template("createactivity.html")
@@ -189,24 +207,43 @@ def update_activity(id):
         return redirect(url_for('activities.activity_details', id=id))
 
     if request.method == 'POST':
-        updated_data = {
-            'title': request.form['title'],
-            'description': request.form['description'],
-            'started_at': request.form['start_date'], 
-            'ended_at': request.form['end_date'],       
-            'venue': request.form['venue'],
-        }
+        title = request.form['title'].strip()
+        description  = request.form['description'].strip()
+        start_date  = request.form['start_date']
+        end_date  = request.form['end_date']
+        venue = request.form['venue'].strip()
+        updated_data = {}
+
+        error = validate_activity(title, description, venue, start_date, end_date)
+        if error:
+            flash(error, "error")
+            return render_template('updateactivity.html', data=activity_data)
+        
+        if title:
+            updated_data['title'] = title
+        if description:
+            updated_data['description'] = description
+        if venue:
+            updated_data['venue'] = venue
+        if start_date:
+            updated_data['started_at'] = start_date
+        if end_date:
+            updated_data['ended_at'] = end_date
+        if not updated_data:
+            flash("No valid fields provided for update.", "error")
+            return render_template('updateactivity.html', data=activity_data)
+
         try:
             activity_resource.update(updated_data)
             return redirect(url_for('activities.activity_details', id=id))
         except ValueError as e:
             flash("Failed to update activity. Please try again later.", "error")
             return render_template('updateactivity.html', data=activity_data)
-    else:
-        return render_template('updateactivity.html', data=activity_data)
+    
+    return render_template('updateactivity.html', data=activity_data)
 
 
-@bp.route('/delete/<int:id>', methods=['POST']) #cleaned up the code
+@bp.route('/delete/<int:id>', methods=['POST']) 
 @login_required
 def delete_activity(id):
     try:
@@ -226,8 +263,8 @@ def delete_activity(id):
         return redirect(url_for('activities.my_activities'))
     
     except ValueError as e:
-        flash(str(e), "error") #flashed error raised from resources
-        return redirect(url_for('activities.activity_details', id=id)) #changed to redirect to activity details
+        flash(str(e), "error")
+        return redirect(url_for('activities.activity_details', id=id))
     
     
 @bp.route('/attendance/<int:id>')
