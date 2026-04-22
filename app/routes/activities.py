@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 
@@ -10,6 +12,15 @@ bp = Blueprint('activities', __name__, url_prefix='/activities')
 activities_resource = ActivitiesResource()
 users_resource = UsersResource()
 
+_DATETIME_FMT = "%Y-%m-%dT%H:%M"
+
+def _parse_activity_datetime(value, field_label):
+    """Strictly parse a datetime-local string; return (datetime, error_string)."""
+    try:
+        return datetime.strptime(value, _DATETIME_FMT), None
+    except ValueError:
+        return None, f"Invalid {field_label} time. Please enter a valid date and time (e.g. 2025-06-01T09:30)."
+
 def validate_activity(title, description, venue, start_date, end_date):
     if not all([title, description, venue, start_date, end_date]):
         return "Please ensure all fields are filled in."
@@ -19,12 +30,19 @@ def validate_activity(title, description, venue, start_date, end_date):
         return "Description cannot exceed 1000 characters."
     if len(venue) > 100:
         return "Venue cannot exceed 100 characters."
-    if start_date >= end_date:
+    start_dt, err = _parse_activity_datetime(start_date, "start")
+    if err:
+        return err
+    end_dt, err = _parse_activity_datetime(end_date, "end")
+    if err:
+        return err
+    if start_dt >= end_dt:
         return "End date must be after start date."
     return None
 
 @bp.route('/')
 @bp.route('')
+@login_required
 def activities():
     """shows all activities"""
     search_query = request.args.get("query")
@@ -105,6 +123,7 @@ def create_activities():
     return render_template('createactivity.html')
 
 @bp.route('/<int:id>')
+@login_required
 def activity_details(id):
     """shows details of activity with that id"""
     try:
