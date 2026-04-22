@@ -27,6 +27,7 @@
         <h1>Create activity</h1>
 
         <form class="create-activity-form" action="#" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="create-activity-top-row">
             <div class="input-group create-activity-name">
               <input type="text" name="title" placeholder="Event name" />
@@ -66,6 +67,7 @@
         <div class="page-card verify-modal-card">
           <h1>Enter verification code</h1>
           <form action="#" method="post" class="create-activity-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="input-group">
               <input
                 type="email"

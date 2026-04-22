@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
@@ -114,7 +114,8 @@ def register():
             }
             user_resource.create_verification_token(data)
             
-            verify_url = f"{request.host_url}auth/verify-email?token={token}"
+            scheme = request.scheme if current_app.debug else 'https'
+            verify_url = url_for('auth.verify_email', token=token, _external=True, _scheme=scheme)
             resend.Emails.send({
                 "from": "onboarding@resend.dev",
                 "to": form_data["email"],
@@ -128,9 +129,8 @@ def register():
             flash("Please check your email to verify your account for creation :).", "info")
             return redirect(url_for('auth.register'))
 
-        except Exception as e:
-            flash(str(e), "error")
-            print(str(e))
+        except Exception:
+            flash("Registration failed. Please try again.", "error")
             return render_template('register.html', **form_data)
     
     return render_template('register.html')
@@ -142,15 +142,14 @@ def verify_email():
     token = request.args.get("token")
 
     if not token:
-        return "Missing token", 400
+        flash("This verification link is invalid or has expired.", "error")
+        return redirect(url_for('auth.register'))
 
     verify = users_resource.verify_token(token, 'verify_email')
 
-    if not verify:
-        return "Invalid token", 400
-
-    if verify["expiry"] < datetime.now(timezone.utc):
-        return "Token expired", 400
+    if not verify or verify["expiry"] < datetime.now(timezone.utc):
+        flash("This verification link is invalid or has expired.", "error")
+        return redirect(url_for('auth.register'))
     
     try:
         id = verify["user_id"]
@@ -161,8 +160,8 @@ def verify_email():
         flash("Email verified successfully! Your account has been created!", "success")
         return redirect(url_for('auth.login'))
 
-    except Exception as e:
-        flash(str(e), "error")
+    except Exception:
+        flash("Email verification failed. Please try again.", "error")
         return redirect(url_for('auth.register'))
 
 
@@ -215,8 +214,8 @@ def update_user():
 
             try:
                 users_resource.authenticate(current_user.email, current_password)
-            except ValueError as e:
-                flash(str(e), "error")
+            except ValueError:
+                flash("Current password is incorrect.", "error")
                 return render_template('editprofile.html')
 
             if not password:
@@ -237,8 +236,8 @@ def update_user():
                 user_resource.update({'password': password})
                 flash("Password updated successfully", "success")
                 return redirect(url_for('auth.update_user'))
-            except ValueError as e:
-                flash(str(e), "error")
+            except ValueError:
+                flash("Failed to update password. Please try again.", "error")
                 return render_template('editprofile.html')
 
         email = request.form.get('email')
@@ -260,12 +259,12 @@ def update_user():
             flash("No valid fields provided for update", "error")
             return render_template('editprofile.html')
 
-        try: 
+        try:
             user_resource.update(user_data)
             flash("Profile updated successfully", "success")
             return redirect(url_for('auth.view_profile', id=current_user.id))
-        except ValueError as e:
-            flash(str(e), "error")
+        except ValueError:
+            flash("Failed to update profile. Please try again.", "error")
             return render_template('editprofile.html')
 
     return render_template('editprofile.html')
@@ -281,13 +280,13 @@ def delete_user(id):
 
     user_resource = users_resource.user(id)
 
-    try: 
+    try:
         user_resource.delete()
         logout_user()
         flash("Profile deleted successfully", "success")
         return redirect(url_for('landing.index'))
-    except ValueError as e:
-        flash(str(e), "error")
+    except ValueError:
+        flash("Failed to delete account. Please try again.", "error")
         return redirect(url_for('auth.view_profile', id=current_user.id))
     
 
@@ -309,7 +308,8 @@ def forgot_password():
                 "type": "forgot_password"
             }
             users_resource.user(user["id"]).create_verification_token(data)
-            reset_url = f"{request.host_url}auth/reset-password?token={token}"
+            scheme = request.scheme if current_app.debug else 'https'
+            reset_url = url_for('auth.reset_password', token=token, _external=True, _scheme=scheme)
             resend.Emails.send({
                 "from": "onboarding@resend.dev",
                 "to": email,
@@ -320,10 +320,8 @@ def forgot_password():
                     }
                 }
             })
-        except Exception as e:
-            flash(str(e), "error")
-            print(str(e))
-            return redirect(url_for('auth.forgot_password'))
+        except Exception:
+            pass  # swallow — both paths must show the same neutral message
 
     flash("If that email exists, a reset link has been sent.", "info")
     return redirect(url_for('auth.login'))
@@ -334,15 +332,14 @@ def reset_password():
     token = request.args.get("token") if request.method == "GET" else request.form.get("token")
 
     if not token:
-        return "Missing token", 400
+        flash("This password reset link is invalid or has expired.", "error")
+        return redirect(url_for('auth.forgot_password'))
 
     reset = users_resource.verify_token(token, 'forgot_password')
 
-    if not reset:
-        return "Invalid token", 400
-
-    if reset["expiry"] < datetime.now(timezone.utc):
-        return "Token expired", 400
+    if not reset or reset["expiry"] < datetime.now(timezone.utc):
+        flash("This password reset link is invalid or has expired.", "error")
+        return redirect(url_for('auth.forgot_password'))
 
     if request.method == "POST":
         password = request.form.get("password")
@@ -367,9 +364,8 @@ def reset_password():
             users_resource.invalidate_token(token)
             flash("Password reset successfully", "success")
             return redirect(url_for('auth.login'))
-        except Exception as e:
-            flash(str(e), "error")
-            print(str(e))
+        except Exception:
+            flash("Failed to reset password. Please try again.", "error")
             return render_template("resetpassword.html", token=token)
 
     return render_template("resetpassword.html", token=token)

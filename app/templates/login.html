@@ -37,6 +37,7 @@
           Sign in to check activity updates, manage your plans, and keep everything in one place.
         </p>
         <form action="{{ url_for('auth.login') }}" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="input-fields-container">
             <div class="input-group">
               <label class="field-label auth-field-label" for="login-email">Email</label>
