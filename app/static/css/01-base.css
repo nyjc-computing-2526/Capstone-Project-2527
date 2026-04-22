@@ -2,6 +2,8 @@
 /* Design tokens: alligator olive accents + cream neutrals. */
 
 :root {
+  --nav-height: 4.5rem;
+  --footer-height: 2.5rem;
   --surface-page: #eef2ec;
   --surface-panel: #e2e9e1;
   --surface-muted: #f7faf4;
@@ -87,6 +89,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-bottom: calc(var(--footer-height) + env(safe-area-inset-bottom));
   background:
     radial-gradient(120% 75% at 7% 2%, rgba(148, 181, 159, 0.24) 0%, rgba(148, 181, 159, 0) 54%),
     linear-gradient(180deg, var(--surface-page) 0%, var(--surface-panel) 100%);
@@ -99,6 +102,9 @@ body.landing-page {
 }
 
 header {
+  position: sticky;
+  top: 0;
+  z-index: 950;
   background:
     linear-gradient(145deg, #98b59a 0%, var(--surface-header) 48%, #7d9f83 100%);
   padding: 1em;
@@ -205,7 +211,16 @@ html.nav-highlight-prepared header li a.nav-active {
 }
 
 footer {
-  padding: 0.75em 1.5em;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  min-height: var(--footer-height);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0.4em 1.5em;
   background:
     linear-gradient(150deg, #c4d1bf 0%, var(--surface-footer) 55%, #b7c7b4 100%);
   border-top: 1px solid rgba(21, 38, 31, 0.09);
