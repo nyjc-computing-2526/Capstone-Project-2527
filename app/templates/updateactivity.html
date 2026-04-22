@@ -44,6 +44,7 @@
               </div>
 
               <form class="create-activity-form" action="{{ url_for('activities.update_activity', id=data.id) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="input-group">
                   <label class="field-label">Title</label>
                   <input type="text" name="title" placeholder="Event name" value="{{ data.title | default('') }}" required />
@@ -95,6 +96,7 @@
                   method="POST"
                   onsubmit="return confirm('Are you sure you want to delete this activity? This cannot be undone.')"
                 >
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                   <button type="submit" class="btn-delete-activity">Delete activity</button>
                 </form>
               </div>

@@ -110,6 +110,7 @@
             <input type="text" id="delete-confirm-input" placeholder="Type DELETE here" autocomplete="off" />
           </div>
           <form method="POST" action="{{ url_for('auth.delete_user', id=current_user.id) }}" id="delete-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="delete-step-stack">
               <button type="submit" class="delete-submit-btn" id="delete-submit-btn" disabled>
                 🗑 Delete my account

@@ -36,6 +36,7 @@
           Create your account with the details you want attached to your activities and profile.
         </p>
         <form action="{{ url_for('auth.register') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="input-fields-container">
             <div class="input-group">
               <label class="field-label auth-field-label" for="register-email">Email</label>

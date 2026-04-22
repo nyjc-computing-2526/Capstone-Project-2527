@@ -4,6 +4,7 @@ from flask_login import login_required, current_user
 from app.resources.users import UsersResource
 from app.resources.activities import ActivitiesResource
 from ..utils.formatting_util import enrich_for_cards, merge_by_id, schedule_for_detail
+from ..utils.sanitize_util import sanitize_input
 
 bp = Blueprint('activities', __name__, url_prefix='/activities')
 activities_resource = ActivitiesResource()
@@ -39,9 +40,8 @@ def activities():
             completed = list(filter(lambda row: row['title'].lower().startswith(search_query), completed))
             ongoing = list(filter(lambda row: row['title'].lower().startswith(search_query), ongoing))
             
-    except ValueError as e:
-        flash(f"Could not load activities.", "error")
-        print(str(e))
+    except ValueError:
+        flash("Could not load activities.", "error")
         upcoming, completed, ongoing = [], [], []
     return render_template('allactivities.html', 
         upcoming=enrich_for_cards(upcoming), 
@@ -75,12 +75,11 @@ def create_activities():
             if len(activities_resource.get_owned(current_user.id)) >= 5:
                 flash("You have reached the maximum number of activities you can create (5).", "error")
                 return render_template('createactivity.html')
-            
-            title = request.form['title'].strip()
-            description  = request.form['description'].strip()
+            title = sanitize_input(request.form['title']).strip()
+            description  = sanitize_input(request.form['description']).strip()
             start_date  = request.form['start_date']
             end_date  = request.form['end_date']
-            venue = request.form['venue'].strip()
+            venue = sanitize_input(request.form['venue']).strip()
             created_by = current_user.id
         
             activity_data = {
@@ -99,9 +98,8 @@ def create_activities():
                         
             activity_id = activities_resource.create_activity(activity_data)
             return redirect(url_for('activities.activity_details', id=activity_id))
-        
-        except Exception as e:
-            flash(str(e))
+        except Exception:
+            flash("Failed to create activity. Please try again.", "error")
             return render_template("createactivity.html")
 
     return render_template('createactivity.html')
@@ -165,9 +163,9 @@ def join_activity(id):
     
     try:
         activity_resource.join(user_id)
-        flash("Successfully joined activity.", "success") #added flash message
-    except ValueError as e:
-        flash(str(e), 'error')
+        flash("Successfully joined activity.", "success")
+    except ValueError:
+        flash("Unable to join activity. Please try again.", "error")
         
     return redirect(url_for('activities.activity_details', id=id)) #changed to just redirect to activity_details no matter success or not
     
@@ -185,10 +183,10 @@ def leave_activity(id):
     
     try:
         activity_resource.leave(user_id)
-        flash("Successfully left activity.", "success") #added flash message
-        return redirect(url_for('activities.my_activities')) #changed redirect to user's activities coz flows nicer   
-    except ValueError as e:
-        flash(str(e), 'error')
+        flash("Successfully left activity.", "success")
+        return redirect(url_for('activities.my_activities'))
+    except ValueError:
+        flash("Unable to leave activity. Please try again.", "error")
         return redirect(url_for('activities.activity_details', id=id))
 
 
@@ -234,9 +232,16 @@ def update_activity(id):
             return render_template('updateactivity.html', data=activity_data)
 
         try:
+            updated_data = {
+                'title': sanitize_input(request.form['title']),
+                'description': sanitize_input(request.form['description']),
+                'started_at': request.form['start_date'],
+                'ended_at': request.form['end_date'],
+                'venue': sanitize_input(request.form['venue']),
+            }
             activity_resource.update(updated_data)
             return redirect(url_for('activities.activity_details', id=id))
-        except ValueError as e:
+        except Exception:
             flash("Failed to update activity. Please try again later.", "error")
             return render_template('updateactivity.html', data=activity_data)
     
@@ -262,8 +267,8 @@ def delete_activity(id):
         flash("Activity deleted successfully", "success")
         return redirect(url_for('activities.my_activities'))
     
-    except ValueError as e:
-        flash(str(e), "error")
+    except ValueError:
+        flash("Failed to delete activity. Please try again.", "error")
         return redirect(url_for('activities.activity_details', id=id))
     
     
@@ -290,9 +295,8 @@ def activities_attendance(id):
             participants=participants
         )
     
-    except ValueError as e:
-        print(e)
-        flash("Failed to retrieve participants", "error")
+    except ValueError:
+        flash("Failed to retrieve participants.", "error")
         return redirect(url_for('activities.activity_details', id=id))
         
     
@@ -338,8 +342,7 @@ def update_attendance(id):
         else:
             flash("Attendance updated successfully.", "success")
     
-    except ValueError as e:
-        print(e)
-        flash("Failed to update attendance", "error")
+    except ValueError:
+        flash("Failed to update attendance.", "error")
     
     return redirect(url_for('activities.activities_attendance', id=id))

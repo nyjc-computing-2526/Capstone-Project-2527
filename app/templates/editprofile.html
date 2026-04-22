@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit profile</title>
     {% include "partials/stylesheets.html" %}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
   </head>
   <body class="app-hero-page">
     <div class="app-hero-viewport" aria-hidden="true"></div>
@@ -57,6 +58,7 @@
               action="{{ url_for('auth.update_user') }}"
               class="edit-profile-form"
             >
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="hidden" name="form_type" value="profile" />
               <div class="stack-field-gap">
                 <div class="input-group edit-profile-field">
@@ -171,6 +173,7 @@
             action="{{ url_for('auth.update_user') }}"
             id="password-form"
           >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="form_type" value="password" />
             <input
               type="hidden"
@@ -284,7 +287,10 @@
           try {
             const res = await fetch('{{ url_for("auth.verify_password") }}', {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": document.querySelector('meta[name="csrf-token"]').content,
+              },
               body: JSON.stringify({ password: current }),
             });
             const data = await res.json();
