@@ -2,14 +2,89 @@ import hashlib
 import os
 import hmac
 import secrets
+from datetime import datetime, timedelta, timezone
 
 import app.storage.db as db
 
-ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'user_class', 'verified'}
+ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'user_class', 'verified', 'failed_attempts', 'locked_until', 'lockout_count'}
+MAX_LOGIN_ATTEMPTS = 5
+LOGIN_COOLDOWN_SECONDS = (30, 60, 180, 300)
 
 
 class UsersResource:
     """Resource class for managing users collection operations."""
+
+    def _normalize_lock_until(self, locked_until):
+        if not locked_until:
+            return None
+        if locked_until.tzinfo is None:
+            return locked_until.replace(tzinfo=timezone.utc)
+        return locked_until
+
+    def _lockout_message(self, seconds_remaining: int) -> str:
+        minutes = seconds_remaining // 60
+        seconds = seconds_remaining % 60
+        if minutes > 0:
+            return f"Too many failed attempts. Please try again in {minutes}m {seconds}s."
+        return f"Too many failed attempts. Please try again in {seconds}s."
+
+    def _record_failed_login(self, user: dict) -> str:
+        now = datetime.now(timezone.utc)
+        failed_attempts = int(user.get('failed_attempts', 0) or 0) + 1
+        lockout_count = int(user.get('lockout_count', 0) or 0)
+        locked_until = None
+
+        if failed_attempts >= MAX_LOGIN_ATTEMPTS:
+            cooldown_seconds = LOGIN_COOLDOWN_SECONDS[min(lockout_count, len(LOGIN_COOLDOWN_SECONDS) - 1)]
+            locked_until = now + timedelta(seconds=cooldown_seconds)
+            failed_attempts = 0
+            lockout_count += 1
+            message = f"Too many failed attempts. Please try again in {cooldown_seconds} seconds."
+        else:
+            remaining = MAX_LOGIN_ATTEMPTS - failed_attempts
+            message = f"Invalid credentials. {remaining} attempt(s) remaining."
+
+        try:
+            self.user(user['id']).update({
+                "failed_attempts": failed_attempts,
+                "locked_until": locked_until,
+                "lockout_count": lockout_count,
+            })
+        except ValueError:
+            # Login feedback should not be replaced by a lockout bookkeeping failure.
+            pass
+        return message
+
+    def reset_login_lockout(self, user_id: int) -> bool:
+        try:
+            return self.user(user_id).update({
+                "failed_attempts": 0,
+                "locked_until": None,
+                "lockout_count": 0,
+            })
+        except ValueError:
+            # A successful login should still succeed even if these optional counters
+            # cannot be reset because the backing schema is out of sync.
+            return False
+
+    def authenticate_with_lockout(self, email: str, password: str) -> dict:
+        user = self.get_user_by_email(email)
+
+        if user:
+            now = datetime.now(timezone.utc)
+            locked_until = self._normalize_lock_until(
+                user.get('locked_until', user.get('lock_until'))
+            )
+            if locked_until and now < locked_until:
+                remaining = int((locked_until - now).total_seconds())
+                raise ValueError(self._lockout_message(remaining))
+
+        try:
+            return self.authenticate(email, password)
+        except ValueError:
+            if user:
+                raise ValueError(self._record_failed_login(user))
+            raise ValueError("Invalid credentials.") from None
 
     def get_user_by_email(self, email: str) -> dict | None:
         """helper to fetch user by email safely."""
@@ -175,14 +250,22 @@ class UserResource:
 
         updates = {"id": self.user_id}
         for k in ALLOWED_USER_COLUMNS:
-            if k in user_data and user_data[k] is not None:
-                val = user_data[k]
-                if isinstance(val, bool):
-                    updates[k] = val
-                if isinstance(val, str) and val.strip():
-                    updates[k] = val.strip()
+            if k not in user_data:
+                continue
 
-        if not updates:
+            val = user_data[k]
+            if isinstance(val, bool):
+                updates[k] = val
+            elif isinstance(val, int):
+                updates[k] = val
+            elif isinstance(val, datetime):
+                updates[k] = val
+            elif val is None and k == "locked_until":
+                updates[k] = None
+            elif isinstance(val, str) and val.strip():
+                updates[k] = val.strip()
+
+        if len(updates) == 1:
             raise ValueError("No valid fields provided for update")
 
         if 'email' in updates:
@@ -258,5 +341,3 @@ class UserResource:
             db.create_verification_token(data)
         except Exception as e:
             raise ValueError("Failed to create verification token") from None
-
-

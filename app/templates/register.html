@@ -45,6 +45,7 @@
                 type="email"
                 name="email"
                 placeholder="Email"
+                value="{{ email | default('') }}"
                 autocomplete="email"
                 required
               />
@@ -56,6 +57,7 @@
                 type="text"
                 name="name"
                 placeholder="Name"
+                value="{{ name | default('') }}"
                 autocomplete="name"
                 required
               />
@@ -67,6 +69,7 @@
                 type="text"
                 name="class"
                 placeholder="Class"
+                value="{{ user_class | default('') }}"
                 autocomplete="organization-title"
                 required
               />

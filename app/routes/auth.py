@@ -25,13 +25,13 @@ def validate_password(password):
     if not (8 <= len(password) <= 24):
         errors.append("Password must be between 8 and 24 characters long")
     
-    special = any(char in "!@#$%&_." for char in password)
+    special = any(not char.isalnum() for char in password)
     upper = any(char.isupper() for char in password)
     lower = any(char.islower() for char in password)
     number = any(char.isdigit() for char in password)
     
     if not special:
-        errors.append("Password must include at least one special character (!@#$%&_. )")
+        errors.append("Password must include at least one special character")
     if not upper:
         errors.append("Password must include at least one uppercase letter")
     if not lower:
@@ -48,29 +48,34 @@ def validate_password(password):
 def login():
     """allows user to log in"""
     if request.method == 'POST':
+        form_data = {"email": request.form.get('email', '').strip()}
         recaptcha_token = request.form.get('g-recaptcha-response')
         
         if not recaptcha_token or not verify_recaptcha(recaptcha_token):
             flash("Please complete the captcha.", "error")
-            return render_template('login.html')
+            return render_template('login.html', **form_data)
 
-        email = request.form['email']
-        password = request.form['password']
+        email = form_data['email']
+        password = request.form['password'].strip()
+        if not email or not password:
+            flash("Please enter your email and password.", "error")
+            return render_template('login.html', **form_data)
         
         try:
-            user_data = users_resource.authenticate(email, password)
+            user_data = users_resource.authenticate_with_lockout(email, password)
 
             if not user_data.get("verified"):
                 flash("Please verify your email before logging in.", "error")
-                return render_template('login.html')
-            
-            user = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], None)
-            login_user(user) 
+                return render_template('login.html', **form_data)
+
+            users_resource.reset_login_lockout(user_data['id'])
+            user_obj = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], None)
+            login_user(user_obj) 
             return redirect(url_for('landing.homepage'))
         
         except ValueError as e:
             flash(str(e), "error")
-            return render_template('login.html')
+            return render_template('login.html', **form_data)
 
     return render_template('login.html')
 
@@ -79,9 +84,17 @@ def login():
 def register():
     """registers user"""
     if request.method == 'POST':
-        form_data = {"email": request.form['email'], "name": request.form['name'], "user_class": request.form['class']}
+        form_data = {
+            "email": request.form['email'],
+            "name": request.form['name'],
+            "user_class": request.form['class'],
+        }
         password = request.form['password']
         confirm_password = request.form['confirm_password']
+
+        if not all([form_data['email'].strip(), form_data['name'].strip(), form_data['user_class'].strip(), password.strip(), confirm_password.strip()]):
+            flash("All fields are required.", "error")
+            return render_template('register.html', **form_data)
 
         recaptcha_token = request.form.get('g-recaptcha-response')
         if not recaptcha_token or not verify_recaptcha(recaptcha_token):
@@ -117,15 +130,16 @@ def register():
             scheme = request.scheme if current_app.debug else 'https'
             verify_url = url_for('auth.verify_email', token=token, _external=True, _scheme=scheme)
             resend.Emails.send({
-                "from": "onboarding@resend.dev",
+                "from": "Activity Alligator <noreply@activityalligator.com>",
                 "to": form_data["email"],
                 "template": {
                     "id": "email-verification",
                     "variables": {
-                    "link": verify_url
+                        "link": verify_url
                     }
                 }
             })
+
             flash("Please check your email to verify your account for creation :).", "info")
             return redirect(url_for('auth.register'))
 
@@ -204,8 +218,8 @@ def update_user():
         form_type = request.form.get('form_type', 'profile')
 
         if form_type == 'password':
-            current_password = request.form.get('current_password')
-            password = request.form.get('password')
+            current_password = request.form.get('current_password').strip()
+            password = request.form.get('password').strip()
             confirm_password = request.form.get('confirm_password')
 
             if not current_password:
@@ -295,7 +309,11 @@ def forgot_password():
     if request.method == "GET":
         return render_template("forgotpassword.html")
 
-    email = request.form.get("email")
+    email = request.form.get("email").strip()
+    if not email:
+        flash("Please enter your email.", "error")
+        return render_template("forgotpassword.html")
+    
     user = users_resource.get_user_by_email(email)
 
     if user:
@@ -311,12 +329,12 @@ def forgot_password():
             scheme = request.scheme if current_app.debug else 'https'
             reset_url = url_for('auth.reset_password', token=token, _external=True, _scheme=scheme)
             resend.Emails.send({
-                "from": "onboarding@resend.dev",
-                "to": email,
+                "from": "Activity Alligator <noreply@activityalligator.com>",
+                "to": form_data["email"],
                 "template": {
                     "id": "password-reset",
                     "variables": {
-                        "link": reset_url
+                        "link": verify_url
                     }
                 }
             })
@@ -342,7 +360,7 @@ def reset_password():
         return redirect(url_for('auth.forgot_password'))
 
     if request.method == "POST":
-        password = request.form.get("password")
+        password = request.form.get("password").strip()
         confirm_password = request.form.get("confirm_password")
 
         if not password:

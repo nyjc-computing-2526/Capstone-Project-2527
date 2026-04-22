@@ -7,7 +7,8 @@
     {% include "partials/stylesheets.html" %}
     <meta name="csrf-token" content="{{ csrf_token() }}">
   </head>
-  <body>
+  <body class="app-hero-page">
+    <div class="app-hero-viewport" aria-hidden="true"></div>
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
     messages %}
     <div class="toast-container">
@@ -23,65 +24,106 @@
     {% endif %} {% endwith %} {% include "partials/navbar-user.html" %}
 
     <main class="profile-page">
-      <section class="page-card profile-card">
-        <h1>Edit profile</h1>
-
-        <div class="profile-avatar" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" role="img">
-            <circle
-              cx="12"
-              cy="8"
-              r="3.5"
-              stroke="currentColor"
-              stroke-width="2"
-            />
-            <path
-              d="M5 19v-1c0-2.8 3.1-4.5 7-4.5s7 1.7 7 4.5v1"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
+      <section class="page-card profile-card profile-card--split edit-profile-card">
+        <div class="edit-profile-summary">
+          <p class="edit-profile-kicker">Account</p>
+          <h1>Edit profile</h1>
+          <div class="profile-avatar edit-profile-avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" role="img">
+              <circle
+                cx="12"
+                cy="8"
+                r="3.5"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M5 19v-1c0-2.8 3.1-4.5 7-4.5s7 1.7 7 4.5v1"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <p class="profile-name">{{ current_user.name | default('User') }}</p>
+          <p class="edit-profile-subtitle">{{ current_user.email }}</p>
         </div>
 
-        <form method="post" action="{{ url_for('auth.update_user') }}">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <input type="hidden" name="form_type" value="profile" />
-          <div class="stack-field-gap">
-            <div class="input-group">
-              <label class="field-label">Name</label>
-              <input
-                type="text"
-                name="name"
-                placeholder="Name"
-                value="{{ current_user.name | default('') }}"
-                autocomplete="name"
-              />
-            </div>
-            <div class="input-group">
-              <label class="field-label">Class</label>
-              <input
-                type="text"
-                name="class"
-                placeholder="Class"
-                value="{{ current_user.user_class | default('') }}"
-              />
-            </div>
+        <div class="edit-profile-form-column">
+          <div class="edit-profile-form-shell">
+            <h2>Profile details</h2>
+            <form
+              method="post"
+              action="{{ url_for('auth.update_user') }}"
+              class="edit-profile-form"
+            >
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="form_type" value="profile" />
+              <div class="stack-field-gap">
+                <div class="input-group edit-profile-field">
+                  <label class="field-label" for="edit-name">Name</label>
+                  <input
+                    type="text"
+                    id="edit-name"
+                    name="name"
+                    placeholder="Name"
+                    value="{{ current_user.name | default('') }}"
+                    autocomplete="name"
+                  />
+                </div>
+                <div class="input-group edit-profile-field">
+                  <label class="field-label" for="edit-email">Email</label>
+                  <input
+                    type="email"
+                    id="edit-email"
+                    name="email"
+                    placeholder="Email"
+                    value="{{ current_user.email | default('') }}"
+                    autocomplete="email"
+                  />
+                </div>
+                <div class="input-group edit-profile-field">
+                  <label class="field-label" for="edit-class">Class</label>
+                  <input
+                    type="text"
+                    id="edit-class"
+                    name="class"
+                    placeholder="Class"
+                    value="{{ current_user.user_class | default('') }}"
+                  />
+                </div>
+              </div>
+              <div class="edit-profile-actions">
+                <button
+                  type="submit"
+                  class="edit-profile-apply-btn edit-profile-action-btn edit-profile-action-btn--primary"
+                >
+                  Save changes
+                </button>
+                <a
+                  href="{{ url_for('auth.view_profile', id=current_user.id) }}"
+                  class="edit-profile-secondary-link edit-profile-action-btn edit-profile-action-btn--secondary"
+                >
+                  Cancel
+                </a>
+              </div>
+            </form>
           </div>
-          <button type="submit" class="btn-primary-block">
-            Apply changes
-          </button>
-        </form>
 
-        <div class="profile-divider-actions">
-          <button
-            type="button"
-            id="open-password-modal"
-            class="btn-secondary-block"
-          >
-            🔒 Change Password
-          </button>
+          <div class="edit-profile-support-card">
+            <div>
+              <h2>Password</h2>
+              <p class="edit-profile-subcopy">Change password</p>
+            </div>
+            <button
+              type="button"
+              id="open-password-modal"
+              class="edit-profile-security-btn edit-profile-action-btn edit-profile-action-btn--secondary"
+            >
+              Change password
+            </button>
+          </div>
         </div>
       </section>
     </main>
