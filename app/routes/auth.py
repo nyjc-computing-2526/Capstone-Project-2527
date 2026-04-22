@@ -246,10 +246,6 @@ def logout():
 @login_required
 def view_profile(id):
     """allows user to view their profile details"""
-    if id != current_user.id:
-        flash("You can only view your own profile.", "error")
-        return redirect(url_for('auth.view_profile', id=current_user.id))
-    
     user_resource = users_resource.user(id)
     user_data = user_resource.get()
     activity_data = activities_resource.get_owned(id)
