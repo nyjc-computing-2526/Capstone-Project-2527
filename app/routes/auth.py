@@ -60,69 +60,20 @@ def login():
             flash("Please enter your email and password.", "error")
             return render_template('login.html')
         
-        max_attempts = 5
-        cooldown = [30, 60, 180, 300] #30s, 1min, 3min, 5min
-        # ADD TO user DB: failed_attempts INTEGER DEFAULT 0, lock_until TIMESTAMPTZ DEFAULT NULL, lockout_count INTEGER DEFAULT 0
-        #failed_attempts to track number of times user fail to log in (before cooldown)
-        #lock_until time that cooldown will end
-        #lockout_count tracks how many times user has been locked out to determine how long cooldown is
-        
-        user = users_resource.get_user_by_email(email) #return the 3 new fields too
-
-        if user:
-            now = datetime.now(timezone.utc)
-            lock_until = user.get('lock_until')
-
-            if lock_until and lock_until.tzinfo is None:
-                lock_until = lock_until.replace(tzinfo=timezone.utc) #adds timezone info incase db strips it
-
-            #checks if lock_until is not None and that it isnt before current time -> show error messaage that acc is still cooling down
-            if lock_until and now < lock_until:
-                remaining = int((lock_until - now).total_seconds())
-                minutes = remaining // 60
-                seconds = remaining % 60
-                if minutes > 0:
-                    flash(f"Too many failed attempts. Please try again in {minutes}m {seconds}s.", "error")
-                else:
-                    flash(f"Too many failed attempts. Please try again in {seconds}s.", "error")
-                return render_template('login.html')
-            
         try:
-            user_data = users_resource.authenticate(email, password)
+            user_data = users_resource.authenticate_with_lockout(email, password)
 
             if not user_data.get("verified"):
                 flash("Please verify your email before logging in.", "error")
                 return render_template('login.html')
 
-            #correct login yay! resets failed_attempts and lockout_count to 0, lock_until set to None
-            user_resource = users_resource.user(user_data['id'])
-            user_resource.update({"failed_attempts": 0, "lock_until": None, "lockout_count": 0})
+            users_resource.reset_login_lockout(user_data['id'])
             user_obj = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], None)
             login_user(user_obj) 
             return redirect(url_for('landing.homepage'))
         
         except ValueError as e:
-            if user:
-                now = datetime.now(timezone.utc)
-                failed_attempts = user.get('failed_attempts', 0) + 1
-                lock_until = None
-                lockout_count = user.get('lockout_count', 0)
-
-                if failed_attempts >= max_attempts:
-                    cooldown = cooldown[min(lockout_count, len(cooldown) - 1)] #make sure even after user locked out more than 4 times, max cooldown still 300s
-                    lock_until = now + timedelta(seconds=cooldown)
-                    failed_attempts = 0
-                    lockout_count += 1
-                    flash(f"Too many failed attempts. Please try again in {cooldown} seconds.", "error") #cooldown triggered
-                else:
-                    remaining = max_attempts - failed_attempts
-                    flash(f"Invalid credentials. {remaining} attempt(s) remaining.", "error")  #cooldown in progress
-
-                users_resource.user(user['id']).update({"failed_attempts": failed_attempts, "lock_until": lock_until, "lockout_count": lockout_count})
-
-            else:
-                flash("Invalid credentials.", "error") #acc does not exist
-            
+            flash(str(e), "error")
             return render_template('login.html')
 
     return render_template('login.html')
