@@ -129,7 +129,7 @@ def register():
             
             verify_url = f"{request.host_url}auth/verify-email?token={token}"
             resend.Emails.send({
-                "from": "Activity Alligator <noreply@mail.activityalligator.com>",
+                "from": "Activity Alligator <noreply@activityalligator.com>",
                 "to": form_data["email"],
                 "template": {
                     "id": "email-verification",
@@ -329,7 +329,7 @@ def forgot_password():
             users_resource.user(user["id"]).create_verification_token(data)
             reset_url = f"{request.host_url}auth/reset-password?token={token}"
             resend.Emails.send({
-                "from": "Activity Alligator <noreply@mail.activityalligator.com>",
+                "from": "Activity Alligator <noreply@activityalligator.com>",
                 "to": form_data["email"],
                 "template": {
                     "id": "password-reset",
