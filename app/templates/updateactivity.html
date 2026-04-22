@@ -110,6 +110,48 @@
       document.querySelectorAll('.toast').forEach((toast) => {
         setTimeout(() => toast.remove(), 4000);
       });
+
+      (function () {
+        function validateDatetimeField(input, label) {
+          input.setCustomValidity("");
+          const val = input.value;
+          if (!val) return;
+          const m = val.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+          if (!m) {
+            input.setCustomValidity(`Please enter a valid ${label} date and time.`);
+            return;
+          }
+          const hours = parseInt(m[4], 10);
+          const minutes = parseInt(m[5], 10);
+          if (hours > 23) {
+            input.setCustomValidity(`Invalid ${label} time: hours must be between 0 and 23.`);
+          } else if (minutes > 59) {
+            input.setCustomValidity(`Invalid ${label} time: minutes must be between 0 and 59.`);
+          }
+        }
+
+        const startInput = document.querySelector('[name="start_date"]');
+        const endInput = document.querySelector('[name="end_date"]');
+
+        [startInput, endInput].forEach((el) => {
+          if (!el) return;
+          const label = el.name === "start_date" ? "start" : "end";
+          el.addEventListener("input", () => validateDatetimeField(el, label));
+          el.addEventListener("change", () => validateDatetimeField(el, label));
+        });
+
+        document.querySelector(".create-activity-form").addEventListener("submit", function (e) {
+          validateDatetimeField(startInput, "start");
+          validateDatetimeField(endInput, "end");
+          if (!startInput.checkValidity()) {
+            e.preventDefault();
+            startInput.reportValidity();
+          } else if (!endInput.checkValidity()) {
+            e.preventDefault();
+            endInput.reportValidity();
+          }
+        });
+      })();
     </script>
   </body>
 </html>
