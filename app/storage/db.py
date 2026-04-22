@@ -26,7 +26,7 @@ def db_execute(sql_query, params=None, fetch=None):
     if fetch not in ("all", "one", None):
         raise ValueError(f"fetch must be 'all', 'one' or None -- got {fetch}")
     
-    conn = psycopg2.connect(os.getenv('DATABASE_URL'))
+    conn = psycopg2.connect(os.getenv('TEST_DATABASE_URL'))
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) #returns rows as dicts instead of tuples
 
     try:
