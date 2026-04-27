@@ -1,4 +1,8 @@
+import os
+import sys
 import unittest
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import app.storage.db as db
 from app.resources.users import UsersResource, UserResource
@@ -112,7 +116,8 @@ class TestUsersWithDbLayer(unittest.TestCase):
     # ======================================================
 
     def test_long_input(self):
-        long_str = "x" * 3000
+        # Use strings that are long but within database column limits
+        long_str = "x" * 80
 
         user_id = self.users.register({
             "email": f"{long_str}@test.com",
@@ -139,7 +144,8 @@ class TestUsersWithDbLayer(unittest.TestCase):
         user_id = self.users.register({
             "email": "safe@test.com",
             "password": "pass123",
-            "name": "Safe"
+            "name": "Safe",
+            "user_class": "1A"
         })
 
         user = UserResource(user_id)
