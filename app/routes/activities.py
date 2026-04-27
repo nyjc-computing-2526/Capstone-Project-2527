@@ -7,6 +7,7 @@ from flask_login import login_required, current_user
 
 from app.resources.users import UsersResource
 from app.resources.activities import ActivitiesResource
+from app.utils.profanity_checker import check_profanity
 from ..utils.formatting_util import enrich_for_cards, merge_by_id, schedule_for_detail
 from ..utils.sanitize_util import sanitize_input
 
@@ -136,7 +137,7 @@ def create_activities():
             end_date  = request.form['end_date']
             venue = sanitize_input(request.form['venue']).strip()
             created_by = current_user.id
-        
+            
             activity_data = {
                 'title': title,
                 'description': description,
@@ -146,6 +147,12 @@ def create_activities():
                 'created_by': created_by
             } 
             
+            for value in [title, description, venue]:
+                result = check_profanity(value)
+                if result["valid"] == False:
+                    flash(result["msg"], "error")
+                    return render_template('createactivity.html', **activity_data)
+                
             error = validate_activity(title, description, venue, start_date, end_date)
             if error:
                 flash(error, "error")
@@ -155,7 +162,7 @@ def create_activities():
             return redirect(url_for('activities.activity_details', id=activity_id))
         except Exception:
             flash("Failed to create activity. Please try again.", "error")
-            return render_template("createactivity.html")
+            return render_template('createactivity.html', **activity_data)
 
     return render_template('createactivity.html')
 
@@ -261,11 +268,11 @@ def update_activity(id):
         return redirect(url_for('activities.activity_details', id=id))
 
     if request.method == 'POST':
-        title = request.form['title'].strip()
-        description  = request.form['description'].strip()
+        title = sanitize_input(request.form['title'].strip())
+        description  = sanitize_input(request.form['description'].strip())
         start_date  = request.form['start_date']
         end_date  = request.form['end_date']
-        venue = request.form['venue'].strip()
+        venue = sanitize_input(request.form['venue'].strip())
         updated_data = {}
 
         error = validate_activity(title, description, venue, start_date, end_date)
@@ -273,6 +280,12 @@ def update_activity(id):
             flash(error, "error")
             return render_template('updateactivity.html', data=activity_data)
         
+        for value in [title, description, venue]:
+            result = check_profanity(value)
+            if result["valid"] == False:
+                flash(result["msg"], "error")
+                return render_template('updateactivity.html', data=activity_data)
+
         if title:
             updated_data['title'] = title
         if description:
@@ -288,13 +301,6 @@ def update_activity(id):
             return render_template('updateactivity.html', data=activity_data)
 
         try:
-            updated_data = {
-                'title': sanitize_input(request.form['title']),
-                'description': sanitize_input(request.form['description']),
-                'started_at': request.form['start_date'],
-                'ended_at': request.form['end_date'],
-                'venue': sanitize_input(request.form['venue']),
-            }
             activity_resource.update(updated_data)
             return redirect(url_for('activities.activity_details', id=id))
         except Exception:
