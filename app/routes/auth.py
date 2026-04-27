@@ -272,6 +272,9 @@ def update_user():
             user_data['name'] = name.strip()
 
         if user_class and user_class.strip():
+            if len(user_class) != 4 and not user_class.startswith('2') and not (1 <= int(user_class[-2:]) <= 30):
+                flash("Invalid class.", "error")
+                return render_template('editprofile.html')
             user_data['user_class'] = user_class.strip()
 
         if not user_data:
