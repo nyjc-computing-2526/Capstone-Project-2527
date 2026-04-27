@@ -251,7 +251,7 @@ def landing_about():
 
 @app.route("/privacy-policy", methods=["GET"], endpoint="landing.privacy_policy")
 def landing_privacy_policy():
-    return render_template("legal.html")
+    return render_template("privacypolicy.html")
 
 
 @app.route("/contact", methods=["GET", "POST"], endpoint="landing.contact")
