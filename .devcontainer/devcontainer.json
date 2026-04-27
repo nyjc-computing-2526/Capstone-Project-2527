@@ -1,16 +1,13 @@
 {
-    "name": "Python + Postgres",
-    "dockerComposeFile": "docker-compose.yml",
-    "service": "app",
-
-    "postCreateCommand": "pip install psycopg2-binary python-dotenv flask flask_login resend",
-    
-    "postStartCommand": "git pull origin $(git branch --show-current) && git merge origin/dev",
-
+    "name": "Python 3.12",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "postCreateCommand": "python -m pip install --upgrade pip && python -m pip install -r requirements.txt",
     "customizations": {
         "vscode": {
             "settings": {
-                "python.defaultInterpreterPath": "/usr/local/bin/python"
+                "python.defaultInterpreterPath": "/usr/local/bin/python3"
             },
             "extensions": [
                 "ms-python.python"

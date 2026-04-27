@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% include "partials/stylesheets.html" %}
+    <title>{{ code }} – Error</title>
+  </head>
+  <body class="auth-page">
+    <div class="authcontainer">
+      <div class="login-card">
+        <a href="{{ url_for('landing.index') }}" class="login-back-home-link">Back to Home</a>
+        <p class="auth-kicker">Error {{ code }}</p>
+        <h1>Something went wrong.</h1>
+        <p class="auth-lead">{{ message }}</p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -333,14 +333,7 @@ class ActivityResource:
             raise ValueError(f"Failed to retrieve participants for activity {self.activity_id}: {str(e)}")
         
 
-    def get_attendance_roster(self) -> list[dict]:
-        try:
-            return db.get_participants_with_attendance(self.activity_id)
-        except Exception as e:
-            raise ValueError(f"Failed to retrieve attendance roster for activity {self.activity_id}: {str(e)}")
-        
-
-    def update_attendance(self, user_id: int, status: str, reason: str | None, marked_by: int) -> bool:
+    def update_attendance_for_participant(self, user_id: int, status: str, reason: str | None, marked_by: int) -> bool:
         try:
             if not isinstance(user_id, int):
                 user_id = int(user_id)
