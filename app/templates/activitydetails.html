@@ -73,17 +73,19 @@
             <div class="body-grid">
             <div class="main-card">
               <p class="section-label">About</p>
-              <div class="description-box"><github-md>{{ data.description | default('No description provided.') }}</github-md></div>
+              <div class="description-box">{{ data.description | markdown_safe if data.description else '<p class="muted-text">No description provided.</p>' | safe }}</div>
 
               {% if current_user.is_authenticated %}
                 {% if current_user.id in participants | map(attribute='id') | list %}
                   {% if current_user.id != data.created_by %}
                     <form action="{{ url_for('activities.leave_activity', id=data.id) }}" method="POST">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                       <button type="submit" class="leave-btn">- Leave</button>
                     </form>
                   {% endif %}
                 {% else %}
                   <form action="{{ url_for('activities.join_activity', id=data.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="signup-btn">+ Sign Up</button>
                   </form>
                 {% endif %}
@@ -124,6 +126,5 @@
         setTimeout(() => toast.remove(), 4000);
       });
     </script>
-    <script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script>
   </body>
 </html>

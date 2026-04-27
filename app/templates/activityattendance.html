@@ -68,6 +68,7 @@
               </div>
 
               <form action="{{ request.path }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="attendance-table-wrap">
                   <table class="attendance-table">
                     <thead>

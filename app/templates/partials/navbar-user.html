@@ -59,6 +59,7 @@
     <div class="nav-auth-actions{% if current_user.is_authenticated %} nav-auth-actions--single{% endif %}">
       {% if current_user.is_authenticated %}
       <form action="{{ url_for('auth.logout') }}" method="POST" class="nav-auth-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="nav-auth-btn nav-auth-btn-logout">Log Out</button>
       </form>
       {% else %}
