@@ -1,6 +1,8 @@
+import csv
+import io
 from datetime import datetime
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, Response, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 
 from app.resources.users import UsersResource
@@ -13,6 +15,41 @@ activities_resource = ActivitiesResource()
 users_resource = UsersResource()
 
 _DATETIME_FMT = "%Y-%m-%dT%H:%M"
+
+
+def _build_participants_csv(activity_data, participants):
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "activity_id",
+        "activity_title",
+        "participant_id",
+        "participant_name",
+        "participant_email",
+        "attendance_status",
+        "attendance_reason",
+        "attendance_marked_at",
+        "attendance_marked_by",
+    ])
+
+    for participant in participants:
+        marked_at = participant.get("attendance_marked_at")
+        if marked_at:
+            marked_at = marked_at.isoformat()
+
+        writer.writerow([
+            activity_data.get("id"),
+            activity_data.get("title", ""),
+            participant.get("id"),
+            participant.get("name", ""),
+            participant.get("email", ""),
+            participant.get("attendance_status") or "pending",
+            participant.get("attendance_reason") or "",
+            marked_at or "",
+            participant.get("attendance_marked_by") or "",
+        ])
+
+    return output.getvalue()
 
 def _parse_activity_datetime(value, field_label):
     """Strictly parse a datetime-local string; return (datetime, error_string)."""
@@ -365,3 +402,35 @@ def update_attendance(id):
         flash("Failed to update attendance.", "error")
     
     return redirect(url_for('activities.activities_attendance', id=id))
+
+@bp.route("/attendance/export/<int:id>")
+@login_required
+def export_participants(id):
+    """Export participants and attendance for an activity as a CSV download."""
+    try:
+        activity_resource = activities_resource.activity(id)
+        activity_data = activity_resource.get()
+    except ValueError:
+        flash("Activity not found.", "error")
+        return redirect(url_for('activities.activities'))
+    
+    try:
+        if activity_data['created_by'] != current_user.id:
+            flash("Only the organsier can export the attendance.", "error")
+            return redirect(url_for('activities.activity_details', id=id))
+    
+        participants = activity_resource.get_participants()
+        csv_content = _build_participants_csv(activity_data, participants)
+        safe_title = (activity_data.get("title") or "activity").strip().replace(" ", "_")
+        filename = f"{safe_title}_participants.csv"
+
+        return Response(
+            csv_content,
+            mimetype="text/csv",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+    
+    except ValueError:
+        flash("Failed to retrieve participants.", "error")
+        return redirect(url_for('activities.activity_details', id=id))
+        
