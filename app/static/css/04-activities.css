@@ -5,34 +5,55 @@
   display: flex;
   flex-direction: column;
   padding: 1em;
-  gap: 2em;
+  gap: 1.5em;
   flex: 1;
   background-color: var(--surface-panel);
 }
 
 .top-section {
   display: flex;
-  flex-direction: row;
-  gap: 3em;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: stretch;
+  margin-bottom: 1rem;
 }
 
 .header-section {
-  flex: 1;
-  max-width: 50%;
+  max-width: 100%;
+}
+
+.page-intro {
+  margin: 0;
+  max-width: 42rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.activity-controls {
+  display: grid;
+  grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: end;
+}
+
+.activity-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.control-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-heading);
 }
 
 .search-section {
-  flex: 1;
-  max-width: 50%;
-  display: flex;
-  flex-direction: column;
+  min-width: 0;
 }
 
 .cards-section {
-  display: flex;
-  flex-direction: row;
-  gap: 3em;
   width: 100%;
 }
 
@@ -44,7 +65,7 @@
 
 .all-activities h1 {
   margin-top: 0;
-  margin-bottom: 1.5em;
+  margin-bottom: 0.5rem;
   font-size: 2.5rem;
   font-weight: bold;
   color: var(--text-heading);
@@ -64,32 +85,32 @@
   max-width: 100%;
 }
 
-.all-activities h2 {
-  margin-top: 0;
-  margin-bottom: 1.25em;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--text-heading);
-}
-
-.search-heading {
-  text-align: center;
-  margin-top: auto;
-  margin-bottom: 1.5em;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--text-heading);
-}
-
 .all-activities .activities-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25em;
 }
 
+.all-activities .activities-grid--two-column {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  align-items: start;
+}
+
+.all-activities .input-group,
+.all-activities .input-group input,
+.all-activities .input-group select,
+.search-container input {
+  width: 100%;
+  max-width: none;
+}
+
+.input-group--wide {
+  max-width: none;
+}
+
 .search-container {
   margin-bottom: 0;
-  flex-shrink: 0;
 }
 
 .search-container input {
@@ -97,14 +118,42 @@
   padding: 1rem;
   border-radius: 1rem;
   border: 1px solid var(--border-warm);
-  background-color: var(--surface-muted);
+  background-color: #ffffff;
   font-size: 1rem;
-  color: var(--text-accent);
+  color: var(--text-heading);
   box-sizing: border-box;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.search-container input:hover,
+.search-container input:focus {
+  border-color: var(--border-moss);
+  background-color: var(--surface-muted);
+  box-shadow: 0 12px 24px rgba(73, 107, 84, 0.12);
+}
+
+.search-container input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  transform: translateY(-1px);
 }
 
 .search-container input::placeholder {
   color: var(--text-placeholder);
+}
+
+@media (max-width: 760px) {
+  .activity-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .all-activities .activities-grid--two-column {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Create Activity Page */

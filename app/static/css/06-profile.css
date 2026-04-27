@@ -137,7 +137,7 @@ a.profile-edit-btn:active {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: min(82%, 32rem);
+  width: 100%;
   max-width: 100%;
   margin-top: 0;
   box-sizing: border-box;
@@ -192,6 +192,176 @@ a.profile-edit-btn:active {
   font-size: 1.35rem;
   line-height: 1;
   font-weight: 600;
+}
+
+.edit-profile-card {
+  gap: 2rem;
+  align-items: stretch;
+}
+
+.edit-profile-avatar {
+  margin: 1.5rem 0;
+}
+
+.edit-profile-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 0 0 min(20rem, 100%);
+  max-width: 20rem;
+}
+
+.edit-profile-kicker {
+  margin: 0 0 0.8rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.edit-profile-subtitle,
+.edit-profile-subcopy {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.edit-profile-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.1;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition:
+    background-color 110ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 110ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    color 110ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.edit-profile-action-btn--primary {
+  background: linear-gradient(135deg, rgba(51, 82, 68, 0.96), rgba(120, 158, 133, 0.9));
+  color: #fff;
+}
+
+.edit-profile-action-btn--primary:hover,
+.edit-profile-action-btn--primary:focus-visible {
+  background: linear-gradient(135deg, rgba(41, 69, 57, 0.98), rgba(95, 134, 112, 0.92));
+  color: #fff;
+}
+
+.edit-profile-action-btn--primary:active {
+  background: linear-gradient(135deg, rgba(31, 53, 43, 1), rgba(72, 111, 90, 0.95));
+}
+
+.edit-profile-action-btn--secondary {
+  background: rgba(247, 250, 244, 0.74);
+  border-color: rgba(33, 57, 46, 0.18);
+  color: var(--text-accent-deep);
+}
+
+.edit-profile-action-btn--secondary:hover,
+.edit-profile-action-btn--secondary:focus-visible {
+  background: rgba(247, 250, 244, 0.92);
+  border-color: var(--border-focus);
+  color: var(--text-accent-deep);
+}
+
+.edit-profile-action-btn--secondary:active {
+  background: rgba(238, 244, 236, 0.92);
+  border-color: var(--border-focus);
+}
+
+.edit-profile-form-shell,
+.edit-profile-support-card {
+  padding: 1.5rem;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(55, 90, 73, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(247, 250, 244, 0.88));
+  box-shadow: 0 14px 28px rgba(31, 51, 42, 0.08);
+}
+
+.edit-profile-form-shell h2,
+.edit-profile-support-card h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.5rem;
+}
+
+.edit-profile-form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1 1 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.edit-profile-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  align-items: stretch;
+}
+
+.edit-profile-actions > * {
+  flex: 1 1 0;
+  width: 100%;
+}
+
+.edit-profile-secondary-link {
+  max-width: none;
+}
+
+.edit-profile-support-card {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-page .edit-profile-form-column .edit-profile-form-shell,
+.profile-page .edit-profile-form-column .edit-profile-support-card,
+.profile-page .edit-profile-form-column .edit-profile-form {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+.edit-profile-security-btn {
+  width: auto;
+  max-width: none;
+  min-width: 12rem;
+  background-image: none;
+}
+
+@media (max-width: 820px) {
+  .edit-profile-summary {
+    max-width: none;
+  }
+
+  .edit-profile-actions,
+  .edit-profile-support-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .edit-profile-actions > * {
+    flex-basis: auto;
+  }
+
+  .edit-profile-security-btn {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 .visually-hidden {

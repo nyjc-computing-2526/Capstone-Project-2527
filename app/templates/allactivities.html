@@ -27,10 +27,14 @@
         <div class="top-section">
           <div class="header-section">
             <h1>All activities</h1>
-            <h2>Happening today</h2>
-            <div class="input-row">
-              <span>View by:</span>
-              <div class="input-group">
+            <p class="page-intro">
+              Browse every activity and narrow the list with the filters below.
+            </p>
+          </div>
+          <div class="activity-controls">
+            <div class="activity-control">
+              <label class="control-label" for="status-filter">View by</label>
+              <div class="input-group input-group--wide">
                 <select name="status" id="status-filter">
                   <option value="all" selected>All</option>
                   <option value="upcoming">Upcoming</option>
@@ -39,15 +43,17 @@
                 </select>
               </div>
             </div>
-          </div>
-          <div class="search-section">
-            <h2 class="search-heading">Search for an activity</h2>
-            <div class="search-container">
+            <div class="activity-control search-section">
+              <label class="control-label" for="search-input"
+                >Search for an activity</label
+              >
+              <div class="search-container">
               <input
                 type="text"
                 id="search-input"
                 placeholder="Enter search query"
               />
+              </div>
             </div>
           </div>
         </div>
@@ -58,157 +64,81 @@
 
         <!-- Upcoming -->
         <div id="upcoming-cards" class="cards-section cards-section--hidden">
-          {% set mid = ((upcoming | length) + 1) // 2 %}
-          <div class="left-activities">
-            <div class="activities-grid">
-              {% for activity in upcoming[:mid] %}
-              <a
-                href="{{ url_for('activities.activity_details', id=activity.id) }}"
-                class="activity-card-link"
-              >
-                <div class="activity-card">
-                  <h3>{{ activity.title | default('Untitled') }}</h3>
-                  <p>{{ activity.display_time }}</p>
-                  <p>{{ activity.display_date }}</p>
-                </div>
-              </a>
-              {% endfor %}               {% if not upcoming %}
-              <p class="muted-text muted-text--inline">No upcoming activities.</p>
-              {% endif %}
-            </div>
-          </div>
-          <div class="right-activities">
-            <div class="activities-grid">
-              {% for activity in upcoming[mid:] %}
-              <a
-                href="{{ url_for('activities.activity_details', id=activity.id) }}"
-                class="activity-card-link"
-              >
-                <div class="activity-card">
-                  <h3>{{ activity.title | default('Untitled') }}</h3>
-                  <p>{{ activity.display_time }}</p>
-                  <p>{{ activity.display_date }}</p>
-                </div>
-              </a>
-              {% endfor %}
-            </div>
+          <div class="activities-grid activities-grid--two-column">
+            {% for activity in upcoming %}
+            <a
+              href="{{ url_for('activities.activity_details', id=activity.id) }}"
+              class="activity-card-link"
+            >
+              <div class="activity-card">
+                <h3>{{ activity.title | default('Untitled') }}</h3>
+                <p>{{ activity.display_time }}</p>
+                <p>{{ activity.display_date }}</p>
+              </div>
+            </a>
+            {% endfor %} {% if not upcoming %}
+            <p class="muted-text muted-text--inline">No upcoming activities.</p>
+            {% endif %}
           </div>
         </div>
 
         <!-- Ongoing -->
         <div id="ongoing-cards" class="cards-section cards-section--hidden">
-          {% set mid = ((ongoing | length) + 1) // 2 %}
-          <div class="left-activities">
-            <div class="activities-grid">
-              {% for activity in ongoing[:mid] %}
-              <a
-                href="{{ url_for('activities.activity_details', id=activity.id) }}"
-                class="activity-card-link"
-              >
-                <div class="activity-card">
-                  <h3>{{ activity.title | default('Untitled') }}</h3>
-                  <p>{{ activity.display_time }}</p>
-                  <p>{{ activity.display_date }}</p>
-                </div>
-              </a>
-              {% endfor %}               {% if not ongoing %}
-              <p class="muted-text muted-text--inline">No ongoing activities.</p>
-              {% endif %}
-            </div>
-          </div>
-          <div class="right-activities">
-            <div class="activities-grid">
-              {% for activity in ongoing[mid:] %}
-              <a
-                href="{{ url_for('activities.activity_details', id=activity.id) }}"
-                class="activity-card-link"
-              >
-                <div class="activity-card">
-                  <h3>{{ activity.title | default('Untitled') }}</h3>
-                  <p>{{ activity.display_time }}</p>
-                  <p>{{ activity.display_date }}</p>
-                </div>
-              </a>
-              {% endfor %}
-            </div>
+          <div class="activities-grid activities-grid--two-column">
+            {% for activity in ongoing %}
+            <a
+              href="{{ url_for('activities.activity_details', id=activity.id) }}"
+              class="activity-card-link"
+            >
+              <div class="activity-card">
+                <h3>{{ activity.title | default('Untitled') }}</h3>
+                <p>{{ activity.display_time }}</p>
+                <p>{{ activity.display_date }}</p>
+              </div>
+            </a>
+            {% endfor %} {% if not ongoing %}
+            <p class="muted-text muted-text--inline">No ongoing activities.</p>
+            {% endif %}
           </div>
         </div>
 
         <!-- Completed -->
         <div id="completed-cards" class="cards-section cards-section--hidden">
-          {% set mid = ((completed | length) + 1) // 2 %}
-          <div class="left-activities">
-            <div class="activities-grid">
-              {% for activity in completed[:mid] %}
-              <a
-                href="{{ url_for('activities.activity_details', id=activity.id) }}"
-                class="activity-card-link"
-              >
-                <div class="activity-card">
-                  <h3>{{ activity.title | default('Untitled') }}</h3>
-                  <p>{{ activity.display_time }}</p>
-                  <p>{{ activity.display_date }}</p>
-                </div>
-              </a>
-              {% endfor %}               {% if not completed %}
-              <p class="muted-text muted-text--inline">No completed activities.</p>
-              {% endif %}
-            </div>
-          </div>
-          <div class="right-activities">
-            <div class="activities-grid">
-              {% for activity in completed[mid:] %}
-              <a
-                href="{{ url_for('activities.activity_details', id=activity.id) }}"
-                class="activity-card-link"
-              >
-                <div class="activity-card">
-                  <h3>{{ activity.title | default('Untitled') }}</h3>
-                  <p>{{ activity.display_time }}</p>
-                  <p>{{ activity.display_date }}</p>
-                </div>
-              </a>
-              {% endfor %}
-            </div>
+          <div class="activities-grid activities-grid--two-column">
+            {% for activity in completed %}
+            <a
+              href="{{ url_for('activities.activity_details', id=activity.id) }}"
+              class="activity-card-link"
+            >
+              <div class="activity-card">
+                <h3>{{ activity.title | default('Untitled') }}</h3>
+                <p>{{ activity.display_time }}</p>
+                <p>{{ activity.display_date }}</p>
+              </div>
+            </a>
+            {% endfor %} {% if not completed %}
+            <p class="muted-text muted-text--inline">No completed activities.</p>
+            {% endif %}
           </div>
         </div>
 
         <!-- Completed -->
         <div id="all-cards" class="cards-section">
-          {% set mid = ((all | length) + 1) // 2 %}
-          <div class="left-activities">
-            <div class="activities-grid">
-              {% for activity in all[:mid] %}
-              <a
-                href="{{ url_for('activities.activity_details', id=activity.id) }}"
-                class="activity-card-link"
-              >
-                <div class="activity-card">
-                  <h3>{{ activity.title | default('Untitled') }}</h3>
-                  <p>{{ activity.display_time }}</p>
-                  <p>{{ activity.display_date }}</p>
-                </div>
-              </a>
-              {% endfor %}               {% if not all %}
-              <p class="muted-text muted-text--inline">No activities.</p>
-              {% endif %}
-            </div>
-          </div>
-          <div class="right-activities">
-            <div class="activities-grid">
-              {% for activity in all[mid:] %}
-              <a
-                href="{{ url_for('activities.activity_details', id=activity.id) }}"
-                class="activity-card-link"
-              >
-                <div class="activity-card">
-                  <h3>{{ activity.title | default('Untitled') }}</h3>
-                  <p>{{ activity.display_time }}</p>
-                  <p>{{ activity.display_date }}</p>
-                </div>
-              </a>
-              {% endfor %}
-            </div>
+          <div class="activities-grid activities-grid--two-column">
+            {% for activity in all %}
+            <a
+              href="{{ url_for('activities.activity_details', id=activity.id) }}"
+              class="activity-card-link"
+            >
+              <div class="activity-card">
+                <h3>{{ activity.title | default('Untitled') }}</h3>
+                <p>{{ activity.display_time }}</p>
+                <p>{{ activity.display_date }}</p>
+              </div>
+            </a>
+            {% endfor %} {% if not all %}
+            <p class="muted-text muted-text--inline">No activities.</p>
+            {% endif %}
           </div>
         </div>
       </div>

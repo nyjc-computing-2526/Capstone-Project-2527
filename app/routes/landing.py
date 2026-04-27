@@ -77,8 +77,8 @@ def contact():
 
             return render_template("contact.html", success=True)
 
-        except Exception as e:
-            return render_template("contact.html", error=str(e))
+        except Exception:
+            return render_template("contact.html", error="Failed to send message. Please try again later.")
 
     return render_template("contact.html")
 
