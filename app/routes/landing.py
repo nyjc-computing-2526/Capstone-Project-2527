@@ -23,6 +23,10 @@ def about():
 def legal():
     return render_template('legal.html')
 
+@bp.route('/privacy-policy', methods=["GET"])
+def privacy_policy():
+    return render_template('privacypolicy.html')
+
 @bp.route('/contact', methods=["GET", "POST"])
 def contact():
     if request.method == "POST":
