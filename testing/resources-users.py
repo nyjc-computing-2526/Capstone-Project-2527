@@ -1,5 +1,9 @@
 import unittest
 import hashlib
+import sys
+import os
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import app.storage.db as db
 from app.resources.users import UsersResource, UserResource
@@ -31,6 +35,34 @@ class TestUsersWithDbLayer(unittest.TestCase):
 
         self.assertIsNotNone(user)
         self.assertEqual(user["email"], "normal@test.com")
+
+    def test_register_without_verification(self):
+        # Test creating multiple accounts with the same name but different emails
+        user_id1 = self.users.register_without_verification({
+            "email": "noverify1@test.com",
+            "password": "password123",
+            "name": "Same Name User",
+            "user_class": "1A"
+        })
+
+        user_id2 = self.users.register_without_verification({
+            "email": "noverify2@test.com",
+            "password": "password456",
+            "name": "Same Name User",
+            "user_class": "1B"
+        })
+
+        user1 = db.get_user_by_id(user_id1)
+        user2 = db.get_user_by_id(user_id2)
+
+        self.assertIsNotNone(user1)
+        self.assertIsNotNone(user2)
+        self.assertEqual(user1["name"], "Same Name User")
+        self.assertEqual(user2["name"], "Same Name User")
+        self.assertEqual(user1["email"], "noverify1@test.com")
+        self.assertEqual(user2["email"], "noverify2@test.com")
+        self.assertTrue(user1.get("verified"))
+        self.assertTrue(user2.get("verified"))
 
     def test_update_normal(self):
         user_id = self.users.register({
