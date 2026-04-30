@@ -227,6 +227,13 @@ footer {
   border-top: 1px solid rgba(21, 38, 31, 0.09);
 }
 
+footer.footer--transparent {
+  background: rgba(174, 191, 170, 0.28);
+  border-top-color: rgba(21, 38, 31, 0.14);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
 footer p {
   padding: 0 0.5em;
 }
