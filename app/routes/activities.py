@@ -1,10 +1,13 @@
+import csv
+import io
 from datetime import datetime
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, Response, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 
 from app.resources.users import UsersResource
 from app.resources.activities import ActivitiesResource
+from app.utils.profanity_checker import check_profanity
 from ..utils.formatting_util import enrich_for_cards, merge_by_id, schedule_for_detail
 from ..utils.sanitize_util import sanitize_input
 
@@ -13,6 +16,41 @@ activities_resource = ActivitiesResource()
 users_resource = UsersResource()
 
 _DATETIME_FMT = "%Y-%m-%dT%H:%M"
+
+
+def _build_participants_csv(activity_data, participants):
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "activity_id",
+        "activity_title",
+        "participant_id",
+        "participant_name",
+        "participant_email",
+        "attendance_status",
+        "attendance_reason",
+        "attendance_marked_at",
+        "attendance_marked_by",
+    ])
+
+    for participant in participants:
+        marked_at = participant.get("attendance_marked_at")
+        if marked_at:
+            marked_at = marked_at.isoformat()
+
+        writer.writerow([
+            activity_data.get("id"),
+            activity_data.get("title", ""),
+            participant.get("id"),
+            participant.get("name", ""),
+            participant.get("email", ""),
+            participant.get("attendance_status") or "pending",
+            participant.get("attendance_reason") or "",
+            marked_at or "",
+            participant.get("attendance_marked_by") or "",
+        ])
+
+    return output.getvalue()
 
 def _parse_activity_datetime(value, field_label):
     """Strictly parse a datetime-local string; return (datetime, error_string)."""
@@ -99,7 +137,7 @@ def create_activities():
             end_date  = request.form['end_date']
             venue = sanitize_input(request.form['venue']).strip()
             created_by = current_user.id
-        
+            
             activity_data = {
                 'title': title,
                 'description': description,
@@ -109,6 +147,12 @@ def create_activities():
                 'created_by': created_by
             } 
             
+            for value in [title, description, venue]:
+                result = check_profanity(value)
+                if result["valid"] == False:
+                    flash(result["msg"], "error")
+                    return render_template('createactivity.html', **activity_data)
+                
             error = validate_activity(title, description, venue, start_date, end_date)
             if error:
                 flash(error, "error")
@@ -118,7 +162,7 @@ def create_activities():
             return redirect(url_for('activities.activity_details', id=activity_id))
         except Exception:
             flash("Failed to create activity. Please try again.", "error")
-            return render_template("createactivity.html")
+            return render_template('createactivity.html', **activity_data)
 
     return render_template('createactivity.html')
 
@@ -224,11 +268,11 @@ def update_activity(id):
         return redirect(url_for('activities.activity_details', id=id))
 
     if request.method == 'POST':
-        title = request.form['title'].strip()
-        description  = request.form['description'].strip()
+        title = sanitize_input(request.form['title'].strip())
+        description  = sanitize_input(request.form['description'].strip())
         start_date  = request.form['start_date']
         end_date  = request.form['end_date']
-        venue = request.form['venue'].strip()
+        venue = sanitize_input(request.form['venue'].strip())
         updated_data = {}
 
         error = validate_activity(title, description, venue, start_date, end_date)
@@ -236,6 +280,12 @@ def update_activity(id):
             flash(error, "error")
             return render_template('updateactivity.html', data=activity_data)
         
+        for value in [title, description, venue]:
+            result = check_profanity(value)
+            if result["valid"] == False:
+                flash(result["msg"], "error")
+                return render_template('updateactivity.html', data=activity_data)
+
         if title:
             updated_data['title'] = title
         if description:
@@ -251,13 +301,6 @@ def update_activity(id):
             return render_template('updateactivity.html', data=activity_data)
 
         try:
-            updated_data = {
-                'title': sanitize_input(request.form['title']),
-                'description': sanitize_input(request.form['description']),
-                'started_at': request.form['start_date'],
-                'ended_at': request.form['end_date'],
-                'venue': sanitize_input(request.form['venue']),
-            }
             activity_resource.update(updated_data)
             return redirect(url_for('activities.activity_details', id=id))
         except Exception:
@@ -365,3 +408,35 @@ def update_attendance(id):
         flash("Failed to update attendance.", "error")
     
     return redirect(url_for('activities.activities_attendance', id=id))
+
+@bp.route("/attendance/export/<int:id>")
+@login_required
+def export_participants(id):
+    """Export participants and attendance for an activity as a CSV download."""
+    try:
+        activity_resource = activities_resource.activity(id)
+        activity_data = activity_resource.get()
+    except ValueError:
+        flash("Activity not found.", "error")
+        return redirect(url_for('activities.activities'))
+    
+    try:
+        if activity_data['created_by'] != current_user.id:
+            flash("Only the organsier can export the attendance.", "error")
+            return redirect(url_for('activities.activity_details', id=id))
+    
+        participants = activity_resource.get_participants()
+        csv_content = _build_participants_csv(activity_data, participants)
+        safe_title = (activity_data.get("title") or "activity").strip().replace(" ", "_")
+        filename = f"{safe_title}_participants.csv"
+
+        return Response(
+            csv_content,
+            mimetype="text/csv",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+    
+    except ValueError:
+        flash("Failed to retrieve participants.", "error")
+        return redirect(url_for('activities.activity_details', id=id))
+        
