@@ -148,7 +148,7 @@ def create_activities():
             end_date  = request.form['end_date']
             venue = sanitize_input(request.form['venue']).strip()
             created_by = current_user.id
-            private = request.form['private']
+            private = bool(request.form.get('is_private'))
             
             activity_data = {
                 'title': title,
@@ -175,7 +175,7 @@ def create_activities():
             return redirect(url_for('activities.activity_details', id=activity_id))
         except Exception:
             flash("Failed to create activity. Please try again.", "error")
-            return render_template('createactivity.html', **activity_data)
+            return render_template('createactivity.html', **locals().get('activity_data', {}))
 
     return render_template('createactivity.html')
 
