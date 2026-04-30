@@ -95,6 +95,11 @@ def register():
         if not all([form_data['email'].strip(), form_data['name'].strip(), form_data['user_class'].strip(), password.strip(), confirm_password.strip()]):
             flash("All fields are required.", "error")
             return render_template('register.html', **form_data)
+        
+        user_class = form_data['user_class'].strip()
+        if len(user_class) != 4 and not user_class.startswith('2') and not (1 <= int(user_class[-2:]) <= 30):
+            flash("Invalid class.", "error")
+            return render_template('register.html', **form_data) 
 
         recaptcha_token = request.form.get('g-recaptcha-response')
         if not recaptcha_token or not verify_recaptcha(recaptcha_token):
@@ -267,6 +272,9 @@ def update_user():
             user_data['name'] = name.strip()
 
         if user_class and user_class.strip():
+            if len(user_class) != 4 and not user_class.startswith('2') and not (1 <= int(user_class[-2:]) <= 30):
+                flash("Invalid class.", "error")
+                return render_template('editprofile.html')
             user_data['user_class'] = user_class.strip()
 
         if not user_data:
