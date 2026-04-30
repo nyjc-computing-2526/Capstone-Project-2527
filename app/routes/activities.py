@@ -82,27 +82,30 @@ def validate_activity(title, description, venue, start_date, end_date):
 @bp.route('')
 @login_required
 def activities():
-    """shows all activities"""
+    """shows all public activities"""
     search_query = request.args.get("query")
     if search_query: 
         search_query = search_query.lower()
     try:
         upcoming = activities_resource.get_upcoming()
+        public_upcoming = [activity for activity in upcoming if not activity['private']]
         completed = activities_resource.get_completed()
+        public_completed = [activity for activity in completed if not activity['private']]
         ongoing = activities_resource.get_ongoing()
+        public_ongoing = [activity for activity in ongoing if not activity['private']]
         
         if search_query:
-            upcoming = list(filter(lambda row: row['title'].lower().startswith(search_query), upcoming))
-            completed = list(filter(lambda row: row['title'].lower().startswith(search_query), completed))
-            ongoing = list(filter(lambda row: row['title'].lower().startswith(search_query), ongoing))
+            upcoming = list(filter(lambda row: row['title'].lower().startswith(search_query), public_upcoming))
+            completed = list(filter(lambda row: row['title'].lower().startswith(search_query), public_completed))
+            ongoing = list(filter(lambda row: row['title'].lower().startswith(search_query), public_ongoing))
             
     except ValueError:
         flash("Could not load activities.", "error")
-        upcoming, completed, ongoing = [], [], []
+        public_upcoming, public_completed, public_ongoing = [], [], []
     return render_template('allactivities.html', 
-        upcoming=enrich_for_cards(upcoming), 
-        completed=enrich_for_cards(completed),
-        ongoing=enrich_for_cards(ongoing),
+        upcoming=enrich_for_cards(public_upcoming), 
+        completed=enrich_for_cards(public_completed),
+        ongoing=enrich_for_cards(public_ongoing),
         search_query=search_query
     )
 
@@ -110,16 +113,22 @@ def activities():
 @bp.route('/myactivities')
 @login_required
 def my_activities():
-    """shows user's activities"""
+    """shows user's public joined activities, public owned, user own private activities"""
     try:
         owned = activities_resource.get_owned(current_user.id)
         joined = activities_resource.get_joined(current_user.id)
+        for activity in owned:
+            if not activity['private']:
+                public_owned.append(activity)
+            else:
+                private_owned.append(activity)
     except ValueError:
         flash("Could not load your activities.", "error")
-        owned, joined = [], []
+        public_owned, private_owned, joined = [], [], []
     return render_template('myactivities.html',
-        owned=enrich_for_cards(owned),
-        joined=enrich_for_cards(joined)
+        public_owned=enrich_for_cards(public_owned),
+        joined=enrich_for_cards(joined),
+        private_owned=enrich_for_cards(private_owned)
     )
 
 @bp.route('/create', methods = ['POST', 'GET'])
@@ -137,6 +146,7 @@ def create_activities():
             end_date  = request.form['end_date']
             venue = sanitize_input(request.form['venue']).strip()
             created_by = current_user.id
+            private = request.form['private']
             
             activity_data = {
                 'title': title,
@@ -144,7 +154,8 @@ def create_activities():
                 'started_at': start_date,
                 'ended_at': end_date,
                 'venue': venue,
-                'created_by': created_by
+                'created_by': created_by,
+                'private': private
             } 
             
             for value in [title, description, venue]:
