@@ -12,6 +12,7 @@ from .resources.users import UsersResource
 from .routes.landing import bp as landing_bp
 from .routes.activities import bp as activities_bp
 from .routes.auth import bp as auth_bp
+from .routes.internal import bp as internal_bp
 from .utils.sanitize_util import render_markdown_safe
 
 load_dotenv()
@@ -100,5 +101,6 @@ def create_app():
     app.register_blueprint(landing_bp)
     app.register_blueprint(activities_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(internal_bp)
 
     return app
