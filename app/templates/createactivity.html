@@ -38,8 +38,8 @@
                 id="is-private"
                 type="checkbox"
                 name="is_private"
-                value="1"
-                {% if is_private %}checked{% endif %}
+              value="1"
+              {% if is_private or private %}checked{% endif %}
               />
               <span class="toggle-slider" aria-hidden="true"></span>
             </label>
@@ -124,9 +124,11 @@
         verifyModal.hidden = true;
       };
 
-      openVerifyModalBtn.addEventListener("click", () => {
-        verifyModal.hidden = false;
-      });
+      if (openVerifyModalBtn) {
+        openVerifyModalBtn.addEventListener("click", () => {
+          verifyModal.hidden = false;
+        });
+      }
 
       closeVerifyModalBtn.addEventListener("click", (event) => {
         event.preventDefault();
