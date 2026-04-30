@@ -96,6 +96,10 @@ def register():
         if not all([form_data['email'].strip(), form_data['name'].strip(), form_data['user_class'].strip(), password.strip(), confirm_password.strip()]):
             flash("All fields are required.", "error")
             return render_template('register.html', **form_data)
+
+        if not form_data['email'].strip().endswith('@nyjc.edu.sg'):
+            flash("Please use your NYJC email", "error")
+            return render_template('register.html', **form_data)
         
         for value in [form_data["name"], form_data["email"], form_data["user_class"]]:
             result = check_profanity(value)
