@@ -82,7 +82,7 @@ def validate_activity(title, description, venue, start_date, end_date):
 @bp.route('')
 @login_required
 def activities():
-    """shows all activities"""
+    """shows Public activities"""
     search_query = request.args.get("query")
     if search_query: 
         search_query = search_query.lower()

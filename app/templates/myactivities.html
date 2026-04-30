@@ -26,49 +26,27 @@
       <div class="content">
         <h1>My activities</h1>
 
-        <div class="my-activities-columns">
-          <!-- Joined -->
-          <div class="my-activities-column">
-            <div class="my-activities-head">
-              <h2 class="my-activities-heading">Organised by others</h2>
-              <div class="input-row input-row--flush input-row--compact">
-                <span>Sort by:</span>
-                <div class="input-group input-group--sort">
-                  <select id="sort-joined">
-                    <option value="earliest" selected>Earliest first</option>
-                    <option value="latest">Latest first</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="activities" id="joined-list">
-              {% for activity in joined or [] %}
-              <a href="{{ url_for('activities.activity_details', id=activity.id) }}"
-                 class="activity-card-link"
-                 data-date="{{ activity.started_at }}">
-                <div class="activity-card">
-                  <h3>{{ activity.title | default('Untitled') }}</h3>
-                  <p>{{ activity.display_time }}</p>
-                  <p>{{ activity.display_date }}</p>
-                </div>
-              </a>
-              {% else %}
-              <p class="muted-text">No joined activities.</p>
-              {% endfor %}
-            </div>
-          </div>
+        {% set private_activities = (owned or []) | selectattr('is_private') | list %}
+        <div class="my-activities-nav" role="tablist" aria-label="My activities tabs">
+          <button type="button" class="my-activities-tab is-active" role="tab" aria-selected="true" aria-controls="panel-created" data-tab-target="panel-created">
+            Organised by me
+          </button>
+          <button type="button" class="my-activities-tab" role="tab" aria-selected="false" aria-controls="panel-joined" data-tab-target="panel-joined">
+            Organised by others
+          </button>
+          <button type="button" class="my-activities-tab" role="tab" aria-selected="false" aria-controls="panel-private" data-tab-target="panel-private">
+            My private activities
+          </button>
+        </div>
 
-          <!-- Divider -->
-          <div class="my-activities-divider" aria-hidden="true"></div>
-
-          <!-- Created -->
-          <div class="my-activities-column">
+        <div class="my-activities-panel-wrap">
+          <section class="my-activities-panel" id="panel-created" role="tabpanel">
             <div class="my-activities-head">
               <h2 class="my-activities-heading">Organised by me</h2>
               <div class="input-row input-row--flush input-row--compact">
                 <span>Sort by:</span>
                 <div class="input-group input-group--sort">
-                  <select id="sort-created">
+                  <select id="sort-created" data-sort-target="created-list">
                     <option value="earliest" selected>Earliest first</option>
                     <option value="latest">Latest first</option>
                   </select>
@@ -90,7 +68,67 @@
               <p class="muted-text">No created activities.</p>
               {% endfor %}
             </div>
-          </div>
+          </section>
+
+          <section class="my-activities-panel" id="panel-joined" role="tabpanel" hidden>
+            <div class="my-activities-head">
+              <h2 class="my-activities-heading">Organised by others</h2>
+              <div class="input-row input-row--flush input-row--compact">
+                <span>Sort by:</span>
+                <div class="input-group input-group--sort">
+                  <select id="sort-joined" data-sort-target="joined-list">
+                    <option value="earliest" selected>Earliest first</option>
+                    <option value="latest">Latest first</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="activities" id="joined-list">
+              {% for activity in joined or [] %}
+              <a href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                 class="activity-card-link"
+                 data-date="{{ activity.started_at }}">
+                <div class="activity-card">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% else %}
+              <p class="muted-text">No joined activities.</p>
+              {% endfor %}
+            </div>
+          </section>
+
+          <section class="my-activities-panel" id="panel-private" role="tabpanel" hidden>
+            <div class="my-activities-head">
+              <h2 class="my-activities-heading">My private activities</h2>
+              <div class="input-row input-row--flush input-row--compact">
+                <span>Sort by:</span>
+                <div class="input-group input-group--sort">
+                  <select id="sort-private" data-sort-target="private-list">
+                    <option value="earliest" selected>Earliest first</option>
+                    <option value="latest">Latest first</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="activities" id="private-list">
+              {% for activity in private_activities %}
+              <a href="{{ url_for('activities.activity_details', id=activity.id) }}"
+                 class="activity-card-link"
+                 data-date="{{ activity.started_at }}">
+                <div class="activity-card">
+                  <h3>{{ activity.title | default('Untitled') }}</h3>
+                  <p>{{ activity.display_time }}</p>
+                  <p>{{ activity.display_date }}</p>
+                </div>
+              </a>
+              {% else %}
+              <p class="muted-text">No private activities.</p>
+              {% endfor %}
+            </div>
+          </section>
         </div>
       </div>
     </main>
@@ -111,15 +149,52 @@
         cards.forEach((card) => list.appendChild(card));
       }
 
-      sortCards("joined-list", document.getElementById("sort-joined").value);
-      sortCards("created-list", document.getElementById("sort-created").value);
-
-      document.getElementById("sort-joined").addEventListener("change", function() {
-        sortCards("joined-list", this.value);
+      document.querySelectorAll("select[data-sort-target]").forEach((select) => {
+        sortCards(select.dataset.sortTarget, select.value);
+        select.addEventListener("change", function() {
+          sortCards(this.dataset.sortTarget, this.value);
+        });
       });
 
-      document.getElementById("sort-created").addEventListener("change", function() {
-        sortCards("created-list", this.value);
+      const tabs = Array.from(document.querySelectorAll(".my-activities-tab"));
+      const panels = Array.from(document.querySelectorAll(".my-activities-panel"));
+      const tabBar = document.querySelector(".my-activities-nav");
+
+      function updateTabIndicator(activeTab) {
+        if (!tabBar || !activeTab) return;
+        const tabBarRect = tabBar.getBoundingClientRect();
+        const tabRect = activeTab.getBoundingClientRect();
+        tabBar.style.setProperty("--tab-left", `${tabRect.left - tabBarRect.left}px`);
+        tabBar.style.setProperty("--tab-width", `${tabRect.width}px`);
+      }
+
+      function activatePanel(panelId) {
+        tabs.forEach((tab) => {
+          const isActive = tab.dataset.tabTarget === panelId;
+          tab.classList.toggle("is-active", isActive);
+          tab.setAttribute("aria-selected", isActive ? "true" : "false");
+          if (isActive) updateTabIndicator(tab);
+        });
+        panels.forEach((panel) => {
+          const isActive = panel.id === panelId;
+          panel.hidden = !isActive;
+          if (isActive) {
+            panel.classList.remove("is-entering");
+            void panel.offsetWidth;
+            panel.classList.add("is-entering");
+            window.setTimeout(() => panel.classList.remove("is-entering"), 320);
+          }
+        });
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => activatePanel(tab.dataset.tabTarget));
+      });
+
+      activatePanel("panel-created");
+      window.addEventListener("resize", () => {
+        const activeTab = tabs.find((tab) => tab.classList.contains("is-active"));
+        updateTabIndicator(activeTab);
       });
     </script>
     {% include "partials/footer.html" %}
