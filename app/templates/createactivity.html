@@ -32,6 +32,17 @@
             <div class="input-group create-activity-name">
               <input type="text" name="title" value="{{ title or '' }}" placeholder="Event name" />
             </div>
+            <label class="create-activity-private-toggle" for="is-private">
+              <span class="create-activity-private-label">Private activity</span>
+              <input
+                id="is-private"
+                type="checkbox"
+                name="is_private"
+                value="1"
+                {% if is_private %}checked{% endif %}
+              />
+              <span class="toggle-slider" aria-hidden="true"></span>
+            </label>
           </div>
 
           <div class="input-group">

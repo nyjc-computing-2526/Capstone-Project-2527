@@ -270,14 +270,10 @@ def update_user():
                 flash("Failed to update password. Please try again.", "error")
                 return render_template('editprofile.html')
 
-        email = request.form.get('email')
         name = request.form.get('name')
         user_class = request.form.get('class')
 
         user_data = {}
-
-        if email and email.strip():
-            user_data['email'] = email.strip()
 
         if name and name.strip():
             user_data['name'] = name.strip()

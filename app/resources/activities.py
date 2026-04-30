@@ -9,10 +9,10 @@ class ActivitiesResource:
     """Resource class for managing activities collection operations."""
 
     def get_all(self) -> list[dict]:
-        """Retrieve all activities.
+        """Retrieve Public activities.
 
         Returns:
-            list[dict]: A list of all activities.
+            list[dict]: A list of Public activities.
 
         Raises:
             ValueError: If retrieval fails.

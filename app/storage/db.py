@@ -122,13 +122,13 @@ def update_activity(data: dict):
     return (updated == 1)
 
 def get_owned (user_id: int):
-    """get all activities created by user_id"""
+    """get Public activities created by user_id"""
     query = """SELECT * FROM activities WHERE created_by = %s"""
     return db_execute(sql_query=query, params=[user_id], fetch="all")
 
 
 def get_joined (user_id: int):
-    """get all activities attended by user_id"""
+    """get Public activities attended by user_id"""
     query = """SELECT activities.* FROM activities 
                 JOIN participants ON participants.activity_id = activities.id
                 WHERE participants.user_id = %s"""
