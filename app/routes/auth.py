@@ -97,6 +97,10 @@ def register():
             return render_template('register.html', **form_data)
         
         user_class = form_data['user_class'].strip()
+        if not user_class.isdigit():
+            flash("Class must be a number.", "error")
+            return render_template('register.html', **form_data) 
+        
         if len(user_class) != 4 and not user_class.startswith('2') and not (1 <= int(user_class[-2:]) <= 30):
             flash("Invalid class.", "error")
             return render_template('register.html', **form_data) 
@@ -272,6 +276,10 @@ def update_user():
             user_data['name'] = name.strip()
 
         if user_class and user_class.strip():
+            if not user_class.isdigit():
+                flash("Class must be a number.", "error")
+                return render_template('editprofile.html')
+            
             if len(user_class) != 4 and not user_class.startswith('2') and not (1 <= int(user_class[-2:]) <= 30):
                 flash("Invalid class.", "error")
                 return render_template('editprofile.html')
