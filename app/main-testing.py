@@ -49,6 +49,15 @@ def _inject_current_user():
     return {"current_user": _mock_current_user}
 
 
+@app.context_processor
+def _inject_csrf_token():
+    """
+    main-testing.py does not initialize Flask-WTF/CSRF.
+    Provide a deterministic placeholder so templates calling csrf_token() render.
+    """
+    return {"csrf_token": lambda: "main-testing-csrf-token"}
+
+
 def _parse_dt_utc(value):
     if value is None:
         return None
@@ -251,7 +260,7 @@ def landing_about():
 
 @app.route("/privacy-policy", methods=["GET"], endpoint="landing.privacy_policy")
 def landing_privacy_policy():
-    return render_template("legal.html")
+    return render_template("privacypolicy.html")
 
 
 @app.route("/contact", methods=["GET", "POST"], endpoint="landing.contact")
