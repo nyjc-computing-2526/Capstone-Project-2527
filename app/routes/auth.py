@@ -7,6 +7,7 @@ import resend
 import os
 from app.resources.users import UsersResource
 from app.resources.activities import ActivitiesResource
+from app.utils.profanity_checker import check_profanity
 from app.models.user import User
 from app.utils.recaptcha import verify_recaptcha
 from ..utils.formatting_util import enrich_for_cards, merge_by_id, schedule_for_detail
@@ -95,6 +96,12 @@ def register():
         if not all([form_data['email'].strip(), form_data['name'].strip(), form_data['user_class'].strip(), password.strip(), confirm_password.strip()]):
             flash("All fields are required.", "error")
             return render_template('register.html', **form_data)
+        
+        for value in [form_data["name"], form_data["email"], form_data["user_class"]]:
+            result = check_profanity(value)
+            if result["valid"] == False:
+                flash(result["msg"], "error")
+                return render_template('register.html', **form_data)
         
         user_class = form_data['user_class'].strip()
         if not user_class.isdigit():
