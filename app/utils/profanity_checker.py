@@ -1,23 +1,26 @@
-# utils.py
-from profanity_check import predict_prob
+from better_profanity import profanity
 
-THRESHOLD = 0.8  # adjust sensitivity
+BLOCKED_SCORE = 1.0
+CLEAN_SCORE = 0.0
 
 def check_profanity(value):
     if not isinstance(value, str):
-        return {"valid": False, "message": "Input must be a string"}
+        message = "Input must be a string"
+        return {"valid": False, "message": message, "msg": message, "score": BLOCKED_SCORE}
 
-    score = predict_prob([value])[0]
-
-    if score >= THRESHOLD:
+    if profanity.contains_profanity(value):
+        message = "Inappropriate language detected"
         return {
             "valid": False,
-            "message": "Inappropriate language detected",
-            "score": round(float(score), 2)
+            "message": message,
+            "msg": message,
+            "score": BLOCKED_SCORE
         }
 
+    message = "Input is clean"
     return {
         "valid": True,
-        "message": "Input is clean",
-        "score": round(float(score), 2)
+        "message": message,
+        "msg": message,
+        "score": CLEAN_SCORE
     }
