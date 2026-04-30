@@ -114,6 +114,8 @@ def activities():
 @login_required
 def my_activities():
     """shows user's public joined activities, public owned, user own private activities"""
+    public_owned = []
+    private_owned = []
     try:
         owned = activities_resource.get_owned(current_user.id)
         joined = activities_resource.get_joined(current_user.id)

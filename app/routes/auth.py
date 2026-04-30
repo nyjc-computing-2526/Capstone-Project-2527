@@ -48,6 +48,9 @@ def validate_password(password):
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     """allows user to log in"""
+    if current_user.is_authenticated:
+        return redirect(url_for('landing.homepage'))
+
     if request.method == 'POST':
         form_data = {"email": request.form.get('email', '').strip()}
         recaptcha_token = request.form.get('g-recaptcha-response')
@@ -84,6 +87,9 @@ def login():
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     """registers user"""
+    if current_user.is_authenticated:
+        return redirect(url_for('landing.homepage'))
+
     if request.method == 'POST':
         form_data = {
             "email": request.form['email'],
