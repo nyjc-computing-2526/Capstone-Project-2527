@@ -122,13 +122,13 @@ def update_activity(data: dict):
     return (updated == 1)
 
 def get_owned (user_id: int):
-    """get all activities created by user_id"""
+    """get Public activities created by user_id"""
     query = """SELECT * FROM activities WHERE created_by = %s"""
     return db_execute(sql_query=query, params=[user_id], fetch="all")
 
 
 def get_joined (user_id: int):
-    """get all activities attended by user_id"""
+    """get Public activities attended by user_id"""
     query = """SELECT activities.* FROM activities 
                 JOIN participants ON participants.activity_id = activities.id
                 WHERE participants.user_id = %s"""
@@ -181,6 +181,34 @@ def update_participant_attendance(activity_id, user_id, status, reason, marked_b
     rowcount = db_execute(query, params, fetch=None)
 
     return (rowcount == 1)
+
+def get_due_activity_reminders(hours_before=24):
+    query = """
+        SELECT
+            participants.user_id,
+            participants.activity_id,
+            users.name AS user_name,
+            users.email AS user_email,
+            activities.title,
+            activities.venue,
+            activities.started_at
+        FROM participants
+        JOIN users ON users.id = participants.user_id
+        JOIN activities ON activities.id = participants.activity_id
+        WHERE participants.reminder_sent_at IS NULL
+        AND activities.started_at > (NOW() AT TIME ZONE 'Asia/Singapore')
+        AND activities.started_at <= (NOW() AT TIME ZONE 'Asia/Singapore') + (%s * INTERVAL '1 hour')
+    """
+    return db_execute(sql_query=query, params=[hours_before], fetch="all")
+
+def mark_activity_reminder_sent(activity_id, user_id):
+    query = """
+        UPDATE participants
+        SET reminder_sent_at = NOW()
+        WHERE activity_id = %s AND user_id = %s AND reminder_sent_at IS NULL
+    """
+    result = db_execute(sql_query=query, params=[activity_id, user_id], fetch=None)
+    return result == 1
 
 ## ========= User Functions ===========
 

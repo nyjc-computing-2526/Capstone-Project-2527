@@ -9,10 +9,10 @@ class ActivitiesResource:
     """Resource class for managing activities collection operations."""
 
     def get_all(self) -> list[dict]:
-        """Retrieve all activities.
+        """Retrieve Public activities.
 
         Returns:
-            list[dict]: A list of all activities.
+            list[dict]: A list of Public activities.
 
         Raises:
             ValueError: If retrieval fails.
@@ -63,6 +63,34 @@ class ActivitiesResource:
             return db.get_ongoing_activities()
         except Exception as e:
             raise ValueError(f"Failed to retrieve ongoing activities: {str(e)}")
+
+    def get_due_reminders(self, hours_before: int = 24) -> list[dict]:
+        """Retrieve joined participants whose activity reminders are due."""
+        try:
+            if not isinstance(hours_before, int):
+                hours_before = int(hours_before)
+            if hours_before <= 0:
+                raise ValueError("hours_before must be a positive integer")
+            return db.get_due_activity_reminders(hours_before)
+        except ValueError:
+            raise
+        except Exception as e:
+            raise ValueError(f"Failed to retrieve due activity reminders: {str(e)}")
+
+    def mark_reminder_sent(self, activity_id: int, user_id: int) -> bool:
+        """Mark one participant's activity reminder as sent."""
+        try:
+            if not isinstance(activity_id, int):
+                activity_id = int(activity_id)
+            if not isinstance(user_id, int):
+                user_id = int(user_id)
+            if activity_id < 0 or user_id < 0:
+                raise ValueError("activity_id and user_id must be positive integers")
+            return db.mark_activity_reminder_sent(activity_id, user_id)
+        except ValueError:
+            raise
+        except Exception as e:
+            raise ValueError(f"Failed to mark reminder as sent: {str(e)}")
     
     def get_owned(self, user_id: int) -> list[dict]:
         """Retrieve activities owned by a specific user.

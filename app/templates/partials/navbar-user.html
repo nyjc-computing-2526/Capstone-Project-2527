@@ -32,7 +32,7 @@
           <a
             href="{{ url_for('activities.activities') }}"
             {% if request.endpoint == 'activities.activities' %}class="nav-active"{% endif %}
-            >All Activities</a>
+            >Public activities</a>
         </li>
         {% if current_user.is_authenticated %}
         <li>
