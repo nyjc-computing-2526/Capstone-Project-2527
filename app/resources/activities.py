@@ -2,7 +2,7 @@ import app.storage.db as db
 from dateutil import parser
 from datetime import timezone
 
-ALLOWED_ACTIVITY_COLUMNS = {'title', 'started_at', 'ended_at', 'description', 'created_by', 'venue'}
+ALLOWED_ACTIVITY_COLUMNS = {'title', 'started_at', 'ended_at', 'description', 'created_by', 'venue', 'private'}
 ALLOWED_STATUS = {'pending', 'present', 'late', 'excused', 'absent'}
 
 class ActivitiesResource:
@@ -128,7 +128,7 @@ class ActivitiesResource:
 
         activity_data = dict(activity_data)
 
-        required_fields = ['started_at', 'ended_at', 'title', 'description', 'created_by', 'venue']
+        required_fields = ['started_at', 'ended_at', 'title', 'description', 'created_by', 'venue', 'private']
         for field in required_fields:
             if field not in activity_data or not (isinstance(activity_data[field], str) or isinstance(activity_data[field], int)):
                 raise ValueError(f"Missing or invalid {field}: must be a string or integer")
