@@ -118,11 +118,17 @@
                   </table>
                 </div>
 
-                <div class="attendance-actions">
-                  <button type="submit" class="create-activity-submit create-activity-submit--grow">
-                    Save attendance
-                  </button>
-                </div>
+              <div class="attendance-actions">
+                <a
+                  href="{{ url_for('activities.export_participants', id=data.id) }}"
+                  class="create-activity-submit"
+                >
+                  Export CSV
+                </a>
+                <button type="submit" class="create-activity-submit create-activity-submit--grow">
+                  Save attendance
+                </button>
+              </div>
               </form>
             </section>
           </div>
