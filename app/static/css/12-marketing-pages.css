@@ -149,7 +149,8 @@
   border-color: var(--border-moss);
 }
 
-.landing-page [data-marketing-reveal] {
+.landing-page [data-marketing-reveal],
+.app-hero-page [data-marketing-reveal] {
   opacity: 0;
   transform: translateY(18px) scale(0.985);
   filter: blur(4px);
@@ -160,7 +161,8 @@
   transition-delay: var(--reveal-delay, 0s);
 }
 
-.landing-page [data-marketing-reveal].is-visible {
+.landing-page [data-marketing-reveal].is-visible,
+.app-hero-page [data-marketing-reveal].is-visible {
   opacity: 1;
   transform: translateY(0) scale(1);
   filter: blur(0);
@@ -215,7 +217,8 @@
 @media (prefers-reduced-motion: reduce) {
   .landing-page .marketing-card,
   .landing-page .feature-item,
-  .landing-page [data-marketing-reveal] {
+  .landing-page [data-marketing-reveal],
+  .app-hero-page [data-marketing-reveal] {
     transition: none;
     transform: none;
     filter: none;
