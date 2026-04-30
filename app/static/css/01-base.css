@@ -220,10 +220,22 @@ footer {
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   padding: 0.4em 1.5em;
   background:
     linear-gradient(150deg, #c4d1bf 0%, var(--surface-footer) 55%, #b7c7b4 100%);
   border-top: 1px solid rgba(21, 38, 31, 0.09);
+}
+
+footer.footer--transparent {
+  background: rgba(174, 191, 170, 0.28);
+  border-top-color: rgba(21, 38, 31, 0.14);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+footer p {
+  padding: 0 0.5em;
 }
 
 .description {
