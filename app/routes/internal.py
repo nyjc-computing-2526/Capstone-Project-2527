@@ -14,7 +14,7 @@ activities_resource = ActivitiesResource()
 
 def _authorized():
     expected_token = os.getenv("REMINDER_CRON_TOKEN")
-    supplied_token = request.headers.get("X-Reminder-Token") or request.args.get("token")
+    supplied_token = request.headers.get("X-Reminder-Token")
     return bool(expected_token) and supplied_token == expected_token
 
 
@@ -45,7 +45,7 @@ def _send_reminder_email(reminder):
     })
 
 
-@bp.route('/send-reminders', methods=['POST', 'GET'])
+@bp.route('/send-reminders', methods=['POST'])
 def send_reminders():
     if not _authorized():
         return jsonify({"error": "Unauthorized"}), 401
