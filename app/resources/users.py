@@ -169,6 +169,15 @@ class UsersResource:
 
         except Exception as e:
             raise ValueError(e) from None
+
+    def register_without_verification(self, user_data: dict) -> int:
+        """Register a user and mark the account as verified immediately."""
+        if not isinstance(user_data, dict):
+            raise ValueError("Data must be a dictionary")
+
+        user_data = dict(user_data)
+        user_data["verified"] = True
+        return self.register(user_data)
     
     def verify_token(self, token: str, type: str) -> dict | None:
         """Verify a password reset token.

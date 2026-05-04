@@ -394,6 +394,12 @@ def update_attendance(id):
             reason = request.form.get(f'reason_{participant_id}', '')
             marked_by = current_user.id
 
+            for value in [participant_name, reason]:
+                result = check_profanity(value)
+                if result["valid"] == False:
+                    flash(result["msg"], "error")
+                    return redirect(url_for('activities.activities_attendance', id=id))
+            
             try:
                 activity_resource.update_attendance_for_participant(participant_id, status, reason, marked_by)
             except ValueError:
