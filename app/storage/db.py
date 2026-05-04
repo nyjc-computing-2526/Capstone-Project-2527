@@ -3,6 +3,7 @@ import json
 import re
 import psycopg2
 import psycopg2.extras
+import psycopg2.pool
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 
@@ -25,6 +26,7 @@ ALLOWED_COLUMNS_SECURITY_AUDIT_LOGS = [
     "target_id",
     "request_metadata",
 ]
+_CONNECTION_POOL = None
 
 
 def _get_security_audit_log_table():
@@ -32,6 +34,42 @@ def _get_security_audit_log_table():
     if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", table_name):
         raise ValueError("SECURITY_AUDIT_LOG_TABLE must be a simple SQL identifier")
     return table_name
+
+
+def _get_connection_pool():
+    global _CONNECTION_POOL
+    if _CONNECTION_POOL is None:
+        database_url = os.getenv("DATABASE_URL")
+        if not database_url:
+            raise RuntimeError("DATABASE_URL environment variable is not set")
+        minconn = int(os.getenv("DB_POOL_MIN_CONN", "1"))
+        maxconn = int(os.getenv("DB_POOL_MAX_CONN", "5"))
+        _CONNECTION_POOL = psycopg2.pool.ThreadedConnectionPool(
+            minconn=minconn,
+            maxconn=maxconn,
+            dsn=database_url,
+            connect_timeout=int(os.getenv("DB_CONNECT_TIMEOUT_SECONDS", "5")),
+        )
+    return _CONNECTION_POOL
+
+
+def _get_db_connection():
+    if os.getenv("DISABLE_DB_POOLING", "false").lower() in {"1", "true", "yes", "on"}:
+        database_url = os.getenv("DATABASE_URL")
+        if not database_url:
+            raise RuntimeError("DATABASE_URL environment variable is not set")
+        return psycopg2.connect(
+            database_url,
+            connect_timeout=int(os.getenv("DB_CONNECT_TIMEOUT_SECONDS", "5")),
+        ), False
+    return _get_connection_pool().getconn(), True
+
+
+def _release_db_connection(conn, from_pool: bool, *, close: bool = False):
+    if from_pool:
+        _get_connection_pool().putconn(conn, close=close)
+    else:
+        conn.close()
 
 def db_execute(sql_query, params=None, fetch=None):
     """
@@ -47,8 +85,8 @@ def db_execute(sql_query, params=None, fetch=None):
     """
     if fetch not in ("all", "one", None):
         raise ValueError(f"fetch must be 'all', 'one' or None -- got {fetch}")
-    
-    conn = psycopg2.connect(os.getenv('DATABASE_URL'))
+
+    conn, from_pool = _get_db_connection()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) #returns rows as dicts instead of tuples
 
     try:
@@ -65,11 +103,14 @@ def db_execute(sql_query, params=None, fetch=None):
 
     except Exception as e:
         conn.rollback() #to make sure failed queries dosent decrement capacity
+        if from_pool:
+            _release_db_connection(conn, from_pool=True, close=True)
+            from_pool = False
         raise e
 
     finally:
         cursor.close()
-        conn.close()
+        _release_db_connection(conn, from_pool)
 
     return result
 

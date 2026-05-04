@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask import g, has_request_context, request
+from flask import g, has_request_context, request, session
 from flask_login import current_user
 
 import app.storage.db as db
@@ -15,15 +15,21 @@ class ResourceAuditMixin:
             return
         if os.getenv("ENABLE_RESOURCE_AUDIT_LOGGING", "true").lower() not in {"1", "true", "yes", "on"}:
             return
-        if getattr(g, "_resource_audit_logged", False):
+        if getattr(g, "_resource_audit_logged", False) or getattr(g, "_resource_audit_logging_in_progress", False):
             return
 
         try:
-            user_id = None
+            g._resource_audit_logging_in_progress = True
+
+            user_id = session.get("_user_id")
             user_email = None
-            if getattr(current_user, "is_authenticated", False):
-                user_id = current_user.get_id()
-                user_email = getattr(current_user, "email", None)
+            # Avoid touching current_user here because that can invoke the
+            # user_loader, which itself goes through audited resources.
+            loaded_user = getattr(g, "_login_user", None)
+            if loaded_user is not None:
+                user_email = getattr(loaded_user, "email", None)
+                if user_id is None:
+                    user_id = getattr(loaded_user, "id", None)
 
             forwarded_for = request.headers.get("X-Forwarded-For", "")
             ip_address = forwarded_for.split(",")[0].strip() if forwarded_for else request.remote_addr
@@ -51,3 +57,5 @@ class ResourceAuditMixin:
                 action,
                 exc_info=True,
             )
+        finally:
+            g._resource_audit_logging_in_progress = False
