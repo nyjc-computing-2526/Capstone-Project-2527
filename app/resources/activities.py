@@ -1,11 +1,12 @@
 import app.storage.db as db
 from dateutil import parser
 from datetime import timezone
+from .base import ResourceAuditMixin
 
 ALLOWED_ACTIVITY_COLUMNS = {'title', 'started_at', 'ended_at', 'description', 'created_by', 'venue', 'private'}
 ALLOWED_STATUS = {'pending', 'present', 'late', 'excused', 'absent'}
 
-class ActivitiesResource:
+class ActivitiesResource(ResourceAuditMixin):
     """Resource class for managing activities collection operations."""
 
     def get_all(self) -> list[dict]:
@@ -18,6 +19,7 @@ class ActivitiesResource:
             ValueError: If retrieval fails.
         """
         try:
+            self._log_resource_access("get_all")
             return db.get_activities()
         except Exception as e:
             raise ValueError(f"Failed to retrieve activities: {str(e)}")
@@ -32,6 +34,7 @@ class ActivitiesResource:
             ValueError: If retrieval fails.
         """
         try:
+            self._log_resource_access("get_completed")
             return db.get_completed_activities()
         except Exception as e:
             raise ValueError(f"Failed to retrieve completed activities: {str(e)}")
@@ -46,6 +49,7 @@ class ActivitiesResource:
             ValueError: If retrieval fails.
         """
         try:
+            self._log_resource_access("get_upcoming")
             return db.get_upcoming_activities()
         except Exception as e:
             raise ValueError(f"Failed to retrieve upcoming activities: {str(e)}")
@@ -60,6 +64,7 @@ class ActivitiesResource:
             ValueError: If retrieval fails.
         """
         try:
+            self._log_resource_access("get_ongoing")
             return db.get_ongoing_activities()
         except Exception as e:
             raise ValueError(f"Failed to retrieve ongoing activities: {str(e)}")
@@ -67,6 +72,7 @@ class ActivitiesResource:
     def get_due_reminders(self, hours_before: int = 24) -> list[dict]:
         """Retrieve joined participants whose activity reminders are due."""
         try:
+            self._log_resource_access("get_due_reminders", metadata={"hours_before": hours_before})
             if not isinstance(hours_before, int):
                 hours_before = int(hours_before)
             if hours_before <= 0:
@@ -80,6 +86,11 @@ class ActivitiesResource:
     def mark_reminder_sent(self, activity_id: int, user_id: int) -> bool:
         """Mark one participant's activity reminder as sent."""
         try:
+            self._log_resource_access(
+                "mark_reminder_sent",
+                target_id=activity_id,
+                metadata={"user_id": user_id},
+            )
             if not isinstance(activity_id, int):
                 activity_id = int(activity_id)
             if not isinstance(user_id, int):
@@ -105,6 +116,7 @@ class ActivitiesResource:
             ValueError: If user_id is invalid or retrieval fails.
         """
         try:
+            self._log_resource_access("get_owned", target_id=user_id)
             if not isinstance(user_id, int):
                 user_id = int(user_id)
             if user_id < 0:
@@ -128,6 +140,7 @@ class ActivitiesResource:
             ValueError: If user_id is invalid or retrieval fails.
         """
         try:
+            self._log_resource_access("get_joined", target_id=user_id)
             if not isinstance(user_id, int):
                 user_id = int(user_id)
             if user_id < 0:
@@ -151,6 +164,14 @@ class ActivitiesResource:
         Raises:
             ValueError: If activity_data is invalid or creation fails.
         """
+        self._log_resource_access(
+            "create_activity",
+            metadata={
+                "title": activity_data.get("title") if isinstance(activity_data, dict) else None,
+                "created_by": activity_data.get("created_by") if isinstance(activity_data, dict) else None,
+                "private": activity_data.get("private") if isinstance(activity_data, dict) else None,
+            },
+        )
         if not isinstance(activity_data, dict):
             raise ValueError("Activity data must be a dictionary")
 
@@ -192,7 +213,7 @@ class ActivitiesResource:
         """
         return ActivityResource(activity_id)
 
-class ActivityResource:
+class ActivityResource(ResourceAuditMixin):
     """Resource class for managing individual activity operations."""
 
     def __init__(self, activity_id):
@@ -221,6 +242,7 @@ class ActivityResource:
             ValueError: If activity not found or retrieval fails.
         """
         try:
+            self._log_resource_access("get", target_id=self.activity_id)
             activity = db.get_activity_by_id(self.activity_id)
             if activity is None:
                 raise ValueError(f"Activity {self.activity_id} not found")
@@ -242,6 +264,11 @@ class ActivityResource:
         Raises:
             ValueError: If activity_data is invalid or update fails.
         """
+        self._log_resource_access(
+            "update",
+            target_id=self.activity_id,
+            metadata={"fields": sorted(activity_data.keys()) if isinstance(activity_data, dict) else []},
+        )
         if not isinstance(activity_data, dict):
             raise ValueError("Activity data must be a dictionary")
         
@@ -277,6 +304,7 @@ class ActivityResource:
             ValueError: If deletion fails.
         """
         try:
+            self._log_resource_access("delete", target_id=self.activity_id)
             success = db.delete_participant_activity(self.activity_id)
             if not success:
                 raise ValueError(f"Activity {self.activity_id} not found or delete failed")
@@ -303,6 +331,7 @@ class ActivityResource:
             ValueError: If user_id is invalid or join fails.
         """
         try:
+            self._log_resource_access("join", target_id=self.activity_id, metadata={"user_id": user_id})
             if not isinstance(user_id, int):
                 user_id = int(user_id)
             if user_id < 0:
@@ -333,6 +362,7 @@ class ActivityResource:
             ValueError: If user_id is invalid or leave fails.
         """
         try:
+            self._log_resource_access("leave", target_id=self.activity_id, metadata={"user_id": user_id})
             if not isinstance(user_id, int):
                 user_id = int(user_id)
             if user_id < 0:
@@ -356,6 +386,7 @@ class ActivityResource:
             ValueError: If retrieval fails.
         """
         try:
+            self._log_resource_access("get_participants", target_id=self.activity_id)
             return db.get_participants(self.activity_id)
         except Exception as e:
             raise ValueError(f"Failed to retrieve participants for activity {self.activity_id}: {str(e)}")
@@ -363,6 +394,11 @@ class ActivityResource:
 
     def update_attendance_for_participant(self, user_id: int, status: str, reason: str | None, marked_by: int) -> bool:
         try:
+            self._log_resource_access(
+                "update_attendance_for_participant",
+                target_id=self.activity_id,
+                metadata={"user_id": user_id, "status": status, "marked_by": marked_by},
+            )
             if not isinstance(user_id, int):
                 user_id = int(user_id)
             if user_id < 0:

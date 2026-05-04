@@ -83,9 +83,6 @@ def validate_activity(title, description, venue, start_date, end_date):
 @login_required
 def activities():
     """shows all public activities"""
-    search_query = request.args.get("query")
-    if search_query: 
-        search_query = search_query.lower()
     try:
         upcoming = activities_resource.get_upcoming()
         public_upcoming = [activity for activity in upcoming if not activity['private']]
@@ -93,12 +90,6 @@ def activities():
         public_completed = [activity for activity in completed if not activity['private']]
         ongoing = activities_resource.get_ongoing()
         public_ongoing = [activity for activity in ongoing if not activity['private']]
-        
-        if search_query:
-            upcoming = list(filter(lambda row: row['title'].lower().startswith(search_query), public_upcoming))
-            completed = list(filter(lambda row: row['title'].lower().startswith(search_query), public_completed))
-            ongoing = list(filter(lambda row: row['title'].lower().startswith(search_query), public_ongoing))
-            
     except ValueError:
         flash("Could not load activities.", "error")
         public_upcoming, public_completed, public_ongoing = [], [], []
@@ -106,7 +97,6 @@ def activities():
         upcoming=enrich_for_cards(public_upcoming), 
         completed=enrich_for_cards(public_completed),
         ongoing=enrich_for_cards(public_ongoing),
-        search_query=search_query
     )
 
 
@@ -118,7 +108,11 @@ def my_activities():
     private_owned = []
     try:
         owned = activities_resource.get_owned(current_user.id)
-        joined = activities_resource.get_joined(current_user.id)
+        joined = [
+            activity
+            for activity in activities_resource.get_joined(current_user.id)
+            if activity.get('created_by') != current_user.id
+        ]
         for activity in owned:
             if not activity['private']:
                 public_owned.append(activity)

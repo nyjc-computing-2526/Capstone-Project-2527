@@ -6,13 +6,14 @@ import logging
 from datetime import datetime, timedelta, timezone
 
 import app.storage.db as db
+from .base import ResourceAuditMixin
 
 ALLOWED_USER_COLUMNS = {'email', 'password', 'name', 'user_class', 'verified', 'failed_attempts', 'locked_until', 'lockout_count'}
 MAX_LOGIN_ATTEMPTS = 5
 LOGIN_COOLDOWN_SECONDS = (30, 60, 180, 300)
 
 
-class UsersResource:
+class UsersResource(ResourceAuditMixin):
     """Resource class for managing users collection operations."""
 
     def _normalize_lock_until(self, locked_until):
@@ -59,6 +60,7 @@ class UsersResource:
 
     def reset_login_lockout(self, user_id: int) -> bool:
         try:
+            self._log_resource_access("reset_login_lockout", target_id=user_id)
             return self.user(user_id).update({
                 "failed_attempts": 0,
                 "locked_until": None,
@@ -70,6 +72,7 @@ class UsersResource:
             return False
 
     def authenticate_with_lockout(self, email: str, password: str) -> dict:
+        self._log_resource_access("authenticate_with_lockout", metadata={"email": email})
         user = self.get_user_by_email(email)
 
         if user:
@@ -90,6 +93,7 @@ class UsersResource:
 
     def get_user_by_email(self, email: str) -> dict | None:
         """helper to fetch user by email safely."""
+        self._log_resource_access("get_user_by_email", metadata={"email": email})
         if not isinstance(email, str) or not email.strip():
             return None
         clean_email = email.strip().lower()
@@ -111,6 +115,7 @@ class UsersResource:
 
     def authenticate(self, email: str, password: str) -> dict:
         """Authenticate user with email and password."""
+        self._log_resource_access("authenticate", metadata={"email": email})
         if not isinstance(email, str) or not email.strip():
             raise ValueError("Email is required")
         if not isinstance(password, str) or not password:
@@ -141,6 +146,13 @@ class UsersResource:
 
     def register(self, user_data: dict) -> int:
         """Register a new user."""
+        self._log_resource_access(
+            "register",
+            metadata={
+                "email": user_data.get("email") if isinstance(user_data, dict) else None,
+                "user_class": user_data.get("user_class") if isinstance(user_data, dict) else None,
+            },
+        )
         if not isinstance(user_data, dict):
             raise ValueError("Data must be a dictionary")
 
@@ -186,18 +198,20 @@ class UsersResource:
             ValueError: If token verification fails.
         """
         try:
+            self._log_resource_access("verify_token", metadata={"type": type})
             return db.verify_token(token, type)
         except Exception as e:
             raise ValueError("Failed to verify token") from None
     
     def invalidate_token(self, token: str):
         try:
+            self._log_resource_access("invalidate_token")
             db.invalidate_token(token)
         except Exception as e:
             raise ValueError("Failed to invalidate token") from None
 
 
-class UserResource:
+class UserResource(ResourceAuditMixin):
     """Resource class for managing individual user operations."""
 
     def __init__(self, user_id: int):
@@ -226,6 +240,7 @@ class UserResource:
             ValueError: If user not found or retrieval fails.
         """
         try:
+            self._log_resource_access("get", target_id=self.user_id)
             user = db.get_user_by_id(self.user_id)
             if user is None:
                 raise ValueError(f"User {self.user_id} not found")
@@ -247,6 +262,11 @@ class UserResource:
         Raises:
             ValueError: If user_data is invalid or update fails.
         """
+        self._log_resource_access(
+            "update",
+            target_id=self.user_id,
+            metadata={"fields": sorted(user_data.keys()) if isinstance(user_data, dict) else []},
+        )
         if not isinstance(user_data, dict):
             raise ValueError("Update data must be a dictionary")
 
@@ -302,6 +322,7 @@ class UserResource:
             ValueError: If deletion fails.
         """
         try:
+            self._log_resource_access("delete", target_id=self.user_id)
             user = db.get_user_by_id(self.user_id)
             if user is None:
                 raise ValueError(f"User {self.user_id} not found")
@@ -339,6 +360,11 @@ class UserResource:
             ValueError: If token creation fails.
         """
         try:
+            self._log_resource_access(
+                "create_verification_token",
+                target_id=self.user_id,
+                metadata={"type": data.get("type") if isinstance(data, dict) else None},
+            )
             data['user_id'] = self.user_id
             db.create_verification_token(data)
         except Exception as e:
