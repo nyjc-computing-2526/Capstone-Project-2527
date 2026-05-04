@@ -250,64 +250,6 @@ def update_user():
 
     if request.method == 'POST':
         form_type = request.form.get('form_type', 'profile')
-<<<<<<< ours
-
-        if form_type == 'password':
-            current_password = request.form.get('current_password').strip()
-            password = request.form.get('password').strip()
-            confirm_password = request.form.get('confirm_password')
-
-            if not current_password:
-                flash("Please verify your current password first.", "error")
-                return render_template('editprofile.html')
-
-            try:
-                users_resource.authenticate(current_user.email, current_password)
-            except ValueError:
-                flash("Current password is incorrect.", "error")
-                return render_template('editprofile.html')
-
-            if not password:
-                flash("Please enter a new password.", "error")
-                return render_template('editprofile.html')
-            
-            try:
-                validate_password(password)
-            except ValueError as e:
-                flash(str(e), "error")
-                return render_template('editprofile.html')
-            
-            if password != confirm_password:
-                flash("Passwords do not match", "error")
-                return render_template('editprofile.html')
-
-            try:
-                user_resource.update({'password': password})
-                flash("Password updated successfully", "success")
-                return redirect(url_for('auth.update_user'))
-            except ValueError:
-                flash("Failed to update password. Please try again.", "error")
-                return render_template('editprofile.html')
-
-        name = request.form.get('name')
-        user_class = request.form.get('class')
-
-        user_data = {}
-
-        if name and name.strip():
-            user_data['name'] = name.strip()
-
-        if user_class and user_class.strip():
-            if not user_class.isdigit():
-                flash("Class must be a number.", "error")
-                return render_template('editprofile.html')
-            
-            if not (len(user_class) == 4 and user_class.startswith('2') and (1 <= int(user_class[-2:]) <= 30)):
-                flash("Invalid class.", "error")
-                return render_template('editprofile.html')
-            user_data['user_class'] = user_class.strip()
-
-=======
         email = request.form.get('email')
         password = request.form.get('password')
         name = request.form.get('name')
@@ -325,21 +267,34 @@ def update_user():
                 user_data['name'] = name.strip()
 
             if user_class and user_class.strip():
+                if not user_class.isdigit():
+                    flash("Class must be a number.", "error")
+                    return render_template('editprofile.html')
+
+                if not (len(user_class) == 4 and user_class.startswith('2') and (1 <= int(user_class[-2:]) <= 30)):
+                    flash("Invalid class.", "error")
+                    return render_template('editprofile.html')
                 user_data['user_class'] = user_class.strip()
 
         elif form_type == 'password':
             if not current_password:
-                flash("Current password is required", "error")
+                flash("Please verify your current password first.", "error")
                 return render_template('editprofile.html')
 
             try:
                 users_resource.authenticate(current_user.email, current_password)
             except ValueError:
-                flash("Current password is incorrect", "error")
+                flash("Current password is incorrect.", "error")
                 return render_template('editprofile.html')
 
             if not password:
-                flash("New password is required", "error")
+                flash("Please enter a new password.", "error")
+                return render_template('editprofile.html')
+
+            try:
+                validate_password(password)
+            except ValueError as e:
+                flash(str(e), "error")
                 return render_template('editprofile.html')
 
             if password != confirm_password:
@@ -351,23 +306,30 @@ def update_user():
             flash("Invalid update request", "error")
             return render_template('editprofile.html')
 
->>>>>>> theirs
         if not user_data:
             flash("No valid fields provided for update", "error")
             return render_template('editprofile.html')
 
         for value in [email, name, user_class]:
-            result = check_profanity(value)
-            if result["valid"] == False:
-                flash(result["msg"], "error")
-                return render_template('editprofile.html')
+            if value and value.strip():
+                result = check_profanity(value)
+                if result["valid"] == False:
+                    flash(result["msg"], "error")
+                    return render_template('editprofile.html')
             
         try:
             user_resource.update(user_data)
+            if form_type == 'password':
+                flash("Password updated successfully", "success")
+                return redirect(url_for('auth.update_user'))
+
             flash("Profile updated successfully", "success")
             return redirect(url_for('auth.view_profile', id=current_user.id))
         except ValueError:
-            flash("Failed to update profile. Please try again.", "error")
+            if form_type == 'password':
+                flash("Failed to update password. Please try again.", "error")
+            else:
+                flash("Failed to update profile. Please try again.", "error")
             return render_template('editprofile.html')
 
     return render_template('editprofile.html')
