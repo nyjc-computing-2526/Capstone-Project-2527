@@ -516,6 +516,16 @@ def landing_legal():
     return render_template("legal.html")
 
 
+@app.route("/app/legal", methods=["GET"], endpoint="landing.legal_app")
+def landing_legal_app():
+    return render_template("app_legal.html")
+
+
+@app.route("/app/privacy-policy", methods=["GET"], endpoint="landing.privacy_policy_app")
+def landing_privacy_policy_app():
+    return render_template("app_privacy_policy.html")
+
+
 @app.route("/login", methods=["GET"])
 def login_alias():
     return redirect(url_for("auth.login"))

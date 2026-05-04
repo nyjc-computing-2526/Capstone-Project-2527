@@ -158,6 +158,7 @@ header[data-nav-profile="landing"] .nav-auth-btn-register {
 
 main,
 .all-activities,
+.app-legal-page,
 .create-activity,
 .auth-page,
 .activity-card-page,
@@ -168,6 +169,7 @@ main,
 
 .app-hero-page main,
 .app-hero-page .all-activities,
+.app-hero-page .app-legal-page,
 .app-hero-page .create-activity,
 .app-hero-page .activity-card-page,
 .app-hero-page .profile-page {
