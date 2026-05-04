@@ -1,1 +1,7 @@
-export PYTHONPATH=/workspaces/Capstone-Project-2527:$PYTHONPATH && /workspaces/Capstone-Project-2527/.venv/bin/python -m unittest app.tests.resources_activities -v
+export PYTHONPATH=/workspaces/Capstone-Project-2527:$PYTHONPATH
+
+# Run all tests
+/workspaces/Capstone-Project-2527/.venv/bin/python -m unittest app.tests.resources_activities -v
+/workspaces/Capstone-Project-2527/.venv/bin/python -m unittest testing.utils_profanity_checker -v
+/workspaces/Capstone-Project-2527/.venv/bin/python -m unittest testing.resources-users -v
+/workspaces/Capstone-Project-2527/.venv/bin/python -m unittest testing.routes -v
