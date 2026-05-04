@@ -7,6 +7,11 @@
     flex-direction: column;
   }
 
+  .create-activity-private-toggle {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+
   .verify-modal-card {
     width: 100%;
     max-width: calc(100vw - 2rem);

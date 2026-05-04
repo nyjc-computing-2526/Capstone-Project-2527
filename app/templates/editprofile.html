@@ -53,6 +53,7 @@
         <div class="edit-profile-form-column">
           <div class="edit-profile-form-shell">
             <h2>Profile details</h2>
+            <p class="edit-profile-subcopy">{{ current_user.email | default('') }}</p>
             <form
               method="post"
               action="{{ url_for('auth.update_user') }}"
@@ -68,19 +69,8 @@
                     id="edit-name"
                     name="name"
                     placeholder="Name"
-                    value="{{ current_user.name | default('') }}"
+                    value="{{ name | default(current_user.name) | default('') }}"
                     autocomplete="name"
-                  />
-                </div>
-                <div class="input-group edit-profile-field">
-                  <label class="field-label" for="edit-email">Email</label>
-                  <input
-                    type="email"
-                    id="edit-email"
-                    name="email"
-                    placeholder="Email"
-                    value="{{ current_user.email | default('') }}"
-                    autocomplete="email"
                   />
                 </div>
                 <div class="input-group edit-profile-field">
@@ -90,7 +80,7 @@
                     id="edit-class"
                     name="class"
                     placeholder="Class"
-                    value="{{ current_user.user_class | default('') }}"
+                    value="{{ user_class | default(current_user.user_class) | default('') }}"
                   />
                 </div>
               </div>
@@ -313,5 +303,6 @@
           }
         });
     </script>
+    {% include "partials/footer.html" %}
   </body>
 </html>

@@ -1,2 +1,5 @@
-# Capstone-Project
-suggest a name for this project guys🥀 backstreet boys
+# Activity Alligator
+
+1. pip install requirements.txt
+2. python main.py
+

@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, render_template, request, session, flash
 from flask_login import login_required, current_user
 from app.resources.activities import ActivitiesResource
 from app.utils.formatting_util import enrich_for_cards
+from app.utils.profanity_checker import check_profanity
 
 from email.message import EmailMessage
 import smtplib
@@ -23,6 +24,10 @@ def about():
 def legal():
     return render_template('legal.html')
 
+@bp.route('/privacy-policy', methods=["GET"])
+def privacy_policy():
+    return render_template('privacypolicy.html')
+
 @bp.route('/contact', methods=["GET", "POST"])
 def contact():
     if request.method == "POST":
@@ -30,6 +35,13 @@ def contact():
         name = request.form.get('name')
         email = request.form.get('email')
         message = request.form.get('message')
+
+        for value in [name, email, message]:
+            result = check_profanity(value)
+            if result["valid"] == False:
+                flash(result["msg"], "error")
+                return render_template("contact.html")
+                
 
         now = time.time()
 

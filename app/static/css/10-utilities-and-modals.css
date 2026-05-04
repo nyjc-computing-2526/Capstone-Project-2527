@@ -178,6 +178,78 @@
   align-items: flex-start;
 }
 
+.my-activities-nav {
+  display: flex;
+  position: relative;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+  padding: 0.35rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-warm);
+  background: var(--surface-muted);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.my-activities-nav::before {
+  content: "";
+  position: absolute;
+  top: 0.35rem;
+  left: var(--tab-left, 0.35rem);
+  width: var(--tab-width, 0px);
+  height: calc(100% - 0.7rem);
+  border-radius: 999px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  transition:
+    left 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    width 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+.my-activities-tab {
+  position: relative;
+  z-index: 1;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-accent);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.2;
+  border-radius: 999px;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.my-activities-tab:hover,
+.my-activities-tab:focus-visible {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: var(--border-warm);
+}
+
+.my-activities-tab.is-active {
+  background: transparent;
+  color: var(--text-heading);
+  border-color: transparent;
+}
+
+.my-activities-panel-wrap {
+  border: 1px solid var(--border-warm);
+  border-radius: 1rem;
+  background: var(--surface-card);
+  padding: 1rem;
+}
+
+.my-activities-panel[hidden] {
+  display: none;
+}
+
 .my-activities-column {
   flex: 1;
   min-width: 0;
@@ -188,18 +260,46 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  gap: 2rem;
+  gap: 1rem;
+  padding-right: 0.85rem;
+  box-sizing: border-box;
 }
 
 .my-activities-heading {
   margin: 0;
-  font-size: 1.3rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  font-size: 1.12rem;
   font-weight: 700;
   color: var(--text-heading);
 }
 
 .input-row--flush {
   margin: 0;
+}
+
+.my-activities-head .input-row--compact {
+  margin-left: auto;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+@keyframes my-activities-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.my-activities-panel.is-entering .my-activities-head,
+.my-activities-panel.is-entering .activities {
+  animation: my-activities-panel-enter 280ms ease;
 }
 
 .input-row--compact span {
@@ -634,5 +734,16 @@
     width: 100%;
     height: 1px;
     align-self: stretch;
+  }
+
+  .my-activities-nav {
+    width: 100%;
+    flex-wrap: wrap;
+    border-radius: 1rem;
+  }
+
+  .my-activities-tab {
+    flex: 1 1 12rem;
+    text-align: center;
   }
 }
