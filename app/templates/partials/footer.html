@@ -1,6 +1,6 @@
 <footer{% if footer_transparent %} class="footer--transparent"{% endif %}>
   <p>
-    {% if not current_user.is_authenticated %}
+    {% if current_user.is_authenticated %}
     <a href="{{ url_for('landing.legal_app') }}" class="footer-legal-link">Terms &amp; Conditions</a>
     {% else %}
     <a href="{{ url_for('landing.legal') }}" class="footer-legal-link">Terms &amp; Conditions</a>
