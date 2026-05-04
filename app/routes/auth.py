@@ -97,7 +97,7 @@ def register():
             flash("All fields are required.", "error")
             return render_template('register.html', **form_data)
         
-        for value in [form_data["name"], form_data["email"], form_data["user_class"]]:
+        for key, value in form_data.items():
             result = check_profanity(value)
             if result["valid"] == False:
                 flash(result["msg"], "error")
@@ -108,7 +108,7 @@ def register():
             flash("Class must be a number.", "error")
             return render_template('register.html', **form_data) 
         
-        if len(user_class) != 4 and not user_class.startswith('2') and not (1 <= int(user_class[-2:]) <= 30):
+        if not (len(user_class) == 4 and user_class.startswith('2') and (1 <= int(user_class[-2:]) <= 30)):
             flash("Invalid class.", "error")
             return render_template('register.html', **form_data) 
 
@@ -287,7 +287,7 @@ def update_user():
                 flash("Class must be a number.", "error")
                 return render_template('editprofile.html')
             
-            if len(user_class) != 4 and not user_class.startswith('2') and not (1 <= int(user_class[-2:]) <= 30):
+            if not (len(user_class) == 4 and user_class.startswith('2') and (1 <= int(user_class[-2:]) <= 30)):
                 flash("Invalid class.", "error")
                 return render_template('editprofile.html')
             user_data['user_class'] = user_class.strip()
@@ -296,6 +296,12 @@ def update_user():
             flash("No valid fields provided for update", "error")
             return render_template('editprofile.html')
 
+        for value in [email, name, user_class]:
+            result = check_profanity(value)
+            if result["valid"] == False:
+                flash(result["msg"], "error")
+                return render_template('editprofile.html')
+            
         try:
             user_resource.update(user_data)
             flash("Profile updated successfully", "success")
