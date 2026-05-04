@@ -48,6 +48,9 @@ def validate_password(password):
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     """allows user to log in"""
+    if current_user.is_authenticated:
+        return redirect(url_for('landing.homepage'))
+
     if request.method == 'POST':
         form_data = {"email": request.form.get('email', '').strip()}
         recaptcha_token = request.form.get('g-recaptcha-response')
@@ -84,6 +87,9 @@ def login():
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     """registers user"""
+    if current_user.is_authenticated:
+        return redirect(url_for('landing.homepage'))
+
     if request.method == 'POST':
         form_data = {
             "email": request.form['email'],
@@ -95,6 +101,10 @@ def register():
 
         if not all([form_data['email'].strip(), form_data['name'].strip(), form_data['user_class'].strip(), password.strip(), confirm_password.strip()]):
             flash("All fields are required.", "error")
+            return render_template('register.html', **form_data)
+
+        if not form_data['email'].strip().endswith('@nyjc.edu.sg'):
+            flash("Please use your NYJC email", "error")
             return render_template('register.html', **form_data)
         
         for value in [form_data["name"], form_data["email"], form_data["user_class"]]:
@@ -270,14 +280,10 @@ def update_user():
                 flash("Failed to update password. Please try again.", "error")
                 return render_template('editprofile.html')
 
-        email = request.form.get('email')
         name = request.form.get('name')
         user_class = request.form.get('class')
 
         user_data = {}
-
-        if email and email.strip():
-            user_data['email'] = email.strip()
 
         if name and name.strip():
             user_data['name'] = name.strip()
