@@ -24,9 +24,24 @@ def about():
 def legal():
     return render_template('legal.html')
 
+
+@bp.route('/app/legal', methods=["GET"])
+@login_required
+def legal_app():
+    """Terms & conditions for logged-in users (post-login shell, same body as /legal)."""
+    return render_template('app_legal.html')
+
+
 @bp.route('/privacy-policy', methods=["GET"])
 def privacy_policy():
     return render_template('privacypolicy.html')
+
+
+@bp.route('/app/privacy-policy', methods=["GET"])
+@login_required
+def privacy_policy_app():
+    """Privacy policy for logged-in users (post-login shell, same body as /privacy-policy)."""
+    return render_template('app_privacy_policy.html')
 
 @bp.route('/contact', methods=["GET", "POST"])
 def contact():
@@ -103,6 +118,9 @@ def features():
 def homepage():
     activities_resource = ActivitiesResource()
     upcoming_activities = activities_resource.get_upcoming()
-    return render_template('home.html', activities=enrich_for_cards(upcoming_activities))
+    return render_template(
+        'home.html',
+        activities=enrich_for_cards(upcoming_activities, current_user.id),
+    )
 
 

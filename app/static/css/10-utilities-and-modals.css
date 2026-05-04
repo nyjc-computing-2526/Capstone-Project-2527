@@ -720,6 +720,104 @@
   opacity: 1;
 }
 
+/* In-app legal / privacy — match other app-hero pages (transparent main, glass cards) */
+.app-hero-page .app-legal-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+  width: min(1120px, calc(100% - 2rem));
+  max-width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: 1em;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.app-hero-page .app-legal-page .page-card,
+.app-hero-page .app-legal-card-stack .marketing-card.legal-card {
+  background: var(--glass-surface);
+  border: 1px solid rgba(33, 57, 46, 0.18);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: blur(14px) saturate(145%);
+  -webkit-backdrop-filter: blur(14px) saturate(145%);
+}
+
+.app-hero-page .app-legal-page .page-card {
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.app-hero-page .app-legal-hero-card h1 {
+  margin: 0;
+  font-size: clamp(1.65rem, 4vw, 2.25rem);
+  color: var(--text-heading);
+}
+
+.app-hero-page .app-legal-hero-card .page-intro {
+  margin: 0.75rem 0 0;
+  color: var(--text-muted);
+}
+
+.app-hero-page .app-legal-kicker {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-weight: 800;
+  color: var(--text-accent);
+}
+
+.app-hero-page .app-legal-hero-card .legal-updated {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.app-hero-page .app-legal-card-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.app-hero-page .app-legal-card-stack .marketing-card.legal-card {
+  padding: 1.35rem 1.25rem;
+  display: grid;
+  align-content: start;
+}
+
+.app-hero-page .app-legal-card-stack .marketing-card.legal-card h2 {
+  margin: 0;
+  font-size: 1.08rem;
+  color: var(--text-accent-deep);
+}
+
+.app-hero-page .app-legal-card-stack .marketing-card.legal-card p {
+  margin: 0.52rem 0 0;
+  line-height: 1.62;
+  color: var(--text-muted);
+}
+
+.app-hero-page .app-legal-card-stack .marketing-card.legal-card ul {
+  margin: 0.65rem 0 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.45rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.app-hero-page .app-legal-card-stack .marketing-card.legal-card strong {
+  color: var(--text-heading);
+}
+
+.app-hero-page .app-legal-card-stack .marketing-card.legal-card:hover {
+  background: var(--glass-surface-strong);
+  border-color: var(--glass-border-strong);
+  box-shadow: var(--shadow-glass-hover);
+}
+
 @media (max-width: 720px) {
   .profile-card--split {
     flex-direction: column;

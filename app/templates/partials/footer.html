@@ -1,8 +1,16 @@
 <footer{% if footer_transparent %} class="footer--transparent"{% endif %}>
   <p>
-    <a href="{{ url_for('landing.legal') }}" class="footer-legal-link">Terms & Condtions</a>
+    {% if not current_user.is_authenticated %}
+    <a href="{{ url_for('landing.legal_app') }}" class="footer-legal-link">Terms &amp; Conditions</a>
+    {% else %}
+    <a href="{{ url_for('landing.legal') }}" class="footer-legal-link">Terms &amp; Conditions</a>
+    {% endif %}
   </p>
   <p>
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('landing.privacy_policy_app') }}" class="footer-legal-link">Privacy Policy</a>
+    {% else %}
     <a href="{{ url_for('landing.privacy_policy') }}" class="footer-legal-link">Privacy Policy</a>
+    {% endif %}
   </p>
 </footer>
