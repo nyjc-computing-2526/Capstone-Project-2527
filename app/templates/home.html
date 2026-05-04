@@ -28,6 +28,10 @@
       class="activity-card-link"
     >
       <div class="activity-card">
+        <div class="organizer-badge activity-card-badge">
+          {{ 'Organized by you' if activity.is_current_user_organizer else
+          'Organized by another user' }}
+        </div>
         <h3>{{ activity.title | default('Untitled') }}</h3>
         <p>{{ activity.display_time }}</p>
         <p>{{ activity.display_date }}</p>

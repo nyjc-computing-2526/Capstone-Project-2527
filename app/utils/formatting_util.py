@@ -17,16 +17,19 @@ def parse_activity_dt(value) -> datetime | None:
     return date_parser.parse(str(value))
 
 
-def enrich_row_for_card(activity: dict) -> dict:
+def enrich_row_for_card(activity: dict, current_user_id: int | None = None) -> dict:
     row = dict(activity)
     start = parse_activity_dt(row.get("started_at") or row.get("date"))
     row["display_time"] = start.strftime("%H:%M") if start else "—"
     row["display_date"] = start.strftime("%d %b %Y") if start else "—"
+    row["is_current_user_organizer"] = (
+        current_user_id is not None and row.get("created_by") == current_user_id
+    )
     return row
 
 
-def enrich_for_cards(activities: list[dict] | None) -> list[dict]:
-    return [enrich_row_for_card(a) for a in (activities or [])]
+def enrich_for_cards(activities: list[dict] | None, current_user_id: int | None = None) -> list[dict]:
+    return [enrich_row_for_card(a, current_user_id) for a in (activities or [])]
 
 
 def schedule_for_detail(activity: dict) -> dict:

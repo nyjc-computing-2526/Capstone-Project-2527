@@ -74,6 +74,7 @@ main {
 }
 
 .activity-card {
+  position: relative;
   background-color: var(--surface-sage);
   border: 1px solid var(--border-warm);
   box-sizing: border-box;
@@ -86,6 +87,12 @@ main {
     background-color 150ms cubic-bezier(0.2, 0.8, 0.2, 1),
     border-color 150ms cubic-bezier(0.2, 0.8, 0.2, 1),
     color 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.activity-card .activity-card-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 .activity-card h3 {
