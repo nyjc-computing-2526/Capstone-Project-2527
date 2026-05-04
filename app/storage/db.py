@@ -1,4 +1,6 @@
 import os
+import json
+import re
 import psycopg2
 import psycopg2.extras
 from datetime import datetime, timezone
@@ -10,6 +12,26 @@ ALLOWED_COLUMNS_ACTIVITIES = ["title", "description", "date", "started_at", "cre
 ALLOWED_COLUMNS_PARTICIPANTS = ["user_id", "activity_id", "attendance_status", "attendance_reason", "attendance_marked_at", "attendance_marked_by"]
 ALLOWED_COLUMNS_USERS = ["name", "email", "password", "user_class", "verified", "failed_attempts", "locked_until", "lockout_count"]
 ALLOWED_COLUMNS_VERIFICATION_TOKENS = ["user_id", "token", "expiry", "type"]
+ALLOWED_COLUMNS_SECURITY_AUDIT_LOGS = [
+    "user_id",
+    "user_email",
+    "http_method",
+    "request_path",
+    "endpoint",
+    "ip_address",
+    "user_agent",
+    "resource_name",
+    "resource_action",
+    "target_id",
+    "request_metadata",
+]
+
+
+def _get_security_audit_log_table():
+    table_name = os.getenv("SECURITY_AUDIT_LOG_TABLE", "security_audit_logs")
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", table_name):
+        raise ValueError("SECURITY_AUDIT_LOG_TABLE must be a simple SQL identifier")
+    return table_name
 
 def db_execute(sql_query, params=None, fetch=None):
     """
@@ -63,18 +85,18 @@ def get_activity_by_id(id):
     return db_execute(sql_query=query, params=params, fetch="one")
 
 def get_completed_activities():
-    query = """SELECT * FROM activities WHERE ended_at < NOW() AT TIME ZONE 'Asia/Singapore';"""
+    query = """SELECT * FROM activities WHERE ended_at < NOW();"""
     return db_execute(sql_query=query, params=None, fetch="all")
 
 def get_upcoming_activities():
-    query = """SELECT * FROM activities WHERE started_at > NOW() AT TIME ZONE 'Asia/Singapore';"""
+    query = """SELECT * FROM activities WHERE started_at > NOW();"""
     return db_execute(sql_query=query, params=None, fetch="all")
 
 def get_ongoing_activities():
     query = """
         SELECT * FROM activities 
-        WHERE started_at <= (NOW() AT TIME ZONE 'Asia/Singapore')
-        AND ended_at >= (NOW() AT TIME ZONE 'Asia/Singapore');
+        WHERE started_at <= NOW()
+        AND ended_at >= NOW();
     """
     return db_execute(sql_query=query, params=None, fetch="all")
 
@@ -196,8 +218,8 @@ def get_due_activity_reminders(hours_before=24):
         JOIN users ON users.id = participants.user_id
         JOIN activities ON activities.id = participants.activity_id
         WHERE participants.reminder_sent_at IS NULL
-        AND activities.started_at > (NOW() AT TIME ZONE 'Asia/Singapore')
-        AND activities.started_at <= (NOW() AT TIME ZONE 'Asia/Singapore') + (%s * INTERVAL '1 hour')
+        AND activities.started_at > NOW()
+        AND activities.started_at <= NOW() + (%s * INTERVAL '1 hour')
     """
     return db_execute(sql_query=query, params=[hours_before], fetch="all")
 
@@ -307,3 +329,25 @@ def delete_verification_tokens_for_user(user_id):
     deleted = db_execute(sql_query=query, params=[user_id], fetch=None)
 
     return (deleted >= 0)
+
+
+def insert_security_audit_log(data: dict) -> bool:
+    for col in data.keys():
+        if col not in ALLOWED_COLUMNS_SECURITY_AUDIT_LOGS:
+            raise ValueError(f"Invalid column: {col}")
+
+    payload = dict(data)
+    if "request_metadata" in payload:
+        payload["request_metadata"] = psycopg2.extras.Json(
+            payload["request_metadata"],
+            dumps=lambda value: json.dumps(value, default=str),
+        )
+
+    columns = ", ".join(payload.keys())
+    placeholders = ", ".join(["%s"] * len(payload))
+    values = tuple(payload.values())
+    table_name = _get_security_audit_log_table()
+
+    query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
+    inserted = db_execute(sql_query=query, params=values, fetch=None)
+    return inserted == 1
