@@ -36,6 +36,7 @@ def create_app():
         logging.warning("RECAPTCHA_SITE_KEY or RECAPTCHA_SECRET_KEY is not set — reCAPTCHA will not function.")
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     app.config['SESSION_COOKIE_SECURE'] = not app.debug
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
 
     csrf.init_app(app)
 
@@ -96,7 +97,7 @@ def create_app():
     def load_user(user_id):
         try:
             user_data = UsersResource().user(int(user_id)).get()
-            return User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'],  user_data['password'])
+            return User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], None)
         except Exception:
             return None
 
