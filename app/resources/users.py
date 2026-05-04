@@ -2,6 +2,7 @@ import hashlib
 import os
 import hmac
 import secrets
+import logging
 from datetime import datetime, timedelta, timezone
 
 import app.storage.db as db
@@ -39,6 +40,7 @@ class UsersResource:
             locked_until = now + timedelta(seconds=cooldown_seconds)
             failed_attempts = 0
             lockout_count += 1
+            logging.warning("AUTH: Account locked for user_id=%s lockout_count=%s cooldown=%ss", user['id'], lockout_count, cooldown_seconds)
             message = f"Too many failed attempts. Please try again in {cooldown_seconds} seconds."
         else:
             remaining = MAX_LOGIN_ATTEMPTS - failed_attempts
@@ -287,7 +289,7 @@ class UserResource:
                 raise ValueError("User not found")
             return success
         except Exception as e:
-            print("Actual error: " + str(e))
+            logging.error("AUTH: User update failed for user_id=%s error=%s", self.user_id, str(e))
             raise ValueError("Update failed") from None
 
     def delete(self) -> bool:
