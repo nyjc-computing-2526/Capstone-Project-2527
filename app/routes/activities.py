@@ -108,7 +108,11 @@ def my_activities():
     private_owned = []
     try:
         owned = activities_resource.get_owned(current_user.id)
-        joined = activities_resource.get_joined(current_user.id)
+        joined = [
+            activity
+            for activity in activities_resource.get_joined(current_user.id)
+            if activity.get('created_by') != current_user.id
+        ]
         for activity in owned:
             if not activity['private']:
                 public_owned.append(activity)
