@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 import secrets
+import logging
 import resend
 import os
 from app.resources.users import UsersResource
@@ -74,10 +75,12 @@ def login():
 
             users_resource.reset_login_lockout(user_data['id'])
             user_obj = User(user_data['id'], user_data['name'], user_data['email'], user_data['user_class'], None)
-            login_user(user_obj) 
+            login_user(user_obj)
+            logging.info("AUTH: Successful login for user_id=%s email=%s", user_data['id'], email)
             return redirect(url_for('landing.homepage'))
         
         except ValueError as e:
+            logging.warning("AUTH: Failed login attempt for email=%s reason=%s", email, str(e))
             flash(str(e), "error")
             return render_template('login.html', **form_data)
 
@@ -125,7 +128,7 @@ def register():
         recaptcha_token = request.form.get('g-recaptcha-response')
         if not recaptcha_token or not verify_recaptcha(recaptcha_token):
             flash("Please complete the captcha.", "error")
-            print("Error completeting captcha")
+            logging.warning("AUTH: reCAPTCHA verification failed during registration for email=%s", form_data['email'])
             return render_template('register.html', **form_data)
 
         try:
@@ -219,7 +222,9 @@ def verify_password():
 @bp.route('/logout', methods=['POST'])
 @login_required
 def logout():
+    user_id = current_user.id
     logout_user()
+    logging.info("AUTH: User logged out user_id=%s", user_id)
     flash("Logged out successfully", "success")
     return redirect(url_for('landing.index'))
 
@@ -227,7 +232,10 @@ def logout():
 @bp.route('/view/<int:id>')  
 @login_required
 def view_profile(id):
-    """allows user to view their profile details"""
+    """allows user to view their own profile details"""
+    if id != current_user.id:
+        flash("You can only view your own profile.", "error")
+        return redirect(url_for('auth.view_profile', id=current_user.id))
     user_resource = users_resource.user(id)
     user_data = user_resource.get()
     activity_data = activities_resource.get_owned(id)
@@ -332,6 +340,7 @@ def delete_user(id):
     try:
         user_resource.delete()
         logout_user()
+        logging.info("AUTH: Account deleted user_id=%s", id)
         flash("Profile deleted successfully", "success")
         return redirect(url_for('landing.index'))
     except ValueError:
