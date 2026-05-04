@@ -1,6 +1,7 @@
 import logging
+import os
 
-from flask import has_request_context, request
+from flask import g, has_request_context, request
 from flask_login import current_user
 
 import app.storage.db as db
@@ -11,6 +12,10 @@ class ResourceAuditMixin:
 
     def _log_resource_access(self, action: str, *, target_id=None, metadata=None) -> None:
         if not has_request_context():
+            return
+        if os.getenv("ENABLE_RESOURCE_AUDIT_LOGGING", "true").lower() not in {"1", "true", "yes", "on"}:
+            return
+        if getattr(g, "_resource_audit_logged", False):
             return
 
         try:
@@ -38,6 +43,7 @@ class ResourceAuditMixin:
                     "request_metadata": metadata or {},
                 }
             )
+            g._resource_audit_logged = True
         except Exception:
             logging.getLogger(__name__).warning(
                 "Failed to persist resource audit log for %s.%s",

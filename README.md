@@ -50,10 +50,11 @@ The app runs on `http://localhost:5000` by default.
 
 ## Security Audit Logging
 
-Resource-layer operations now write audit entries to Postgres so user activity is captured centrally for security review. By default the code writes to a table named `security_audit_logs`. You can override that with:
+Resource-layer access now writes one audit entry per request to Postgres so user activity is captured centrally for security review without duplicating several writes during a single page load. By default the code writes to a table named `security_audit_logs`. You can override that with:
 
 ```bash
 SECURITY_AUDIT_LOG_TABLE=your_existing_table_name
+ENABLE_RESOURCE_AUDIT_LOGGING=true
 ```
 
 The expected table should support columns matching the inserted audit payload:
