@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy</title>
+    {% include "partials/stylesheets.html" %}
+  </head>
+  <body class="app-hero-page">
+    <div class="app-hero-viewport" aria-hidden="true"></div>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="toast-container">
+      {% for category, message in messages %}
+      <div class="toast toast-{{ category }}">
+        <span>{{ message }}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          ✕
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% include "partials/navbar-user.html" %}
+
+    <main class="app-legal-page">
+      <div class="page-card app-legal-hero-card">
+        <p class="app-legal-kicker">Privacy Policy</p>
+        <h1>Your data, handled with care.</h1>
+        <p class="page-intro">
+          Activity Alligator is committed to protecting your personal data in
+          accordance with Singapore’s PDPA. This policy outlines how we collect,
+          use, protect, and respond to data-related incidents.
+        </p>
+        <p class="legal-updated">Last updated: April 2026</p>
+      </div>
+      <section class="page-card app-legal-card-stack">
+        {% include "partials/privacy-policy-body.html" %}
+      </section>
+    </main>
+
+    <script>
+      document.querySelectorAll(".toast").forEach((toast) => {
+        setTimeout(() => toast.remove(), 4000);
+      });
+    </script>
+    {% include "partials/footer.html" %}
+  </body>
+</html>

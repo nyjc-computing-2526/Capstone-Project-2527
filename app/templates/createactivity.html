@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create activity</title>
+    {% include "partials/stylesheets.html" %}
+  </head>
+  <body class="app-hero-page">
+    <div class="app-hero-viewport" aria-hidden="true"></div>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="toast-container">
+      {% for category, message in messages %}
+      <div class="toast toast-{{ category }}">
+        <span>{{ message }}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          ✕
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% include "partials/navbar-user.html" %}
+
+    <main class="create-activity">
+      <div class="page-card">
+        <h1>Create activity</h1>
+
+        <form class="create-activity-form" action="#" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="create-activity-top-row">
+            <div class="input-group create-activity-name">
+              <input type="text" name="title" value="{{ title or '' }}" placeholder="Event name" />
+            </div>
+            <label class="create-activity-private-toggle" for="is-private">
+              <span class="create-activity-private-label">Private activity</span>
+              <input
+                id="is-private"
+                type="checkbox"
+                name="is_private"
+              value="1"
+              {% if is_private or private %}checked{% endif %}
+              />
+              <span class="toggle-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+
+          <div class="input-group">
+            <textarea
+              name="description"
+              placeholder="Event description"
+            >{{ description or '' }}</textarea>
+          </div>
+
+          <div class="create-activity-date-row">
+            <div class="input-group">
+              <label class="field-label">Start</label>
+              <input type="datetime-local" name="start_date" value="{{ start_date or started_at or '' }}" required />
+            </div>
+            <div class="input-group">
+              <label class="field-label">End</label>
+              <input type="datetime-local" name="end_date" value="{{ end_date or ended_at or '' }}" required />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <input type="text" name="venue" value="{{ venue or '' }}" placeholder="Location" />
+          </div>
+
+          <button type="submit" class="create-activity-submit">
+            <span class="plus-icon">+</span>
+            <span>Create activity</span>
+          </button>
+        </form>
+      </div>
+
+      <div id="verify-modal" class="verify-modal-overlay" hidden>
+        <div class="page-card verify-modal-card">
+          <h1>Enter verification code</h1>
+          <form action="#" method="post" class="create-activity-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="input-group">
+              <input
+                type="email"
+                name="teacher_email"
+                placeholder="Enter teacher email"
+              />
+            </div>
+
+            <div class="verify-code-row">
+              <div class="input-group">
+                <input
+                  type="text"
+                  name="verification_code"
+                  placeholder="Enter code"
+                />
+              </div>
+              <button type="button" class="verify-btn verify-send-btn">
+                Send
+              </button>
+            </div>
+
+            <button type="submit" class="verify-btn verify-submit-btn">
+              Submit
+            </button>
+            <button
+              type="button"
+              id="close-verify-modal"
+              class="verify-close-btn"
+            >
+              Close
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const verifyModal = document.getElementById("verify-modal");
+      const openVerifyModalBtn = document.getElementById("open-verify-modal");
+      const closeVerifyModalBtn = document.getElementById("close-verify-modal");
+
+      const closeVerifyModal = () => {
+        verifyModal.hidden = true;
+      };
+
+      if (openVerifyModalBtn) {
+        openVerifyModalBtn.addEventListener("click", () => {
+          verifyModal.hidden = false;
+        });
+      }
+
+      closeVerifyModalBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        closeVerifyModal();
+      });
+
+      verifyModal.addEventListener("click", (event) => {
+        if (event.target === verifyModal) {
+          closeVerifyModal();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !verifyModal.hidden) {
+          closeVerifyModal();
+        }
+      });
+
+      (function () {
+        function validateDatetimeField(input, label) {
+          input.setCustomValidity("");
+          const val = input.value;
+          if (!val) return;
+          const m = val.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+          if (!m) {
+            input.setCustomValidity(`Please enter a valid ${label} date and time.`);
+            return;
+          }
+          const hours = parseInt(m[4], 10);
+          const minutes = parseInt(m[5], 10);
+          if (hours > 23) {
+            input.setCustomValidity(`Invalid ${label} time: hours must be between 0 and 23.`);
+          } else if (minutes > 59) {
+            input.setCustomValidity(`Invalid ${label} time: minutes must be between 0 and 59.`);
+          }
+        }
+
+        const startInput = document.querySelector('[name="start_date"]');
+        const endInput = document.querySelector('[name="end_date"]');
+
+        [startInput, endInput].forEach((el) => {
+          if (!el) return;
+          const label = el.name === "start_date" ? "start" : "end";
+          el.addEventListener("input", () => validateDatetimeField(el, label));
+          el.addEventListener("change", () => validateDatetimeField(el, label));
+        });
+
+        document.querySelector(".create-activity-form").addEventListener("submit", function (e) {
+          validateDatetimeField(startInput, "start");
+          validateDatetimeField(endInput, "end");
+          if (!startInput.checkValidity()) {
+            e.preventDefault();
+            startInput.reportValidity();
+          } else if (!endInput.checkValidity()) {
+            e.preventDefault();
+            endInput.reportValidity();
+          }
+        });
+      })();
+    </script>
+    {% include "partials/footer.html" %}
+  </body>
+</html>

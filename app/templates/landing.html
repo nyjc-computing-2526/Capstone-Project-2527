@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    {% include "partials/stylesheets.html" %}
+    <title>Activity Alligator</title>
+  </head>
+  <body class="landing-page{% if request.endpoint == 'landing.index' %} landing-home{% endif %}">
+    <div class="landing-bg-viewport" aria-hidden="true">
+      <img
+        src="{{ url_for('static', filename='images/alligator-hero-image.png') }}"
+        alt=""
+      />
+    </div>
+    {% include "partials/navbar-landing.html" %}
+    {% block content %}
+
+    <main class="landing-main">
+      <section class="hero-home" aria-labelledby="landing-title">
+        <div class="hero-home-copy" data-reveal>
+          <p class="hero-home-kicker">Activity Alligator</p>
+          <h1 id="landing-title" class="hero-home-title">
+            Plan activities without the chaos.
+          </h1>
+          <p class="hero-home-subtitle">Simple timeline. Clear updates.</p>
+        </div>
+      </section>
+    </main>
+    {% endblock %}
+
+    {% include "partials/footer.html" %}
+    <script src="{{ url_for('static', filename='js/landing-hero.js') }}"></script>
+  </body>
+</html>

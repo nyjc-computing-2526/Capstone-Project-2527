@@ -1,0 +1,20 @@
+/*!
+ * Aggregates split stylesheets under css/. Templates should include
+ * templates/partials/stylesheets.html for explicit per-file loads.
+ * This file remains as a single-request fallback (same cascade order).
+ */
+@import url("css/01-base.css");
+@import url("css/02-forms.css");
+@import url("css/03-layout-content.css");
+@import url("css/04-activities.css");
+@import url("css/05-legacy-and-forgot-password.css");
+@import url("css/06-profile.css");
+@import url("css/07-responsive-600.css");
+@import url("css/08-toasts.css");
+@import url("css/09-activity-detail.css");
+@import url("css/10-utilities-and-modals.css");
+@import url("css/11-landing-hero.css");
+@import url("css/12-marketing-pages.css");
+@import url("css/13-button-harmony.css");
+@import url("css/14-responsive-aspect-ratios.css");
+@import url("css/15-glass-surfaces.css");

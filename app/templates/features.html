@@ -1,0 +1,83 @@
+{% extends "landing.html" %}
+{% block content %}
+  <main class="marketing-main features-main">
+    <section class="marketing-hero features-hero" data-marketing-reveal>
+      <div class="marketing-hero-copy" data-marketing-reveal data-reveal-delay="0.05s">
+        <p class="marketing-kicker">Features</p>
+        <h1>Everything you need to run events smoothly.</h1>
+        <p>
+          From creation to follow-up, these tools keep activity management clear
+          and consistent.
+        </p>
+      </div>
+    </section>
+
+    <section class="features-slideshow" data-marketing-reveal data-reveal-delay="0.08s" aria-label="Feature highlights slideshow">
+      <button
+        type="button"
+        class="slideshow-control slideshow-control-prev"
+        data-feature-prev
+        aria-label="Show previous feature"
+      >
+        <span aria-hidden="true">&larr;</span>
+      </button>
+
+      <div class="slideshow-track" data-feature-track>
+        <article class="feature-slide is-active" data-feature-slide>
+          <figure class="feature-visual">
+            <!-- Feature screenshot goes here: Activity creation -->
+            <img src="{{ url_for('static', filename='images/activity-creation.png') }}" alt="Activity creation screen">
+          </figure>
+          <div class="feature-copy">
+            <h2>Activity creation</h2>
+            <p>Create events quickly with a guided and structured form.</p>
+          </div>
+        </article>
+
+        <article class="feature-slide" data-feature-slide>
+          <figure class="feature-visual">
+            <!-- Feature screenshot goes here: Upcoming timeline -->
+            <img src="{{ url_for('static', filename='images/upcoming-timeline.png') }}" alt="Upcoming timeline view">
+          </figure>
+          <div class="feature-copy">
+            <h2>Upcoming timeline</h2>
+            <p>See what is next at a glance and avoid missed plans.</p>
+          </div>
+        </article>
+
+        <article class="feature-slide" data-feature-slide>
+          <figure class="feature-visual">
+            <!-- Feature screenshot goes here: Personal dashboard -->
+            <img src="{{ url_for('static', filename='images/personal-dashboard.png') }}" alt="Personal dashboard view">
+          </figure>
+          <div class="feature-copy">
+            <h2>Personal dashboard</h2>
+            <p>Track your own activities and keep details updated.</p>
+          </div>
+        </article>
+
+        <article class="feature-slide" data-feature-slide>
+          <figure class="feature-visual">
+            <!-- Feature screenshot goes here: Responsive design -->
+            <img src="{{ url_for('static', filename='images/responsive-design.png') }}" alt="Responsive design across devices">
+          </figure>
+          <div class="feature-copy">
+            <h2>Responsive design</h2>
+            <p>Use it on laptop, tablet, and phone without layout issues.</p>
+          </div>
+        </article>
+      </div>
+
+      <button
+        type="button"
+        class="slideshow-control slideshow-control-next"
+        data-feature-next
+        aria-label="Show next feature"
+      >
+        <span aria-hidden="true">&rarr;</span>
+      </button>
+
+      <div class="slideshow-pagination" data-feature-dots aria-label="Select feature slide"></div>
+    </section>
+  </main>
+{% endblock %}

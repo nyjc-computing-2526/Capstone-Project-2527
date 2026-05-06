@@ -1,0 +1,21 @@
+{% extends "landing.html" %}
+{% block content %}
+  <main class="marketing-main legal-main">
+
+    <!-- HERO -->
+    <section class="marketing-hero legal-hero">
+      <div class="marketing-hero-copy">
+        <p class="marketing-kicker">Privacy Policy</p>
+        <h1>Your data, handled with care.</h1>
+        <p>
+          Activity Alligator is committed to protecting your personal data in accordance
+          with Singapore’s PDPA. This policy outlines how we collect, use, protect,
+          and respond to data-related incidents.
+        </p>
+        <p class="legal-updated">Last updated: April 2026</p>
+      </div>
+    </section>
+
+    {% include "partials/privacy-policy-body.html" %}
+  </main>
+{% endblock %}
